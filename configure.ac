@@ -11,5 +11,5 @@ if test "$OCAMLFIND" = "no"; then
 	AC_MSG_ERROR([You must install the OCaml findlib])
 fi
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
