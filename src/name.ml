@@ -4,11 +4,11 @@ type name =
       Name of string
 ;;
 
-let print_name name = match name with
+let print_name = function
       Name(str) -> printf "%s" str
 ;;
 
-let rec print_name_list name_list = match name_list with
+let rec print_name_list = function
       [] -> ()
     | name::rest -> print_name name; print_name_list rest
 ;;

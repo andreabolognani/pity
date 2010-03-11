@@ -9,7 +9,7 @@ type term =
     | Concatenation of term * term
 ;;
 
-let rec print_term term = match term with
+let rec print_term = function
       Output(name, name_list) -> (
           printf "%s" "!";
           print_name name;
