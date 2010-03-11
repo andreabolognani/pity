@@ -1,0 +1,13 @@
+hello
+*.cmi
+*.cmo
+
+Makefile
+Makefile.in
+config.*
+configure
+
+aclocal.m4
+autom4te.cache
+install-sh
+missing
