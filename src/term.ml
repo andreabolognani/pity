@@ -1,5 +1,5 @@
-open Printf;;
-open Name;;
+open Printf
+open Name
 
 module Term = struct
 
@@ -9,7 +9,6 @@ module Term = struct
         | Restriction of Name.name * term
         | Parallelization of term * term
         | Concatenation of term * term
-    ;;
 
     let rec print = function
           Output(name, name_list) -> (
@@ -21,4 +20,4 @@ module Term = struct
           )
         | _ -> printf "%s" "NOT SUPPORTED YET"
 
-end;;
+end
