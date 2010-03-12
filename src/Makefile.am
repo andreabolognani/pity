@@ -4,7 +4,7 @@ pity_OCAMLSOURCES = name.ml term.ml main.ml
 PACKAGES =
 LIBS =
 
-pity: name.cmo term.cmo main.cmo
+pity: $(pity_OCAMLSOURCES:.ml=.cmo)
 		$(OCAMLFIND) ocamlc $(PACKAGES) $(LIBS) $^ -o $@
 
 EXTRA_DIST = $(pity_OCAMLSOURCES)
