@@ -1,8 +1,8 @@
 open Name;;
 open Term;;
 
-let test_term = Output(Name("x"), [Name("y")])
+let test_term = Term.Output(Name.Name("x"), [Name.Name("y")])
 in
-    print_term test_term;
+    Term.print_term test_term;
     print_endline ""
 ;;

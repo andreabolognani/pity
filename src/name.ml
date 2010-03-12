@@ -1,14 +1,17 @@
 open Printf;;
 
-type name =
-      Name of string
-;;
+module Name = struct
 
-let print_name = function
-      Name(str) -> printf "%s" str
-;;
+    type name =
+          Name of string
+    ;;
 
-let rec print_name_list = function
-      [] -> ()
-    | name::rest -> print_name name; print_name_list rest
-;;
+    let print_name = function
+          Name(str) -> printf "%s" str
+    ;;
+
+    let rec print_name_list = function
+          [] -> ()
+        | name::rest -> print_name name; print_name_list rest
+
+end;;
