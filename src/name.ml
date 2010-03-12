@@ -6,12 +6,12 @@ module Name = struct
           Name of string
     ;;
 
-    let print_name = function
+    let print = function
           Name(str) -> printf "%s" str
     ;;
 
-    let rec print_name_list = function
+    let rec print_list = function
           [] -> ()
-        | name::rest -> print_name name; print_name_list rest
+        | name::rest -> print name; print_list rest
 
 end;;

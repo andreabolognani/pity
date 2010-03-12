@@ -11,12 +11,12 @@ module Term = struct
         | Concatenation of term * term
     ;;
 
-    let rec print_term = function
+    let rec print = function
           Output(name, name_list) -> (
               printf "%s" "!";
-              Name.print_name name;
+              Name.print name;
               printf "%s" "<";
-              Name.print_name_list name_list;
+              Name.print_list name_list;
               printf "%s" ">";
           )
         | _ -> printf "%s" "NOT SUPPORTED YET"
