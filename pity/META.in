@@ -1,4 +1,4 @@
 description = "Pi–calculus process type system"
 requires = ""
-version = "0.1.0"
+version = "@VERSION@"
 archive(byte) = "pity.cma"
