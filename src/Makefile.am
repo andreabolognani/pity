@@ -1,11 +1,10 @@
-bin_SCRIPTS = pity
-pity_OCAMLSOURCES = name.ml term.ml main.ml
+PACKAGES = -package pity -linkpkg
 
-PACKAGES =
-LIBS =
+bin_SCRIPTS = pity
+pity_OCAMLSOURCES = main.ml
 
 pity: $(pity_OCAMLSOURCES:.ml=.cmo)
-		$(OCAMLFIND) ocamlc $(PACKAGES) $(LIBS) $^ -o $@
+	OCAMLPATH=$(top_srcdir) $(OCAMLFIND) ocamlc $(PACKAGES) $^ -o $@
 
 EXTRA_DIST = $(pity_OCAMLSOURCES)
 CLEANFILES = *.cmi *.cmo $(bin_SCRIPTS)

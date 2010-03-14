@@ -1,2 +1,2 @@
 .ml.cmo:
-	$(OCAMLFIND) ocamlc $(PACKAGES) -c $< -o $@
+	OCAMLPATH=$(top_srcdir) $(OCAMLFIND) ocamlc $(PACKAGES) -c $< -o $@
