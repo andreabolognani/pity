@@ -9,4 +9,4 @@ pity: $(pity_OCAMLSOURCES:.ml=.cmo)
 EXTRA_DIST = $(pity_OCAMLSOURCES)
 CLEANFILES = *.cmi *.cmo $(bin_SCRIPTS)
 
-include $(top_srcdir)/ocaml.make
+include $(top_srcdir)/support/ocaml.make

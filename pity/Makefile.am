@@ -9,4 +9,4 @@ all-am: $(noinst_OCAMLPACKAGES)
 EXTRA_DIST = META.in $(pity_cma_OCAMLSOURCES)
 CLEANFILES = *.cmi *.cmo $(noinst_OCAMLPACKAGES)
 
-include $(top_srcdir)/ocaml.make
+include $(top_srcdir)/support/ocaml.make
