@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I support
 
-SUBDIRS = pity src
+SUBDIRS = pity tests src
 
 EXTRA_DIST = META.in

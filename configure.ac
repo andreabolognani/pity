@@ -13,6 +13,7 @@ fi
 
 AC_CONFIG_FILES([Makefile
                  pity/Makefile
+                 tests/Makefile
                  src/Makefile
                  META])
 AC_OUTPUT
