@@ -4,20 +4,46 @@ open Name
 module Term = struct
 
     type term =
-          Input of Name.name * Name.name list
+          Nil
+        | Input of Name.name * Name.name list
         | Output of Name.name * Name.name list
         | Restriction of Name.name * term
-        | Parallelization of term * term
-        | Concatenation of term * term
+        | Composition of term * term
+        | Prefix of term * term
 
     let rec print = function
-          Output(name, name_list) -> (
-              printf "%s" "!";
-              Name.print name;
-              printf "%s" "<";
-              Name.print_list name_list;
-              printf "%s" ">";
+          Nil -> (
+              printf "0"
           )
-        | _ -> printf "%s" "NOT SUPPORTED YET"
+        | Input(x, y) -> (
+              Name.print x;
+              printf "%s" "(";
+              Name.print_list y;
+              printf "%s" ")"
+          )
+        | Output(x, y) -> (
+              printf "%s" "!";
+              Name.print x;
+              printf "%s" "<";
+              Name.print_list y;
+              printf "%s" ">"
+          )
+        | Restriction(x, p) -> (
+              printf "%s" "(v";
+              Name.print x;
+              printf "%s" ")(";
+              print p;
+              printf "%s" ")"
+          )
+        | Composition(p, q) -> (
+              print p;
+              printf "%s" "|";
+              print q
+          )
+        | Prefix(p, q) -> (
+              print p;
+              printf "%s" ".";
+              print q
+          )
 
 end
