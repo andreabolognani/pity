@@ -5,11 +5,20 @@ module Name = struct
     type name =
           Name of string
 
-    let print = function
-          Name(str) -> printf "%s" str
+    let to_string = function
+          Name(x) -> x
 
-    let rec print_list = function
-          [] -> ()
-        | name::rest -> print name; print_list rest
+    let rec list_to_string = function
+          [] -> (
+              ""
+          )
+        | [x] -> (
+              (to_string x)
+          )
+        | x::y -> (
+              (to_string x) ^
+              "," ^
+              (list_to_string y)
+          )
 
 end

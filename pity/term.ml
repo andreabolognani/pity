@@ -11,39 +11,39 @@ module Term = struct
         | Composition of term * term
         | Prefix of term * term
 
-    let rec print = function
+    let rec to_string = function
           Nil -> (
-              printf "0"
+              "0"
           )
         | Input(x, y) -> (
-              Name.print x;
-              printf "%s" "(";
-              Name.print_list y;
-              printf "%s" ")"
+              (Name.to_string x) ^
+              "(" ^
+              (Name.list_to_string y) ^
+              ")"
           )
         | Output(x, y) -> (
-              printf "%s" "!";
-              Name.print x;
-              printf "%s" "<";
-              Name.print_list y;
-              printf "%s" ">"
+              "!" ^
+              (Name.to_string x) ^
+              "<" ^
+              (Name.list_to_string y) ^
+              ">"
           )
         | Restriction(x, p) -> (
-              printf "%s" "(v";
-              Name.print x;
-              printf "%s" ")(";
-              print p;
-              printf "%s" ")"
+              "(v" ^
+              (Name.to_string x) ^
+              ")(" ^
+              (to_string p) ^
+              ")"
           )
         | Composition(p, q) -> (
-              print p;
-              printf "%s" "|";
-              print q
+              (to_string p) ^
+              "|" ^
+              (to_string q)
           )
         | Prefix(p, q) -> (
-              print p;
-              printf "%s" ".";
-              print q
+              (to_string p) ^
+              "." ^
+              (to_string q)
           )
 
 end

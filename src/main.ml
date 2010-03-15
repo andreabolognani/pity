@@ -1,3 +1,4 @@
+open Printf
 open Name
 open Term;;
 
@@ -34,5 +35,5 @@ Term.Composition(
     )
 )
 in
-    Term.print test_term;
+    printf "%s" (Term.to_string test_term);
     print_endline ""
