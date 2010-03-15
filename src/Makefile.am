@@ -1,13 +1,13 @@
 PACKAGES = -package pity -linkpkg
+OCAMLADD = $(top_builddir)/pity/pity.cma
 
-bin_SCRIPTS = pity
+noinst_SCRIPTS = pity
 pity_OCAMLSOURCES = main.ml
-pity_OCAMLADD = $(top_builddir)/pity/pity.cma
 
-pity: $(pity_OCAMLSOURCES:.ml=.cmo) $(pity_OCAMLADD)
+pity: $(pity_OCAMLSOURCES:.ml=.cmo) $(OCAMLADD)
 	OCAMLPATH=$(top_builddir) $(OCAMLFIND) ocamlc $(PACKAGES) $^ -o $@
 
 EXTRA_DIST = $(pity_OCAMLSOURCES)
-CLEANFILES = *.cmi *.cmo $(bin_SCRIPTS)
+CLEANFILES = *.cmi *.cmo $(noinst_SCRIPTS)
 
 include $(top_srcdir)/support/ocaml.make
