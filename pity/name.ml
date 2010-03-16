@@ -1,5 +1,3 @@
-open Printf
-
 module Name = struct
 
     type name =

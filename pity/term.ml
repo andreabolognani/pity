@@ -1,4 +1,3 @@
-open Printf
 open Name
 
 module Term = struct
