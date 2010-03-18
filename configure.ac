@@ -12,8 +12,8 @@ if test "$OCAMLFIND" = "no"; then
 fi
 
 AC_CONFIG_FILES([Makefile
+                 pity/META.pity
                  pity/Makefile
                  tests/Makefile
-                 src/Makefile
-                 META])
+                 src/Makefile])
 AC_OUTPUT
