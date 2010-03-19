@@ -1,6 +1,5 @@
-META
-
 *.swp
+*.mli
 *.cmi
 *.cmo
 *.cma
