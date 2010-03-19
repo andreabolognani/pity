@@ -6,6 +6,16 @@ if test "$OCAMLC" = "no"; then
 	AC_MSG_ERROR([You must install the OCaml compiler])
 fi
 
+AC_PROG_OCAMLYACC
+if test "$OCAMLYACC" = "no"; then
+	AC_MSG_ERROR([You must install the OCaml parser generator])
+fi
+
+AC_PROG_OCAMLLEX
+if test "$OCAMLLEX" = "no"; then
+	AC_MSG_ERROR([You must install the OCaml lexer generator])
+fi
+
 AC_PROG_FINDLIB
 if test "$OCAMLFIND" = "no"; then
 	AC_MSG_ERROR([You must install the OCaml findlib])
