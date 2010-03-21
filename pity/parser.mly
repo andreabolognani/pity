@@ -6,21 +6,36 @@ open Term
 %}
 
 %token<string>   NAME
-%token           NIL VU DOT COMMA PIPE BANG
+%token           NIL DOT COMMA PIPE BANG
 %token           L_PAREN R_PAREN L_BRACKET R_BRACKET
 %token           EOF
 
-%start term
-%type<Term.term> term
+%start process
+%type<Term.term> process
 
 %%
 
+process
+    : subprocess                               { $1 }
+    | subprocess PIPE process                  { Term.Composition($1, $3) }
+    ;
+
+subprocess
+    :
+    | term                                     { $1 }
+    | L_PAREN name R_PAREN subprocess          { Term.Restriction($2, $4) }
+    ;
+
 term
+    : action                                   { $1 }
+    | action DOT term                          { Term.Prefix($1, $3) }
+    ;
+
+action
     : NIL                                      { Term.Nil }
-    | L_PAREN term R_PAREN                     { $2 }
     | name L_PAREN name_list R_PAREN           { Term.Input($1, $3) }
     | BANG name L_BRACKET name_list R_BRACKET  { Term.Output($2, $4) }
-    | L_PAREN VU name R_PAREN term             { Term.Restriction($3, $5) }
+    | L_PAREN process R_PAREN                  { $2 }
     ;
 
 name_list

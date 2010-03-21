@@ -9,6 +9,6 @@ let dump p = match p with
 
 let _ =
     let lexbuf = (Lexing.from_channel stdin) in
-        let result = (Parser.term Lexer.token lexbuf) in
+        let result = (Parser.process Lexer.token lexbuf) in
             dump result;
             print_endline ""
