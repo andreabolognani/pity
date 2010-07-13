@@ -19,26 +19,29 @@ let rec to_string = function
           ")"
       )
     | Output(x, y) -> (
-          "!" ^
           (Name.to_string x) ^
           "<" ^
           (Name.list_to_string y) ^
           ">"
       )
     | Restriction(x, p) -> (
-          "(v" ^
+          "(" ^
           (Name.to_string x) ^
           ")(" ^
           (to_string p) ^
           ")"
       )
     | Composition(p, q) -> (
+          "(" ^
           (to_string p) ^
-          "|" ^
-          (to_string q)
+          ")|(" ^
+          (to_string q) ^
+          ")"
       )
     | Prefix(p, q) -> (
+          "(" ^
           (to_string p) ^
-          "." ^
-          (to_string q)
+          ").(" ^
+          (to_string q) ^
+          ")"
       )

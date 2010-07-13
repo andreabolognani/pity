@@ -34,7 +34,7 @@ term
 action
     : NIL                                      { Term.Nil }
     | name L_PAREN name_list R_PAREN           { Term.Input($1, $3) }
-    | BANG name L_BRACKET name_list R_BRACKET  { Term.Output($2, $4) }
+    | name L_BRACKET name_list R_BRACKET       { Term.Output($1, $3) }
     | L_PAREN process R_PAREN                  { $2 }
     ;
 
