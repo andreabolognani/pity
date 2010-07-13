@@ -21,9 +21,14 @@ process
     ;
 
 subprocess
+    : part                                     { $1 }
+    | BANG subprocess                          { Term.Replication($2) }
+    ;
+
+part
     :
     | term                                     { $1 }
-    | L_PAREN name R_PAREN subprocess          { Term.Restriction($2, $4) }
+    | L_PAREN name R_PAREN part                { Term.Restriction($2, $4) }
     ;
 
 term

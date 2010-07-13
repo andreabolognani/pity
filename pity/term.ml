@@ -6,6 +6,7 @@ type term =
     | Output of Name.name * Name.name list
     | Restriction of Name.name * term
     | Composition of term * term
+    | Replication of term
     | Prefix of term * term
 
 let rec to_string = function
@@ -36,6 +37,11 @@ let rec to_string = function
           (to_string p) ^
           ")|(" ^
           (to_string q) ^
+          ")"
+      )
+    | Replication(p) -> (
+          "!(" ^
+          (to_string p) ^
           ")"
       )
     | Prefix(p, q) -> (
