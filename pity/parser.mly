@@ -16,8 +16,12 @@ open Term
 %%
 
 process
-    : subprocess                               { $1 }
-    | subprocess PIPE process                  { Term.Composition($1, $3) }
+    : subprocess_list                          { Term.Composition($1) }
+    ;
+
+subprocess_list
+    : subprocess                               { [$1] }
+    | subprocess PIPE subprocess_list          { $1::$3 }
     ;
 
 subprocess

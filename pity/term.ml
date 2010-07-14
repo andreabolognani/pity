@@ -5,7 +5,7 @@ type term =
     | Input of Name.name * Name.name list
     | Output of Name.name * Name.name list
     | Restriction of Name.name * term
-    | Composition of term * term
+    | Composition of term list
     | Replication of term
     | Prefix of term * term
 
@@ -32,12 +32,22 @@ let rec to_string = function
           (to_string p) ^
           ")"
       )
-    | Composition(p, q) -> (
-          "(" ^
-          (to_string p) ^
-          ")|(" ^
-          (to_string q) ^
-          ")"
+    | Composition(lst) -> (
+          match lst with
+                []  -> (
+                    ""
+                )
+              | [p] -> (
+                    "(" ^
+                    (to_string p) ^
+                    ")"
+                )
+              | p::rest -> (
+                    "(" ^
+                    (to_string p) ^
+                    ")|" ^
+                    (to_string (Composition(rest)))
+                )
       )
     | Replication(p) -> (
           "!(" ^
