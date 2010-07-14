@@ -23,6 +23,6 @@ rule token = parse
     | ")"    { R_PAREN }
     | "<"    { L_BRACKET }
     | ">"    { R_BRACKET }
-    | "\n"   { token lexbuf }
+    | "\n"   { EOF }
     | eof    { EOF }
     | _      { raise (UnknownSymbol(Lexing.lexeme lexbuf)) }
