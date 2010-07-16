@@ -4,6 +4,7 @@ open Printf
 open Lexing
 open Parser
 
+exception EndOfInput
 exception UnknownSymbol of string
 
 }
@@ -24,5 +25,5 @@ rule token = parse
     | "<"    { L_BRACKET }
     | ">"    { R_BRACKET }
     | "\n"   { EOF }
-    | eof    { EOF }
+    | eof    { raise (EndOfInput) }
     | _      { raise (UnknownSymbol(Lexing.lexeme lexbuf)) }

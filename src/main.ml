@@ -23,6 +23,7 @@ let rec repl () =
               print_endline "ERR: Syntax error";
               repl ()
           )
+        | Lexer.EndOfInput -> ()
 
 let _ =
     repl ()
