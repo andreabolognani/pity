@@ -14,15 +14,15 @@
  (define lex
   (lexer
    [name   (token-NAME lexeme)]
-   ["0"    token-NIL]
-   ["."    token-DOT]
-   [","    token-COMMA]
-   ["|"    token-PIPE]
-   ["!"    token-BANG]
-   ["("    token-L_PAREN]
-   [")"    token-R_PAREN]
-   ["<"    token-L_BRACKET]
-   [">"    token-R_BRACKET]
-   [(eof)  token-EOF]))
+   ["0"    (token-NIL)]
+   ["."    (token-DOT)]
+   [","    (token-COMMA)]
+   ["|"    (token-PIPE)]
+   ["!"    (token-BANG)]
+   ["("    (token-L_PAREN)]
+   [")"    (token-R_PAREN)]
+   ["<"    (token-L_BRACKET)]
+   [">"    (token-R_BRACKET)]
+   [(eof)  (token-EOF)]))
 
  (provide lex))
