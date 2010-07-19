@@ -14,38 +14,32 @@
  (define (term->string term)
   (match term
    [(nil)             "0"]
-   [(replication p)   (string-join (list "!("
-                                         (term->string p)
-                                         ")")
-                                   "")]
-   [(input x y)       (string-join (list (name->string x)
-                                         "("
-                                         (name-list->string y)
-                                         ")")
-                                    "")]
-   [(output x y)      (string-join (list (name->string x)
-                                         "<"
-                                         (name-list->string y)
-                                         ">")
-                                   "")]
-   [(restriction x p) (string-join (list "("
-                                         (name->string x)
-                                         ")("
-                                         (term->string p)
-                                         ")")
-                                   "")]
-   [(composition p q) (string-join (list "("
-                                         (term->string p)
-                                         ")|("
-                                         (term->string q)
-                                         ")")
-                                   "")]
-   [(prefix p q)      (string-join (list "("
-                                         (term->string p)
-                                         ").("
-                                         (term->string q)
-                                         ")")
-                                   "")]))
+   [(replication p)   (string-append "!("
+                                     (term->string p)
+                                     ")")]
+   [(input x y)       (string-append (name->string x)
+                                     "("
+                                     (name-list->string y)
+                                     ")")]
+   [(output x y)      (string-append (name->string x)
+                                     "<"
+                                     (name-list->string y)
+                                     ">")]
+   [(restriction x p) (string-append "("
+                                     (name->string x)
+                                     ")("
+                                     (term->string p)
+                                     ")")]
+   [(composition p q) (string-append "("
+                                     (term->string p)
+                                     ")|("
+                                     (term->string q)
+                                     ")")]
+   [(prefix p q)      (string-append "("
+                                     (term->string p)
+                                     ").("
+                                     (term->string q)
+                                     ")")]))
 
  (provide nil nil?
           replication replication?
