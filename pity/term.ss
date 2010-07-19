@@ -3,17 +3,55 @@
  (require scheme/match
           "name.ss")
 
- (define-struct nil    ())
- (define-struct input  (channel name-list))
- (define-struct prefix (action term))
+ (define-struct nil         ())
+ (define-struct replication (p))
+ (define-struct input       (x y))
+ (define-struct output      (x y))
+ (define-struct restriction (x p))
+ (define-struct composition (p q))
+ (define-struct prefix      (p q))
 
  (define (term->string term)
   (match term
-   [(nil) "0"]
-   [(input c l) (string-join (list (name->string c) "(" (name-list->string l) ")") "")]
-   [(prefix a t) (string-join (list (term->string a) (term->string t)) ".")]))
+   [(nil)             "0"]
+   [(replication p)   (string-join (list "!("
+                                         (term->string p)
+                                         ")")
+                                   "")]
+   [(input x y)       (string-join (list (name->string x)
+                                         "("
+                                         (name-list->string y)
+                                         ")")
+                                    "")]
+   [(output x y)      (string-join (list (name->string x)
+                                         "<"
+                                         (name-list->string y)
+                                         ">")
+                                   "")]
+   [(restriction x p) (string-join (list "("
+                                         (name->string x)
+                                         ")("
+                                         (term->string p)
+                                         ")")
+                                   "")]
+   [(composition p q) (string-join (list "("
+                                         (term->string p)
+                                         ")|("
+                                         (term->string q)
+                                         ")")
+                                   "")]
+   [(prefix p q)      (string-join (list "("
+                                         (term->string p)
+                                         ").("
+                                         (term->string q)
+                                         ")")
+                                   "")]))
 
  (provide nil nil?
+          replication replication?
           input input?
+          output output?
+          restriction restriction?
+          composition composition?
           prefix prefix?
           term->string))
