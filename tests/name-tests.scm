@@ -22,6 +22,7 @@
 
   (test-case
    "name-list->string with three names"
-   (check-equal? (name-list->string (list (name "x") (name "y") (name "z"))) "x,y,z"))))
+   (let ([name-list (list (name "x") (name "y") (name "z"))])
+    (check-equal? (name-list->string name-list) "x,y,z")))))
 
 (exit (run-tests name-tests))
