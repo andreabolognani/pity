@@ -25,6 +25,4 @@
     (let ([name-list (list (name "x") (name "y") (name "z"))])
      (check-equal? (name-list->string name-list) "x,y,z")))))
 
- (exit (run-tests name-tests))
-
  (provide name-tests))
