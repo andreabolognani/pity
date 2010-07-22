@@ -25,4 +25,4 @@
    [">"    (token-R_BRACKET)]
    [(eof)  (token-EOF)]))
 
- (provide lex))
+ (provide op-tokens value-tokens lex))
