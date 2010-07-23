@@ -1,4 +1,0 @@
-description = "Pi–calculus process type system"
-requires = ""
-version = "@VERSION@"
-archive(byte) = "pity.cma"
