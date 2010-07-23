@@ -1,4 +1,4 @@
-(module repl scheme
+(module repl racket
 
  (define (repl action prompt)
   (printf "~a" prompt)

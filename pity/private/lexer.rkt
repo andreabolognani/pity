@@ -1,4 +1,4 @@
-(module private-lexer scheme
+(module private-lexer racket
 
  (require parser-tools/lex)
 

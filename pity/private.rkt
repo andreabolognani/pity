@@ -1,4 +1,4 @@
-(module private scheme
+(module private racket
 
  (require "private/lexer.rkt"
           "private/parser.rkt")

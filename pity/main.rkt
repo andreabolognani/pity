@@ -1,4 +1,4 @@
-(module main scheme
+(module main racket
 
  (require "name.rkt"
           "term.rkt"

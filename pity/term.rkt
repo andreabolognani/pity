@@ -1,6 +1,6 @@
-(module term scheme
+(module term racket
 
- (require scheme/match
+ (require racket/match
           "name.rkt")
 
  (define-struct nil         ())

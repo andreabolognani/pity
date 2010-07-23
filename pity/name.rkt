@@ -1,6 +1,6 @@
-(module name scheme
+(module name racket
 
- (require scheme/match)
+ (require racket/match)
 
  (define-struct name (s))
 

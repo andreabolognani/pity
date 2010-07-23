@@ -1,4 +1,4 @@
-(module private-parser scheme
+(module private-parser racket
 
  (require parser-tools/yacc
           "../name.rkt"

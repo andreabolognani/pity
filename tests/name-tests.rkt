@@ -1,4 +1,4 @@
-(module name-tests scheme
+(module name-tests racket
 
  (require rackunit
           rackunit/text-ui
