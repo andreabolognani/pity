@@ -12,9 +12,9 @@ check-for-racket:
 	fi
 
 run: check-for-racket
-	@$(RLWRAP) $(RACKET) -S $(SEARCH_DIRS) src/main.scm
+	@$(RLWRAP) $(RACKET) -S $(SEARCH_DIRS) src/main.rkt
 
 check: check-for-racket
-	@$(RACKET) -S $(SEARCH_DIRS) tests/tests.scm
+	@$(RACKET) -S $(SEARCH_DIRS) tests/tests.rkt
 
 .PHONY: all check-for-racket run check

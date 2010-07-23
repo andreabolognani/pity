@@ -1,9 +1,9 @@
 (module private-parser scheme
 
  (require parser-tools/yacc
-          "../name.ss"
-          "../term.ss"
-          "lexer.ss")
+          "../name.rkt"
+          "../term.rkt"
+          "lexer.rkt")
 
  (define private-parser
   (parser

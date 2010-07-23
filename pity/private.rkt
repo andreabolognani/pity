@@ -1,7 +1,7 @@
 (module private scheme
 
- (require "private/lexer.ss"
-          "private/parser.ss")
+ (require "private/lexer.rkt"
+          "private/parser.rkt")
 
  (define (string->term str)
   (let ([ip (open-input-string str)])

@@ -1,7 +1,7 @@
 (module term scheme
 
  (require scheme/match
-          "name.ss")
+          "name.rkt")
 
  (define-struct nil         ())
  (define-struct replication (p))

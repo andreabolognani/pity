@@ -2,7 +2,7 @@
 
 (require rackunit
          rackunit/text-ui
-         "name-tests.ss")
+         "name-tests.rkt")
 
 (define pity-tests
  (test-suite
