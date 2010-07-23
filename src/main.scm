@@ -1,13 +1,6 @@
 #lang scheme
 
-(require pity/name
-         pity/term
-         pity/private
-         pity/repl)
-
-;(define (action line)
-; (let ([ip (open-input-string line)])
-; (printf "~a~n" (term->string (parse (lambda () (lex ip)))))))
+(require pity)
 
 (define (action line)
  (printf "~a~n" (term->string (string->term line))))
