@@ -1,4 +1,4 @@
-(module lexer scheme
+(module private-lexer scheme
 
  (require parser-tools/lex)
 
@@ -11,7 +11,7 @@
   (digit (char-range "0" "9"))
   (name (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
 
- (define lex
+ (define private-lexer
   (lexer
    [name   (token-NAME lexeme)]
    ["0"    (token-NIL)]
@@ -25,4 +25,4 @@
    [">"    (token-R_BRACKET)]
    [(eof)  (token-EOF)]))
 
- (provide op-tokens value-tokens lex))
+ (provide op-tokens value-tokens private-lexer))

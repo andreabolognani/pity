@@ -2,12 +2,14 @@
 
 (require pity/name
          pity/term
-         pity/lex
-         pity/parse
+         pity/private
          pity/repl)
 
+;(define (action line)
+; (let ([ip (open-input-string line)])
+; (printf "~a~n" (term->string (parse (lambda () (lex ip)))))))
+
 (define (action line)
- (let ([ip (open-input-string line)])
- (printf "~a~n" (term->string (parse (lambda () (lex ip)))))))
+ (printf "~a~n" (term->string (string->term line))))
 
 (repl action)

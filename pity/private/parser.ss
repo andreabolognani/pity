@@ -1,11 +1,11 @@
-(module parse scheme
+(module private-parser scheme
 
  (require parser-tools/yacc
-          "name.ss"
-          "term.ss"
-          "lex.ss")
+          "../name.ss"
+          "../term.ss"
+          "lexer.ss")
 
- (define parse
+ (define private-parser
   (parser
 
    (start  process)
@@ -37,4 +37,4 @@
 
     (name       [(NAME)                               (name $1)]))))
  
- (provide parse))
+ (provide private-parser))
