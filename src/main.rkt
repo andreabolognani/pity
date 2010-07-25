@@ -4,6 +4,8 @@
          "repl.rkt")
 
 (define (action line)
- (printf "~a~n" (term->string (string->term line))))
+ (with-handlers ([(lambda (e) (exn:fail:read? e))
+                  (lambda (e) (printf "ERR: Exception caught~n"))])
+  (printf "~a~n" (term->string (string->term line)))))
 
 (repl action "> ")
