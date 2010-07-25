@@ -2,11 +2,11 @@
 
  (require rackunit
           rackunit/text-ui
-          pity/name)
+          pity)
 
  (define name-tests
   (test-suite
-   "Tests for the pity/name module"
+   "Tests for the name module"
 
    (test-case
     "name->string"
