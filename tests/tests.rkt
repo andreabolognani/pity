@@ -2,14 +2,14 @@
 
 (require rackunit
          rackunit/text-ui
-         "name-tests.rkt"
+         "print-tests.rkt"
          "parser-tests.rkt")
 
 (define pity-tests
  (test-suite
   "Tests for pity"
 
-  name-tests
+  print-tests
   parser-tests))
 
 (exit (run-tests pity-tests))
