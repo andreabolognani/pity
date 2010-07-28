@@ -54,31 +54,37 @@
 
    (test-case
     "Parse an input action with a single parameter"
-    (check-equal? (term->string (string->term "a(b)")) "a(b)"))
+    (let ([term "a(b)"])
+     (check-equal? (term->string (string->term term)) term)))
    
    (test-case
     "Parse an input action with two parameters"
-    (check-equal? (term->string (string->term "a(b,c)")) "a(b,c)"))
+    (let ([term "a(b,c)"])
+     (check-equal? (term->string (string->term term)) term)))
    
    (test-case
     "Parse an input action with three parameters"
-    (check-equal? (term->string (string->term "a(b,c,d)")) "a(b,c,d)"))
+    (let ([term "a(b,c,d)"])
+     (check-equal? (term->string (string->term term)) term)))
 
    (test-case
     "Parse an output action with a single parameter"
-    (check-equal? (term->string (string->term "a<b>")) "a<b>"))
+    (let ([term "a<b>"])
+     (check-equal? (term->string (string->term term)) term)))
    
    (test-case
     "Parse an output action with two parameters"
-    (check-equal? (term->string (string->term "a<b,c>")) "a<b,c>"))
+    (let ([term "a<b,c>"])
+     (check-equal? (term->string (string->term term)) term)))
    
    (test-case
     "Parse an output action with three parameters"
-    (check-equal? (term->string (string->term "a<b,c,d>")) "a<b,c,d>"))
+    (let ([term "a<b,c,d>"])
+     (check-equal? (term->string (string->term term)) term)))
    
    (test-case
     "Parse the composition of two nil terms"
-	(let ([term "0|0"])
+    (let ([term "0|0"])
      (check-equal? (term->string (string->term term)) term)))))
   
  (provide parser-tests))
