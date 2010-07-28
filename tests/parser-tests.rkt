@@ -78,6 +78,7 @@
    
    (test-case
     "Parse the composition of two nil terms"
-    (check-equal? (term->string (string->term "0|0")) "(0)|(0)"))))
+	(let ([term "0|0"])
+     (check-equal? (term->string (string->term term)) term)))))
   
  (provide parser-tests))

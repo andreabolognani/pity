@@ -14,32 +14,73 @@
  (define (term->string term)
   (match term
    [(nil)             "0"]
-   [(replication p)   (string-append "!("
-                                     (term->string p)
-                                     ")")]
-   [(input x y)       (string-append (name->string x)
-                                     "("
-                                     (name-list->string y)
-                                     ")")]
-   [(output x y)      (string-append (name->string x)
-                                     "<"
-                                     (name-list->string y)
-                                     ">")]
-   [(restriction x p) (string-append "("
-                                     (name->string x)
-                                     ")("
-                                     (term->string p)
-                                     ")")]
-   [(composition p q) (string-append "("
-                                     (term->string p)
-                                     ")|("
-                                     (term->string q)
-                                     ")")]
-   [(prefix p q)      (string-append "("
-                                     (term->string p)
-                                     ").("
-                                     (term->string q)
-                                     ")")]))
+   [(replication p)   (replication->string term)]
+   [(input x y)       (input->string term)]
+   [(output x y)      (output->string term)]
+   [(restriction x p) (restriction->string term)]
+   [(composition p q) (composition->string term)]
+   [(prefix p q)      (prefix->string term)]))
+
+ ; replication->string : replication -> string
+ (define (replication->string term)
+  (match-let ([(replication p) term])
+   (string-append "!"
+                  (if (contains-composition? p)
+                      (enclose (term->string p))
+                      (term->string p)))))
+
+ ; input->string : output -> string
+ (define (input->string term)
+  (match-let ([(input x y) term])
+   (string-append (name->string x) "("
+                  (name-list->string y) ")")))
+
+ ; output->string : output -> string
+ (define (output->string term)
+  (match-let ([(output x y) term])
+   (string-append (name->string x) "<"
+                  (name-list->string y) ">")))
+
+ ; restriction->string : restriction -> string
+ (define (restriction->string term)
+  (match-let ([(restriction x p) term])
+   (string-append (enclose (name->string x))
+                  (if (contains-composition? p)
+                      (enclose (term->string p))
+                      (term->string p)))))
+
+ ; composition->string : composition -> string
+ (define (composition->string term)
+  (match-let ([(composition p q) term])
+   (string-append (term->string p)
+                  "|"
+                  (term->string q))))
+
+ ; prefix->string : prefix -> string
+ (define (prefix->string term)
+  (match-let ([(prefix p q) term])
+   (string-append (if (contains-composition? p)
+                      (enclose (term->string p))
+                      (term->string p))
+                  "."
+                  (if (contains-composition? q)
+                      (enclose (term->string q))
+                      (term->string q)))))
+
+ ; enclose : string -> string
+ (define (enclose stuff)
+  (string-append "(" stuff ")"))
+
+ (define (contains-composition? term)
+  (match term
+   [(nil)             #f]
+   [(replication p)   (contains-composition? p)]
+   [(input x y)       #f]
+   [(output x y)      #f]
+   [(restriction x p) (contains-composition? p)]
+   [(composition p q) #t]
+   [(prefix p q)      (or (contains-composition? p)
+                          (contains-composition? q))]))
 
  (provide nil nil?
           replication replication?
