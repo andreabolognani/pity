@@ -1,7 +1,6 @@
 (module parser-tests racket
 
  (require rackunit
-          rackunit/text-ui
           pity)
 
  (define parser-tests

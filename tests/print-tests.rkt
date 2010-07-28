@@ -1,7 +1,6 @@
 (module print-tests racket
 
  (require rackunit
-          rackunit/text-ui
           pity)
 
  (define print-tests
