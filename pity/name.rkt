@@ -2,7 +2,7 @@
 
  (require racket/match)
 
- (define-struct name (s))
+ (define-struct name (s) #:transparent)
 
  (define (name->string value)
   (match value

@@ -3,13 +3,13 @@
  (require racket/match
           "name.rkt")
 
- (define-struct nil         ())
- (define-struct replication (p))
- (define-struct input       (x y))
- (define-struct output      (x y))
- (define-struct restriction (x p))
- (define-struct composition (p q))
- (define-struct prefix      (p q))
+ (define-struct nil         () #:transparent)
+ (define-struct replication (p) #:transparent)
+ (define-struct input       (x y) #:transparent)
+ (define-struct output      (x y) #:transparent)
+ (define-struct restriction (x p) #:transparent)
+ (define-struct composition (p q) #:transparent)
+ (define-struct prefix      (p q) #:transparent)
 
  (define (term->string term)
   (match term
