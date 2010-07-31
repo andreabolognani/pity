@@ -97,6 +97,59 @@
     "Parse the composition of two nil terms"
     (let ([as-string "0|0"]
           [as-term (composition (nil) (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse the replication of a nil term"
+    (let ([as-string "!0"]
+          [as-term (replication (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse an input prefix"
+    (let* ([as-string "a(b).0"]
+           [params (list (name "b"))]
+           [as-term (prefix (input (name "a") params) (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse an output prefix"
+    (let* ([as-string "a<b>.0"]
+           [params (list (name "b"))]
+           [as-term (prefix (output (name "a") params) (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a restriction"
+    (let ([as-string "(x)0"]
+          [as-term (restriction (name "x") (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a term containing both a prefix and a composition"
+    (let ([as-string "0.0|0"]
+          [as-term (composition (prefix (nil) (nil)) (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a term containing two compositions"
+    (let* ([as-string "0|x(y)|0"]
+           [action (input (name "x") (list (name "y")))]
+           [as-term (composition (nil) (composition action (nil)))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a double composition with parentheses first"
+    (let* ([as-string "(0|x(y))|0"]
+           [action (input (name "x") (list (name "y")))]
+           [as-term (composition (composition (nil) action) (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a double composition with parentheses last"
+    (let* ([as-string "0|(x(y)|0)"]
+           [action (input (name "x") (list (name "y")))]
+           [as-term (composition (nil) (composition action (nil)))])
      (check-equal? (string->term as-string) as-term)))))
   
  (provide parser-tests))
