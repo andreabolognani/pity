@@ -150,6 +150,24 @@
     (let* ([as-string "0|(x(y)|0)"]
            [action (input (name "x") (list (name "y")))]
            [as-term (composition (nil) (composition action (nil)))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a restriction over the first term of a composition"
+    (let ([as-string "(x)0|0"]
+          [as-term (composition (restriction (name "x") (nil)) (nil))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a restriction over the last term of a composition"
+    (let ([as-string "0|(x)0"]
+          [as-term (composition (nil) (restriction (name "x") (nil)))])
+     (check-equal? (string->term as-string) as-term)))
+
+   (test-case
+    "Parse a restriction over both terms of a composition"
+    (let ([as-string "(x)(0|0)"]
+          [as-term (restriction (name "x") (composition (nil) (nil)))])
      (check-equal? (string->term as-string) as-term)))))
   
  (provide parser-tests))
