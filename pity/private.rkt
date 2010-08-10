@@ -1,10 +1,10 @@
-(module private racket
+#lang racket
 
- (require "private/lexer.rkt"
-          "private/parser.rkt")
+(require "private/lexer.rkt"
+         "private/parser.rkt")
 
- (define (string->term str)
+(define (string->term str)
   (let ([ip (open-input-string str)])
-   (private-parser (lambda () (private-lexer ip)))))
+    (private-parser (lambda () (private-lexer ip)))))
 
- (provide string->term))
+(provide string->term)

@@ -7,11 +7,11 @@
          "names-tests.rkt")
 
 (define pity-tests
- (test-suite
-  "Tests for pity"
+  (test-suite
+    "Tests for pity"
 
-  print-tests
-  parser-tests
-  names-tests))
+    print-tests
+    parser-tests
+    names-tests))
 
 (exit (run-tests pity-tests))
