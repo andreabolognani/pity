@@ -1,7 +1,5 @@
 #lang racket
 
-(require racket/match)
-
 (define-struct name (s) #:transparent)
 
 (define (name->string value)

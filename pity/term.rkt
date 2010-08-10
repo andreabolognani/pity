@@ -1,7 +1,6 @@
 #lang racket
 
-(require racket/match
-         "name.rkt")
+(require "name.rkt")
 
 (define-struct nil         () #:transparent)
 (define-struct replication (p) #:transparent)
