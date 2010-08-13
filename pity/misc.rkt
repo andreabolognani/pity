@@ -20,13 +20,19 @@
             @{Returns a contract that recognizes a set whose every
               element matches the contract @scheme[c].}))
 (define (setof c)
-  (let ([band (lambda (a b) (and a b))] ; Binary and wrapper for fold
-        [c-name (symbol->string (object-name c))])
+  (let* ([band (lambda (a b) (and a b))] ; Binary and wrapper
+         [name (object-name c)]
+         [name (if (false? name) (format "~a" c) (symbol->string name))]
+         [name (string-append "(setof " name ")")])
     (flat-named-contract
-      (string-append "(setof " c-name ")")
-      (lambda (x)
-        (and (set? x)
-             (foldl band #t (set-map x c)))))))
+       name
+       (lambda (x)
+         (and (set? x)
+              (foldl band
+                     #t
+                     (set-map x (cond
+                                  [(procedure? c) c]
+                                  [else (lambda (i) (equal? i c))]))))))))
 
 (provide/doc
   (proc-doc non-empty-setof
