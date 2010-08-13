@@ -2,8 +2,8 @@
 
 (require "name.rkt"
          "term.rkt"
-         "private.rkt")
+         "misc.rkt")
 
 (provide (all-from-out "name.rkt"
                        "term.rkt"
-                       "private.rkt"))
+                       "misc.rkt"))
