@@ -1,6 +1,7 @@
 #lang racket
 
-(require "name.rkt")
+(require "name.rkt"
+         "misc.rkt")
 
 (define-struct nil         () #:transparent)
 (define-struct replication (p) #:transparent)
@@ -204,10 +205,6 @@
 
 ;; Utility functions
 ;; -----------------
-
-;; Convert a list to a set
-(define (list->set lst)
-  (foldl (lambda (i acc) (set-add acc i)) (set) lst))
 
 ;; Enclose a string between matching parentheses
 (define (enclose stuff)

@@ -1,11 +1,12 @@
-#lang racket
+#lang at-exp racket
 
 (require scribble/srcdoc
-         "private/lexer.rkt"
-         "private/parser.rkt")
+         "contracts.rkt")
 
-(define (string->process str)
-  (let ([ip (open-input-string str)])
-    (private-parser (lambda () (private-lexer ip)))))
-
-(provide string->process)
+(provide/doc
+  (proc-doc list->set
+            (([lst (listof any/c)]) () . ->d . [_ (setof any/c)])
+            @{Returns a set containing all the items in @scheme[lst],
+              minus the duplicates.}))
+(define (list->set lst)
+  (foldl (lambda (i acc) (set-add acc i)) (set) lst))
