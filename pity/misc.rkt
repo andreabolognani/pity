@@ -19,9 +19,16 @@
 ;; one, or the same string that would be printed by display
 (define (contract-name c)
   (let ([name (object-name c)])
-    (if (false? name)
-        (format "~a" c)
-        (symbol->string name))))
+    (cond [(false? name) (format "~a" c)]
+          [(symbol? name) (symbol->string name)]
+          [else name])))
+
+;; Apply a contract.
+;; Works with procedures, regexps and simple values.
+(define (contract-apply c)
+  (cond [(procedure? c) c]
+        [(regexp? c) (lambda (x) (and (string? x) (regexp-match c x)))]
+        [else (curry equal? c)]))
 
 (provide/doc
   (proc-doc setof
@@ -35,8 +42,7 @@
       (and (set? x)
            (foldl (lambda (x y) (and x y)) ; Binary and wrapper
                   #t
-                  (set-map x (cond [(procedure? c) c]
-                                   [else (curry equal? c)])))))))
+                  (set-map x (contract-apply c)))))))
 
 (provide/doc
   (proc-doc non-empty-setof
