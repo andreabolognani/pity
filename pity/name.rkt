@@ -18,9 +18,8 @@
             (([n name?]) () . ->d . [_ string?])
             @{Returns a string @scheme[equal?] to the one passed in
               when @scheme[n] was created.}))
-(define (name->string value)
-  (match value
-    [(name a) a]))
+(define (name->string n)
+  (name-s n))
 
 (provide/doc
   (proc-doc name-list->string
@@ -28,4 +27,4 @@
             @{Returns a string representation of @scheme[lst], where
               names are comma-separated.}))
 (define (name-list->string lst)
-  (string-join (map (lambda (n) (name->string n)) lst) ","))
+  (string-join (map name->string lst) ","))
