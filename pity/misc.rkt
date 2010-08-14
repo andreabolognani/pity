@@ -14,25 +14,29 @@
 ;;
 ;;  Pretty generic contracts one would expect to find built-in.
 
+;; Get the name for a contract.
+;; The name is the object-name of the contract if the contract has
+;; one, or the same string that would be printed by display
+(define (contract-name c)
+  (let ([name (object-name c)])
+    (if (false? name)
+        (format "~a" c)
+        (symbol->string name))))
+
 (provide/doc
   (proc-doc setof
             (([c contract?]) () . ->d . [_ contract?])
             @{Returns a contract that recognizes a set whose every
               element matches the contract @scheme[c].}))
 (define (setof c)
-  (let* ([band (lambda (a b) (and a b))] ; Binary and wrapper
-         [name (object-name c)]
-         [name (if (false? name) (format "~a" c) (symbol->string name))]
-         [name (string-append "(setof " name ")")])
-    (flat-named-contract
-       name
-       (lambda (x)
-         (and (set? x)
-              (foldl band
-                     #t
-                     (set-map x (cond
-                                  [(procedure? c) c]
-                                  [else (lambda (i) (equal? i c))]))))))))
+  (flat-named-contract
+    (string-append "(setof " (contract-name c) ")")
+    (lambda (x)
+      (and (set? x)
+           (foldl (lambda (x y) (and x y)) ; Binary and wrapper
+                  #t
+                  (set-map x (cond [(procedure? c) c]
+                                   [else (curry equal? c)])))))))
 
 (provide/doc
   (proc-doc non-empty-setof
@@ -40,10 +44,10 @@
             @{Returns a contract that recognizes non-empty sets whose
               every element matches the contract @scheme[c].}))
 (define (non-empty-setof c)
-  (let ([c-name (symbol->string (object-name c))])
-    (flat-named-contract
-      (string-append "(non-empty-setof " c-name ")")
-      (and/c (setof c) (not/c set-empty?)))))
+  (flat-named-contract
+    (string-append "(non-empty-setof " (contract-name c) ")")
+    (and/c (setof c)
+           (not/c set-empty?))))
 
 (provide/doc
   (proc-doc non-empty-string?
