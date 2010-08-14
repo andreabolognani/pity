@@ -2,7 +2,7 @@
 
 (require parser-tools/yacc
          "../name.rkt"
-         "../term.rkt"
+         "../process.rkt"
          "lexer.rkt")
 
 (define private-parser

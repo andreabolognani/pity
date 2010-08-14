@@ -11,16 +11,16 @@
 (define-struct prefix      (p q) #:transparent)
 
 
-;; Routines to get names, free names and bound names in a term
-;; -----------------------------------------------------------
+;; Routines to get names, free names and bound names in a process
+;; --------------------------------------------------------------
 ;;
 ;;  The procedures are split into a glue procedure, which is exported,
 ;;  and several smaller procedures which calculate the free and bound
-;;  names for a single type of term.
+;;  names for a single type of process.
 
-;; Find the names that have free occurences in a term
-(define (free-names term)
-  (match term
+;; Find the names that have free occurences in a process
+(define (free-names process)
+  (match process
     [(nil)             (free-names/nil)]
     [(replication p)   (free-names/replication p)]
     [(input x y)       (free-names/input x y)]
@@ -30,9 +30,9 @@
     [(prefix p q)      (free-names/prefix p q)]))
 (provide free-names)
 
-;; Find the names that have bound occurences in a term
-(define (bound-names term)
-  (match term
+;; Find the names that have bound occurences in a process
+(define (bound-names process)
+  (match process
     [(nil)             (bound-names/nil)]
     [(replication p)   (bound-names/replication p)]
     [(input x y)       (bound-names/input x y)]
@@ -42,9 +42,9 @@
     [(prefix p q)      (bound-names/prefix p q)]))
 (provide bound-names)
 
-;; Find all the names occurring in a term
-(define (names term)
-  (match term
+;; Find all the names occurring in a process
+(define (names process)
+  (match process
     [(nil)             (names/nil)]
     [(replication p)   (names/replication p)]
     [(input x y)       (names/input x y)]
@@ -54,7 +54,7 @@
     [(prefix p q)      (names/prefix p q)]))
 (provide names)
 
-;; Names, free names and bound names in a nil term
+;; Names, free names and bound names in the nil process
 
 (define (free-names/nil)
   (set))
@@ -145,61 +145,61 @@
              (names q)))
 
 
-(define (term->string term)
-  (match term
+(define (process->string process)
+  (match process
     [(nil)             "0"]
-    [(replication p)   (replication->string term)]
-    [(input x y)       (input->string term)]
-    [(output x y)      (output->string term)]
-    [(restriction x p) (restriction->string term)]
-    [(composition p q) (composition->string term)]
-    [(prefix p q)      (prefix->string term)]))
+    [(replication p)   (replication->string process)]
+    [(input x y)       (input->string process)]
+    [(output x y)      (output->string process)]
+    [(restriction x p) (restriction->string process)]
+    [(composition p q) (composition->string process)]
+    [(prefix p q)      (prefix->string process)]))
 
 ; replication->string : replication -> string
-(define (replication->string term)
-  (match-let ([(replication p) term])
+(define (replication->string process)
+  (match-let ([(replication p) process])
     (string-append "!"
                    (if (contains-composition? p)
-                       (enclose (term->string p))
-                       (term->string p)))))
+                       (enclose (process->string p))
+                       (process->string p)))))
 
 ; input->string : output -> string
-(define (input->string term)
-  (match-let ([(input x y) term])
+(define (input->string process)
+  (match-let ([(input x y) process])
     (string-append (name->string x) "("
                    (name-list->string y) ")")))
 
 ; output->string : output -> string
-(define (output->string term)
-  (match-let ([(output x y) term])
+(define (output->string process)
+  (match-let ([(output x y) process])
     (string-append (name->string x) "<"
                    (name-list->string y) ">")))
 
 ; restriction->string : restriction -> string
-(define (restriction->string term)
-  (match-let ([(restriction x p) term])
+(define (restriction->string process)
+  (match-let ([(restriction x p) process])
     (string-append (enclose (name->string x))
                    (if (contains-composition? p)
-                       (enclose (term->string p))
-                       (term->string p)))))
+                       (enclose (process->string p))
+                       (process->string p)))))
 
 ; composition->string : composition -> string
-(define (composition->string term)
-  (match-let ([(composition p q) term])
-    (string-append (term->string p)
+(define (composition->string process)
+  (match-let ([(composition p q) process])
+    (string-append (process->string p)
                    "|"
-                   (term->string q))))
+                   (process->string q))))
 
 ; prefix->string : prefix -> string
-(define (prefix->string term)
-  (match-let ([(prefix p q) term])
+(define (prefix->string process)
+  (match-let ([(prefix p q) process])
     (string-append (if (contains-composition? p)
-                       (enclose (term->string p))
-                       (term->string p))
+                       (enclose (process->string p))
+                       (process->string p))
                    "."
                    (if (contains-composition? q)
-                       (enclose (term->string q))
-                       (term->string q)))))
+                       (enclose (process->string q))
+                       (process->string q)))))
 
 
 ;; Utility functions
@@ -213,10 +213,10 @@
 (define (enclose stuff)
   (string-append "(" stuff ")"))
 
-;; Checks whether a term contains a composition.
-;; Terms containing compositions will need to be enclosed
-(define (contains-composition? term)
-  (match term
+;; Checks whether a process contains a composition.
+;; Processes containing compositions will need to be enclosed
+(define (contains-composition? process)
+  (match process
     [(nil)             #f]
     [(replication p)   (contains-composition? p)]
     [(input x y)       #f]
@@ -234,4 +234,4 @@
          restriction restriction?
          composition composition?
          prefix prefix?
-         term->string)
+         process->string)

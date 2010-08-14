@@ -13,10 +13,10 @@
 (define (action line)
   (with-handlers ([(lambda (e) (exn:fail:read? e))
                    (lambda (e) (printf "ERR: Exception caught~n"))])
-    (let ([term (string->term line)])
-      (printf "Term        : ~a~n" (term->string term))
-      (printf "Free names  : ~a~n" (pretty-set (free-names term)))
-      (printf "Bound names : ~a~n" (pretty-set (bound-names term))))))
+    (let ([process (string->process line)])
+      (printf "Process     : ~a~n" (process->string process))
+      (printf "Free names  : ~a~n" (pretty-set (free-names process)))
+      (printf "Bound names : ~a~n" (pretty-set (bound-names process))))))
 
 ;; Start the evaluation loop
 (repl action "pity> ")

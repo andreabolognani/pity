@@ -10,164 +10,164 @@
     (test-case
       "Parse an empty string"
       (check-exn exn:fail:read?
-        (lambda () (string->term ""))))
+        (lambda () (string->process ""))))
 
     (test-case
       "Parse a name containing illegal symbols"
       (check-exn exn:fail:read?
-        (lambda () (string->term "a_b(c)"))))
+        (lambda () (string->process "a_b(c)"))))
 
     (test-case
       "Parse an input action with no closing paren"
       (check-exn exn:fail:read?
-        (lambda () (string->term "a(b"))))
+        (lambda () (string->process "a(b"))))
 
     (test-case
       "Parse an input action with no opening paren"
       (check-exn exn:fail:read?
-        (lambda () (string->term "ab)"))))
+        (lambda () (string->process "ab)"))))
 
     (test-case
       "Parse an output action with no closing paren"
       (check-exn exn:fail:read?
-        (lambda () (string->term "a<b"))))
+        (lambda () (string->process "a<b"))))
 
     (test-case
       "Parse an output action with no opening paren"
       (check-exn exn:fail:read?
-        (lambda () (string->term "ab>"))))
+        (lambda () (string->process "ab>"))))
 
     (test-case
       "Parse an input action with no parameters"
       (check-exn exn:fail:read?
-        (lambda () (string->term "a()"))))
+        (lambda () (string->process "a()"))))
 
     (test-case
       "Parse an output action with no parameters"
       (check-exn exn:fail:read?
-        (lambda () (string->term "a<>"))))
+        (lambda () (string->process "a<>"))))
 
     (test-case
-      "Parse the nil term"
-      (check-pred nil? (string->term "0")))
+      "Parse the nil process"
+      (check-pred nil? (string->process "0")))
 
     (test-case
       "Parse an input action with a single parameter"
-      (let* ([as-string "a(b)"]
+      (let* ([string "a(b)"]
              [params (list (name "b"))]
-             [as-term (input (name "a") params)])
-        (check-equal? (string->term as-string) as-term)))
+             [process (input (name "a") params)])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse an input action with two parameters"
-      (let* ([as-string "a(b,c)"]
+      (let* ([string "a(b,c)"]
              [params (list (name "b") (name "c"))]
-             [as-term (input (name "a") params)])
-        (check-equal? (string->term as-string) as-term)))
+             [process (input (name "a") params)])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse an input action with three parameters"
-      (let* ([as-string "a(b,c,d)"]
+      (let* ([string "a(b,c,d)"]
              [params (list (name "b") (name "c") (name "d"))]
-             [as-term (input (name "a") params)])
-        (check-equal? (string->term as-string) as-term)))
+             [process (input (name "a") params)])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse an output action with a single parameter"
-      (let* ([as-string "a<b>"]
+      (let* ([string "a<b>"]
              [params (list (name "b"))]
-             [as-term (output (name "a") params)])
-        (check-equal? (string->term as-string) as-term)))
+             [process (output (name "a") params)])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse an output action with two parameters"
-      (let* ([as-string "a<b,c>"]
+      (let* ([string "a<b,c>"]
              [params (list (name "b") (name "c"))]
-             [as-term (output (name "a") params)])
-        (check-equal? (string->term as-string) as-term)))
+             [process (output (name "a") params)])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse an output action with three parameters"
-      (let* ([as-string "a<b,c,d>"]
+      (let* ([string "a<b,c,d>"]
              [params (list (name "b") (name "c") (name "d"))]
-             [as-term (output (name "a") params)])
-        (check-equal? (string->term as-string) as-term)))
+             [process (output (name "a") params)])
+        (check-equal? (string->process string) process)))
 
     (test-case
-      "Parse the composition of two nil terms"
-      (let ([as-string "0|0"]
-            [as-term (composition (nil) (nil))])
-        (check-equal? (string->term as-string) as-term)))
+      "Parse the composition of two nil processes"
+      (let ([string "0|0"]
+            [process (composition (nil) (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
-      "Parse the replication of a nil term"
-      (let ([as-string "!0"]
-            [as-term (replication (nil))])
-        (check-equal? (string->term as-string) as-term)))
+      "Parse the replication of a nil process"
+      (let ([string "!0"]
+            [process (replication (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse an input prefix"
-      (let* ([as-string "a(b).0"]
+      (let* ([string "a(b).0"]
              [params (list (name "b"))]
-             [as-term (prefix (input (name "a") params) (nil))])
-        (check-equal? (string->term as-string) as-term)))
+             [process (prefix (input (name "a") params) (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse an output prefix"
-      (let* ([as-string "a<b>.0"]
+      (let* ([string "a<b>.0"]
              [params (list (name "b"))]
-             [as-term (prefix (output (name "a") params) (nil))])
-        (check-equal? (string->term as-string) as-term)))
+             [process (prefix (output (name "a") params) (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse a restriction"
-      (let ([as-string "(x)0"]
-            [as-term (restriction (name "x") (nil))])
-        (check-equal? (string->term as-string) as-term)))
+      (let ([string "(x)0"]
+            [process (restriction (name "x") (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
-      "Parse a term containing both a prefix and a composition"
-      (let ([as-string "0.0|0"]
-            [as-term (composition (prefix (nil) (nil)) (nil))])
-        (check-equal? (string->term as-string) as-term)))
+      "Parse a process containing both a prefix and a composition"
+      (let ([string "0.0|0"]
+            [process (composition (prefix (nil) (nil)) (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
-      "Parse a term containing two compositions"
-      (let* ([as-string "0|x(y)|0"]
+      "Parse a process containing two compositions"
+      (let* ([string "0|x(y)|0"]
              [action (input (name "x") (list (name "y")))]
-             [as-term (composition (nil) (composition action (nil)))])
-        (check-equal? (string->term as-string) as-term)))
+             [process (composition (nil) (composition action (nil)))])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse a double composition with parentheses first"
-      (let* ([as-string "(0|x(y))|0"]
+      (let* ([string "(0|x(y))|0"]
              [action (input (name "x") (list (name "y")))]
-             [as-term (composition (composition (nil) action) (nil))])
-        (check-equal? (string->term as-string) as-term)))
+             [process (composition (composition (nil) action) (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
       "Parse a double composition with parentheses last"
-      (let* ([as-string "0|(x(y)|0)"]
+      (let* ([string "0|(x(y)|0)"]
              [action (input (name "x") (list (name "y")))]
-             [as-term (composition (nil) (composition action (nil)))])
-        (check-equal? (string->term as-string) as-term)))
+             [process (composition (nil) (composition action (nil)))])
+        (check-equal? (string->process string) process)))
 
     (test-case
-      "Parse a restriction over the first term of a composition"
-      (let ([as-string "(x)0|0"]
-            [as-term (composition (restriction (name "x") (nil)) (nil))])
-        (check-equal? (string->term as-string) as-term)))
+      "Parse a restriction over the first part of a composition"
+      (let ([string "(x)0|0"]
+            [process (composition (restriction (name "x") (nil)) (nil))])
+        (check-equal? (string->process string) process)))
 
     (test-case
-      "Parse a restriction over the last term of a composition"
-      (let ([as-string "0|(x)0"]
-            [as-term (composition (nil) (restriction (name "x") (nil)))])
-        (check-equal? (string->term as-string) as-term)))
+      "Parse a restriction over the last part of a composition"
+      (let ([string "0|(x)0"]
+            [process (composition (nil) (restriction (name "x") (nil)))])
+        (check-equal? (string->process string) process)))
 
     (test-case
-      "Parse a restriction over both terms of a composition"
-      (let ([as-string "(x)(0|0)"]
-            [as-term (restriction (name "x") (composition (nil) (nil)))])
-        (check-equal? (string->term as-string) as-term)))))
+      "Parse a restriction over both parts of a composition"
+      (let ([string "(x)(0|0)"]
+            [process (restriction (name "x") (composition (nil) (nil)))])
+        (check-equal? (string->process string) process)))))
 
 (provide parser-tests)
