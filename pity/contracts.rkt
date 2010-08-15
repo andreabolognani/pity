@@ -16,9 +16,9 @@
           [(symbol? name) (symbol->string name)]
           [else name])))
 
-;; Apply a contract.
+;; Create a procedure which checks a contract.
 ;; Works with procedures, regexps and simple values.
-(define (contract-apply c)
+(define (contract-procedure c)
   (cond [(procedure? c) c]
         [(regexp? c) (lambda (x) (and (string? x) (regexp-match c x)))]
         [else (curry equal? c)]))
@@ -35,7 +35,7 @@
       (and (set? x)
            (foldl (lambda (x y) (and x y)) ; Binary and wrapper
                   #t
-                  (set-map x (contract-apply c)))))))
+                  (set-map x (contract-procedure c)))))))
 
 (provide/doc
   (proc-doc non-empty-setof
