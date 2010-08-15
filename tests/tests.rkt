@@ -2,6 +2,7 @@
 
 (require rackunit
          rackunit/text-ui
+         "contracts-tests.rkt"
          "print-tests.rkt"
          "parser-tests.rkt"
          "names-tests.rkt")
@@ -10,6 +11,7 @@
   (test-suite
     "Tests for pity"
 
+    contracts-tests
     print-tests
     parser-tests
     names-tests))
