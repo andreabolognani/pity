@@ -4,19 +4,86 @@
          "name.rkt"
          "misc.rkt")
 
-(define-struct nil         () #:transparent)
+(provide/doc
+  (proc-doc nil
+            (() () . ->d . [_ nil?])
+            @{Returns a newly-created nil process.})
+  (proc-doc nil?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Returns @scheme[#t] if @scheme[v] is a nil process,
+              @scheme[#f] otherwise.}))
+(define-struct nil () #:transparent)
+
+(provide/doc
+  (proc-doc replication
+            (([p process?]) () . ->d . [_ replication?])
+            @{Returns the replication of the process @scheme[p].})
+  (proc-doc replication?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Returns @scheme[#t] if @scheme[v] is a replication,
+              @scheme[#f] otherwise.}))
 (define-struct replication (p) #:transparent)
-(define-struct input       (x y) #:transparent)
-(define-struct output      (x y) #:transparent)
+
+(provide/doc
+  (proc-doc input
+            (([x name?] [y (listof name?)]) () . ->d . [_ input?])
+            @{Returns an input over the channel @scheme[x] to the names
+              contained in @scheme[y].})
+  (proc-doc input?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Returns @scheme[#t] if @scheme[v] is an input,
+              @scheme[#f] otherwise.}))
+(define-struct input (x y) #:transparent)
+
+(provide/doc
+  (proc-doc output
+            (([x name?] [y (listof name?)]) () . ->d . [_ output?])
+            @{Returns an output over the channel @scheme[x] of the names
+              contained in @scheme[y].})
+  (proc-doc output?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Returns @scheme[#t] if @scheme[v] is an output,
+              @scheme[#f] otherwise.}))
+(define-struct output (x y) #:transparent)
+
+(provide/doc
+  (proc-doc restriction
+            (([x name?] [p process?]) () . ->d . [_ restriction?])
+            @{Returns the restriction of the name @scheme[x] over
+              the process @scheme[p].})
+  (proc-doc restriction?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Returns @scheme[#t] if @scheme[v] is a restriction,
+              @scheme[#f] otherwise.}))
 (define-struct restriction (x p) #:transparent)
+
+(provide/doc
+  (proc-doc composition
+            (([p process?] [q process?]) () . ->d . [_ composition?])
+            @{Returns the parallel composition of processes @scheme[p]
+              and @scheme[q].})
+  (proc-doc composition?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Returns @scheme[#t] if @scheme[v] is a composition,
+              @scheme[#f] otherwise.}))
 (define-struct composition (p q) #:transparent)
-(define-struct prefix      (p q) #:transparent)
+
+(provide/doc
+  (proc-doc prefix
+            (([p process?] [q process?]) () . ->d . [_ prefix?])
+            @{Returns a process with @scheme[p] as prefix and
+              @scheme[q] as continuation.})
+  (proc-doc prefix?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Returns @scheme[#t] if @scheme[v] is a prefix,
+              @scheme[#f] otherwise.}))
+(define-struct prefix (p q) #:transparent)
 
 
 (provide/doc
   (proc-doc process?
             (([v any/c]) () . ->d . [_ boolean?])
-            @{Return @scheme[#t] if @scheme[v] is a process,
+            @{Returns @scheme[#t] if @scheme[v] is a process,
               @scheme[#f] otherwise.}))
 (define (process? v)
   (or
@@ -241,11 +308,4 @@
                            (contains-composition? q))]))
 
 
-(provide nil nil?
-         replication replication?
-         input input?
-         output output?
-         restriction restriction?
-         composition composition?
-         prefix prefix?
-         process->string)
+(provide process->string)
