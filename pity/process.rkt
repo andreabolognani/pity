@@ -1,6 +1,7 @@
-#lang racket
+#lang at-exp racket
 
-(require "name.rkt"
+(require scribble/srcdoc
+         "name.rkt"
          "misc.rkt")
 
 (define-struct nil         () #:transparent)
@@ -10,6 +11,22 @@
 (define-struct restriction (x p) #:transparent)
 (define-struct composition (p q) #:transparent)
 (define-struct prefix      (p q) #:transparent)
+
+
+(provide/doc
+  (proc-doc process?
+            (([v any/c]) () . ->d . [_ boolean?])
+            @{Return @scheme[#t] if @scheme[v] is a process,
+              @scheme[#f] otherwise.}))
+(define (process? v)
+  (or
+    (nil? v)
+    (replication? v)
+    (input? v)
+    (output? v)
+    (restriction? v)
+    (composition? v)
+    (prefix? v)))
 
 
 ;; Routines to get names, free names and bound names in a process

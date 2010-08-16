@@ -5,6 +5,7 @@
          "contracts-tests.rkt"
          "print-tests.rkt"
          "parser-tests.rkt"
+         "process-tests.rkt"
          "names-tests.rkt")
 
 (define pity-tests
@@ -14,6 +15,7 @@
     contracts-tests
     print-tests
     parser-tests
+    process-tests
     names-tests))
 
 (exit (run-tests pity-tests))
