@@ -6,7 +6,7 @@
 
 @title[#:tag "process"]{Processes}
 
-@defmodule[pity/process]
+@declare-exporting[pity]
 
 Procedures to create and manipulate processes.
 

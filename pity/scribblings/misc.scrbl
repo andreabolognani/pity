@@ -6,7 +6,7 @@
 
 @title[#:tag "misc"]{Miscellaneous}
 
-@defmodule[pity/misc]
+@declare-exporting[pity]
 
 Miscellaneous procedures.
 

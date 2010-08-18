@@ -6,7 +6,7 @@
 
 @title[#:tag "name"]{Names}
 
-@defmodule[pity/name]
+@declare-exporting[pity]
 
 Procedures to create and manipulate names.
 

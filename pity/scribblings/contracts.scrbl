@@ -6,7 +6,7 @@
 
 @title[#:tag "contracts"]{Contracts}
 
-@defmodule[pity/contracts]
+@declare-exporting[pity]
 
 Pretty generic contracts one would expect to find built-in.
 
