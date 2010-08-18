@@ -1,5 +1,6 @@
 #lang racket
 
+
 ;; Contracts
 ;; ---------
 ;;
@@ -45,6 +46,9 @@
   (and (string? x)
        (not (= (string-length x) 0))))
 
-(provide/contract [setof (contract? . -> . contract?)]
-                  [non-empty-setof (contract? . -> . contract?)]
-                  [non-empty-string? (any/c . -> . boolean?)])
+
+;; Export public symbols
+(provide/contract
+  [setof             (contract? . -> . contract?)]
+  [non-empty-setof   (contract? . -> . contract?)]
+  [non-empty-string? (any/c     . -> . boolean?)])

@@ -4,6 +4,7 @@
          "contracts.rkt"
          "misc.rkt")
 
+
 (define-struct nil         ()    #:transparent)
 (define-struct replication (p)   #:transparent)
 (define-struct input       (x y) #:transparent)
@@ -233,22 +234,24 @@
                            (contains-composition? q))]))
 
 
-(provide/contract [nil (-> nil?)]
-                  [nil? (any/c . -> . boolean?)]
-                  [replication (process? . -> . replication?)]
-                  [replication? (any/c . -> . boolean?)]
-                  [input (name? (listof name?) . -> . input?)]
-                  [input? (any/c . -> . boolean?)]
-                  [output (name? (listof name?) . -> . output?)]
-                  [output? (any/c . -> . boolean?)]
-                  [restriction (name? process? . -> . restriction?)]
-                  [restriction? (any/c . -> . boolean?)]
-                  [composition (process? process? . -> . composition?)]
-                  [composition? (any/c . -> . boolean?)]
-                  [prefix (process? process? . -> . prefix?)]
-                  [prefix? (any/c . -> . boolean?)]
-                  [process? (any/c . -> . boolean?)]
-                  [free-names (process? . -> . (setof name?))]
-                  [bound-names (process? . -> . (setof name?))]
-                  [names (process? . -> . (setof name?))]
-                  [process->string (process? . -> . string?)])
+;; Export public symbols
+(provide/contract
+  [nil             (                       ->   nil?)]
+  [nil?            (any/c                . -> . boolean?)]
+  [replication     (process?             . -> . replication?)]
+  [replication?    (any/c                . -> . boolean?)]
+  [input           (name? (listof name?) . -> . input?)]
+  [input?          (any/c                . -> . boolean?)]
+  [output          (name? (listof name?) . -> . output?)]
+  [output?         (any/c                . -> . boolean?)]
+  [restriction     (name? process?       . -> . restriction?)]
+  [restriction?    (any/c                . -> . boolean?)]
+  [composition     (process? process?    . -> . composition?)]
+  [composition?    (any/c                . -> . boolean?)]
+  [prefix          (process? process?    . -> . prefix?)]
+  [prefix?         (any/c                . -> . boolean?)]
+  [process?        (any/c                . -> . boolean?)]
+  [free-names      (process?             . -> . (setof name?))]
+  [bound-names     (process?             . -> . (setof name?))]
+  [names           (process?             . -> . (setof name?))]
+  [process->string (process?             . -> . string?)])
