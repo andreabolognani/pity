@@ -1,11 +1,10 @@
-#lang at-exp racket
-
-(require scribble/srcdoc)
+#lang racket
 
 ;; Contracts
 ;; ---------
 ;;
 ;;  Pretty generic contracts one would expect to find built-in.
+
 
 ;; Get the name for a contract.
 ;; The name is the object-name of the contract if the contract has
@@ -16,6 +15,7 @@
           [(symbol? name) (symbol->string name)]
           [else name])))
 
+
 ;; Create a procedure which checks a contract.
 ;; Works with procedures, regexps and simple values.
 (define (contract-procedure c)
@@ -23,11 +23,7 @@
         [(regexp? c) (lambda (x) (and (string? x) (regexp-match c x)))]
         [else (curry equal? c)]))
 
-(provide/doc
-  (proc-doc setof
-            (([c contract?]) () . ->d . [_ contract?])
-            @{Returns a contract that recognizes a set whose every
-              element matches the contract @scheme[c].}))
+
 (define (setof c)
   (flat-named-contract
     (string-append "(setof " (contract-name c) ")")
@@ -37,22 +33,18 @@
                   #t
                   (set-map x (contract-procedure c)))))))
 
-(provide/doc
-  (proc-doc non-empty-setof
-            (([c contract?]) () . ->d . [_ contract?])
-            @{Returns a contract that recognizes non-empty sets whose
-              every element matches the contract @scheme[c].}))
+
 (define (non-empty-setof c)
   (flat-named-contract
     (string-append "(non-empty-setof " (contract-name c) ")")
     (and/c (setof c)
            (not/c set-empty?))))
 
-(provide/doc
-  (proc-doc non-empty-string?
-            (([v any/c]) () . ->d . [_ boolean?])
-            @{Returns @scheme[#t] if @scheme[v] is a non-empty
-              string, @scheme[#f] otherwise.}))
+
 (define (non-empty-string? x)
   (and (string? x)
        (not (= (string-length x) 0))))
+
+(provide/contract [setof (contract? . -> . contract?)]
+                  [non-empty-setof (contract? . -> . contract?)]
+                  [non-empty-string? (any/c . -> . boolean?)])
