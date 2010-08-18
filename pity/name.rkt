@@ -1,7 +1,6 @@
-#lang at-exp racket
+#lang racket
 
-(require scribble/srcdoc
-         "contracts.rkt")
+(require "contracts.rkt")
 
 (define-struct name (n) #:transparent)
 (provide/contract [name (non-empty-string? . -> . name?)]

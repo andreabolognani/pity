@@ -9,5 +9,6 @@ This is the documentation for Pity.
 @table-of-contents[]
 
 @include-section["name.scrbl"]
+@include-section["process.scrbl"]
 
 @index-section[]

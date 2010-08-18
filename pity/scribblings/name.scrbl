@@ -4,9 +4,9 @@
           (for-label (except-in racket prefix) ; Avoid name clash
                      pity))
 
-@title{Names}
+@title[#:tag "name"]{Names}
 
-@defmodule[pity]
+@defmodule[pity/name]
 
 Procedures to create and manipulate names.
 
