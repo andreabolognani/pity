@@ -91,3 +91,37 @@ Returns @racket[#t] if @racket[v] is a prefix, @racket[#f] otherwise.
 
 Returns @racket[#t] if @racket[v] is a process, @racket[#f] otherwise.
 }
+
+@defproc[(free-names [p process?]) (setof name?)]{
+
+Returns a @racket[set] containing all the names that have a free
+occurence in @racket[p].
+}
+
+@defproc[(bound-names [p process?]) (setof name?)]{
+
+Returns a @racket[set] containing all the names that have a bound
+occurence in @racket[p].
+}
+
+@defproc[(names [p process?]) (setof name?)]{
+
+Returns a @racket[set] containing all the names that have an
+occurence in @racket[p].
+}
+
+@defproc[(string->process [str string?]) process?]{
+
+Returns the process obtained by parsing @racket[str].
+
+Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
+correctly.
+}
+
+@defproc[(process->string [p process?]) string?]{
+
+Returns a string representation of @racket[p].
+
+The returned string can be passed to @racket[string->process] to
+obtain a process which is @racket[equal?] to @racket[p].
+}

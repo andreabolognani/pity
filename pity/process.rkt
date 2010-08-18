@@ -1,6 +1,7 @@
 #lang racket
 
 (require "name.rkt"
+         "contracts.rkt"
          "misc.rkt")
 
 (define-struct nil         ()    #:transparent)
@@ -40,7 +41,6 @@
     [(restriction x p) (free-names/restriction x p)]
     [(composition p q) (free-names/composition p q)]
     [(prefix p q)      (free-names/prefix p q)]))
-(provide free-names)
 
 ;; Find the names that have bound occurences in a process
 (define (bound-names process)
@@ -52,7 +52,6 @@
     [(restriction x p) (bound-names/restriction x p)]
     [(composition p q) (bound-names/composition p q)]
     [(prefix p q)      (bound-names/prefix p q)]))
-(provide bound-names)
 
 ;; Find all the names occurring in a process
 (define (names process)
@@ -64,7 +63,6 @@
     [(restriction x p) (names/restriction x p)]
     [(composition p q) (names/composition p q)]
     [(prefix p q)      (names/prefix p q)]))
-(provide names)
 
 ;; Names, free names and bound names in the nil process
 
@@ -235,7 +233,6 @@
                            (contains-composition? q))]))
 
 
-(provide process->string)
 (provide/contract [nil (-> nil?)]
                   [nil? (any/c . -> . boolean?)]
                   [replication (process? . -> . replication?)]
@@ -250,4 +247,8 @@
                   [composition? (any/c . -> . boolean?)]
                   [prefix (process? process? . -> . prefix?)]
                   [prefix? (any/c . -> . boolean?)]
-                  [process? (any/c . -> . boolean?)])
+                  [process? (any/c . -> . boolean?)]
+                  [free-names (process? . -> . (setof name?))]
+                  [bound-names (process? . -> . (setof name?))]
+                  [names (process? . -> . (setof name?))]
+                  [process->string (process? . -> . string?)])
