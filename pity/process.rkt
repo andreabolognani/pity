@@ -1,5 +1,23 @@
 #lang racket
 
+; Pity: Pi-Calculus Type Checking
+; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
+;
+; This program is free software; you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation; either version 2 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License along
+; with this program; if not, write to the Free Software Foundation, Inc.,
+; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
 (require "name.rkt"
          "contracts.rkt"
          "misc.rkt")
@@ -14,7 +32,7 @@
 (define-struct prefix      (p q) #:transparent)
 
 
-;; Recognize any kind of process
+; Recognize any kind of process
 (define (process? v)
   (or
     (nil? v)
@@ -26,15 +44,15 @@
     (prefix? v)))
 
 
-;; Routines to get names, free names and bound names in a process
-;; --------------------------------------------------------------
-;;
-;;  The procedures are split into a glue procedure, which is exported,
-;;  and several smaller procedures which calculate the free and bound
-;;  names for a single type of process.
+; Routines to get names, free names and bound names in a process
+; --------------------------------------------------------------
+;
+;  The procedures are split into a glue procedure, which is exported,
+;  and several smaller procedures which calculate the free and bound
+;  names for a single type of process.
 
 
-;; Find the names that have free occurences in a process
+; Find the names that have free occurences in a process
 (define (free-names process)
   (match process
     [(nil)             (free-names/nil)]
@@ -46,7 +64,7 @@
     [(prefix p q)      (free-names/prefix p q)]))
 
 
-;; Find the names that have bound occurences in a process
+; Find the names that have bound occurences in a process
 (define (bound-names process)
   (match process
     [(nil)             (bound-names/nil)]
@@ -58,7 +76,7 @@
     [(prefix p q)      (bound-names/prefix p q)]))
 
 
-;; Find all the names occurring in a process
+; Find all the names occurring in a process
 (define (names process)
   (match process
     [(nil)             (names/nil)]
@@ -70,7 +88,7 @@
     [(prefix p q)      (names/prefix p q)]))
 
 
-;; Names, free names and bound names in the nil process
+; Names, free names and bound names in the nil process
 
 (define (free-names/nil)
   (set))
@@ -82,7 +100,7 @@
   (set))
 
 
-;; Names, free names and bound names in a replication
+; Names, free names and bound names in a replication
 
 (define (free-names/replication p)
   (free-names p))
@@ -94,7 +112,7 @@
   (names p))
 
 
-;; Names, free names and bound names in an input action
+; Names, free names and bound names in an input action
 
 (define (free-names/input x y)
   (set x))
@@ -107,7 +125,7 @@
              (list->set y)))
 
 
-;; Names, free names and bound names in an output action
+; Names, free names and bound names in an output action
 
 (define (free-names/output x y)
   (set-union (set x)
@@ -121,7 +139,7 @@
              (list->set y)))
 
 
-;; Names, free names and bound names under a restriction
+; Names, free names and bound names under a restriction
 
 (define (free-names/restriction x p)
   (set-remove (free-names p) x))
@@ -134,7 +152,8 @@
   (set-union (set x)
              (names p)))
 
-;; Names, free names and bound names in a composition
+
+; Names, free names and bound names in a composition
 
 (define (free-names/composition p q)
   (set-union (free-names p)
@@ -148,7 +167,8 @@
   (set-union (names p)
              (names q)))
 
-;; Names, free names and bound names under a prefix
+
+; Names, free names and bound names under a prefix
 
 (define (free-names/prefix p q)
   (set-subtract
@@ -165,17 +185,17 @@
              (names q)))
 
 
-;; Process pretty-printing
-;; -----------------------
-;;
-;;  When a process is converted to a string, only strictly needed
-;;  parentheses should be present.
-;;
-;;  More importantly, it must be possible to parse the returned string
-;;  and obtain the same process once again.
+; Process pretty-printing
+; -----------------------
+;
+;  When a process is converted to a string, only strictly needed
+;  parentheses should be present.
+;
+;  More importantly, it must be possible to parse the returned string
+;  and obtain the same process once again.
 
 
-;; Convert a process to a string
+; Convert a process to a string
 (define (process->string process)
   (match process
     [(nil)             "0"]
@@ -187,7 +207,7 @@
     [(prefix p q)      (process->string/prefix p q)]))
 
 
-;; Convert a replication to a string
+; Convert a replication to a string
 (define (process->string/replication p)
   (string-append "!"
                  (if (contains-composition? p)
@@ -195,19 +215,19 @@
                      (process->string p))))
 
 
-;; Convert an input to a string
+; Convert an input to a string
 (define (process->string/input x y)
   (string-append (name->string x) "("
                  (name-list->string y) ")"))
 
 
-;; Convert an output to a string
+; Convert an output to a string
 (define (process->string/output x y)
   (string-append (name->string x) "<"
                  (name-list->string y) ">"))
 
 
-;; Convert a restriction to a string
+; Convert a restriction to a string
 (define (process->string/restriction x p)
   (string-append (enclose (name->string x))
                  (if (contains-composition? p)
@@ -215,14 +235,14 @@
                      (process->string p))))
 
 
-;; Convert a composition to a string
+; Convert a composition to a string
 (define (process->string/composition p q)
   (string-append (process->string p)
                  "|"
                  (process->string q)))
 
 
-;; Convert a prefix to a string
+; Convert a prefix to a string
 (define (process->string/prefix p q)
   (string-append (if (contains-composition? p)
                      (enclose (process->string p))
@@ -233,17 +253,17 @@
                      (process->string q))))
 
 
-;; Utility functions
-;; -----------------
+; Utility functions
+; -----------------
 
 
-;; Enclose a string between matching parentheses
+; Enclose a string between matching parentheses
 (define (enclose stuff)
   (string-append "(" stuff ")"))
 
 
-;; Checks whether a process contains a composition.
-;; Processes containing compositions will need to be enclosed
+; Checks whether a process contains a composition.
+; Processes containing compositions will need to be enclosed
 (define (contains-composition? process)
   (match process
     [(nil)             #f]
@@ -256,7 +276,7 @@
                            (contains-composition? q))]))
 
 
-;; Export public symbols
+; Export public symbols
 (provide/contract
   [nil             (                       ->   nil?)]
   [nil?            (any/c                . -> . boolean?)]
