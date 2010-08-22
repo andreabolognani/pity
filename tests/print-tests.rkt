@@ -22,34 +22,66 @@
          pity)
 
 
+; Act like (format "~a" lst), but use display-list instead of
+; plain display for list pretty-printing
+(define (format~a/list lst)
+  (let ([out (open-output-string)])
+    (display-list lst out #:separator ",")
+	(get-output-string out)))
+
+
+; Wrappers around format
+(define (format~a x)
+  (if (list? x)
+      (format~a/list x)
+      (format "~a" x)))
+(define format~s (curry format "~s"))
+(define format~v (curry format "~v"))
+
+
 (define print-tests
   (test-suite
     "Tests for print functionality"
 
     (test-case
       "Print a name"
-      (let ([name (name "x")])
-        (check-equal? (name->string name) "x")))
+      (let ([n (name "x")])
+        (check-equal? (name->string n) "x")
+        (check-equal? (format~a n) "x")
+        (check-equal? (format~s n) "(name \"x\")")
+        (check-equal? (format~v n) "(name \"x\")")))
 
     (test-case
       "Print an empty name list"
-      (let ([name-list '()])
-        (check-equal? (name-list->string name-list) "")))
+      (let ([nlst '()])
+        (check-equal? (name-list->string nlst) "")
+        (check-equal? (format~a nlst) "")
+        (check-equal? (format~s nlst) "()")
+        (check-equal? (format~v nlst) "'()")))
 
     (test-case
       "Print a list containing a single name"
-      (let ([name-list (list (name "x"))])
-        (check-equal? (name-list->string name-list) "x")))
+      (let ([nlst (list (name "x"))])
+        (check-equal? (name-list->string nlst) "x")
+        (check-equal? (format~a nlst) "x")
+        (check-equal? (format~s nlst) "((name \"x\"))")
+        (check-equal? (format~v nlst) "'((name \"x\"))")))
 
     (test-case
       "Print a list containing two names"
-      (let ([name-list (list (name "x") (name "y"))])
-        (check-equal? (name-list->string name-list) "x,y")))
+      (let ([nlst (list (name "x") (name "y"))])
+        (check-equal? (name-list->string nlst) "x,y")
+        (check-equal? (format~a nlst) "x,y")
+        (check-equal? (format~s nlst) "((name \"x\") (name \"y\"))")
+        (check-equal? (format~v nlst) "'((name \"x\") (name \"y\"))")))
 
     (test-case
       "Print a list containing three names"
-      (let ([name-list (list (name "x") (name "y") (name "z"))])
-        (check-equal? (name-list->string name-list) "x,y,z")))))
+      (let ([nlst (list (name "x") (name "y") (name "z"))])
+        (check-equal? (name-list->string nlst) "x,y,z")
+        (check-equal? (format~a nlst) "x,y,z")
+        (check-equal? (format~s nlst) "((name \"x\") (name \"y\") (name \"z\"))")
+        (check-equal? (format~v nlst) "'((name \"x\") (name \"y\") (name \"z\"))")))))
 
 
 ; Export public symbols
