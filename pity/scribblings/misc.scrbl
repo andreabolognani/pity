@@ -31,3 +31,12 @@ Miscellaneous procedures.
 
 Returns a set containing all the items in @racket[lst].
 }
+
+@defproc[(display-list [lst list?]
+                       [out output-port? (current-output-port)]
+                       [#:separator separator any/c #\newline])
+          void?]{
+
+Like @racket[display-lines], except @racket[separator] is not printed
+after the last element of @racket[lst].
+}

@@ -25,6 +25,17 @@
   (foldl (lambda (i acc) (set-add acc i)) (set) lst))
 
 
+(define (display-list lst
+                      [out (current-output-port)]
+                      #:separator [separator #\newline])
+  (unless (empty? lst)
+    (display (car lst) out)
+    (unless (empty? (cdr lst))
+      (display separator out)
+      (display-list (cdr lst) out #:separator separator))))
+
+
 ;; Export public symbols
 (provide/contract
-  [list->set (list? . -> . set?)])
+  [list->set    (list?                                    . ->  . set?)]
+  [display-list ((list?) (output-port? #:separator any/c) . ->* . void?)])
