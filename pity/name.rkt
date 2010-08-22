@@ -24,10 +24,9 @@
 ; Custom write handler
 (define (name-custom-write n out mode)
   (when mode (write-string "(name " out))
-  (case mode
-      [(#t) (write (name-n n) out)]
-      [(#f) (display (name-n n) out)]
-      [else (print (name-n n) out mode)])
+  (if (not mode)
+      (display (name-n n) out)
+      (write (name-n n) out))
   (when mode (write-string ")" out)))
 
 
