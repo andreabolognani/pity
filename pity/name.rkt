@@ -21,7 +21,18 @@
 (require "contracts.rkt")
 
 
-(define-struct name (n) #:transparent)
+; Custom write handler
+(define (name-custom-write n out mode)
+  (when mode (write-string "(name " out))
+  (case mode
+      [(#t) (write (name-n n) out)]
+      [(#f) (display (name-n n) out)]
+      [else (print (name-n n) out mode)])
+  (when mode (write-string ")" out)))
+
+
+(define-struct name (n) #:transparent
+                        #:property prop:custom-write name-custom-write)
 
 
 (define (name->string n)
