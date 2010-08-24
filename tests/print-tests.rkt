@@ -22,6 +22,12 @@
          pity)
 
 
+; Make a list of names out of a string
+(define (string->name-list str)
+  (cond [(equal? str "") '()]
+        [else (map name (regexp-split #rx", *" str))]))
+
+
 ; Act like (format "~a" lst), but use display-list instead of
 ; plain display for list pretty-printing
 (define (format~a/list lst)
@@ -39,49 +45,62 @@
 (define format~v (curry format "~v"))
 
 
+; Reusable test body
+(define (test-body v display-string read-string [eval-string read-string])
+  (check-equal? (format~a v) display-string)
+  (check-equal? (format~s v) read-string)
+  (check-equal? (format~v v) eval-string))
+
+
 (define print-tests
   (test-suite
     "Tests for print functionality"
 
     (test-case
       "Print a name"
-      (let ([n (name "x")])
-        (check-equal? (name->string n) "x")
-        (check-equal? (format~a n) "x")
-        (check-equal? (format~s n) "(name \"x\")")
-        (check-equal? (format~v n) "(name \"x\")")))
+      (let* ([display-string "x"]
+             [read-string "(name \"x\")"]
+             [name (name display-string)])
+        (test-body name display-string read-string)))
 
     (test-case
       "Print an empty name list"
-      (let ([nlst '()])
-        (check-equal? (name-list->string nlst) "")
-        (check-equal? (format~a nlst) "")
-        (check-equal? (format~s nlst) "()")
-        (check-equal? (format~v nlst) "'()")))
+      (let* ([display-string ""]
+             [read-string "()"]
+             [eval-string (string-append "'" read-string)]
+             [names (string->name-list display-string)])
+        (test-body names display-string read-string eval-string)))
 
     (test-case
       "Print a list containing a single name"
-      (let ([nlst (list (name "x"))])
-        (check-equal? (name-list->string nlst) "x")
-        (check-equal? (format~a nlst) "x")
-        (check-equal? (format~s nlst) "((name \"x\"))")
-        (check-equal? (format~v nlst) "'((name \"x\"))")))
+      (let* ([display-string "x"]
+             [read-string "((name \"x\"))"]
+             [eval-string (string-append "'" read-string)]
+             [names (string->name-list display-string)])
+        (test-body names display-string read-string eval-string)))
 
     (test-case
       "Print a list containing two names"
-      (let ([nlst (list (name "x") (name "y"))])
-        (check-equal? (name-list->string nlst) "x,y")
-        (check-equal? (format~a nlst) "x,y")
-        (check-equal? (format~s nlst) "((name \"x\") (name \"y\"))")
-        (check-equal? (format~v nlst) "'((name \"x\") (name \"y\"))")))
+      (let* ([display-string "x,y"]
+             [read-string "((name \"x\") (name \"y\"))"]
+             [eval-string (string-append "'" read-string)]
+             [names (string->name-list display-string)])
+        (test-body names display-string read-string eval-string)))
 
     (test-case
       "Print a list containing three names"
-      (let ([nlst (list (name "x") (name "y") (name "z"))])
-        (check-equal? (name-list->string nlst) "x,y,z")
-        (check-equal? (format~a nlst) "x,y,z")
-        (check-equal? (format~s nlst) "((name \"x\") (name \"y\") (name \"z\"))")
-        (check-equal? (format~v nlst) "'((name \"x\") (name \"y\") (name \"z\"))")))))
+      (let* ([display-string "x,y,z"]
+             [read-string "((name \"x\") (name \"y\") (name \"z\"))"]
+             [eval-string (string-append "'" read-string)]
+             [names (string->name-list display-string)])
+        (test-body names display-string read-string eval-string)))
+
+    (test-case
+      "Print a nil process"
+      (let* ([display-string "0"]
+             [read-string "(nil)"]
+             [process (string->process display-string)])
+        (test-body process display-string read-string)))))
 
 
 ; Export public symbols
