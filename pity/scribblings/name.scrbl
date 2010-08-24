@@ -48,3 +48,9 @@ was created.
 Returns a string representation of @racket[lst], where names are
 comma-separated.
 }
+
+@defproc[(string->name-list [str string?]) (listof name?)]{
+
+Returns a list containing all the comma-separated elements of
+@racket[str] as names.
+}

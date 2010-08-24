@@ -34,12 +34,26 @@
                         #:property prop:custom-write name-custom-write)
 
 
+; Conversion routines
+; -------------------
+;
+;  Convert names and lists of names to strings, and the other way around.
+
+
+; Make a string out of a name
 (define (name->string n)
   (name-n n))
 
 
+; Make a string out of a list of names
 (define (name-list->string lst)
   (string-join (map name->string lst) ","))
+
+
+; Make a list of names out of a string
+(define (string->name-list str)
+  (cond [(equal? str "") '()]
+        [else (map name (regexp-split #rx", *" str))]))
 
 
 ;; Export public symbols
@@ -47,4 +61,5 @@
   [name              (non-empty-string? . -> . name?)]
   [name?             (any/c             . -> . boolean?)]
   [name->string      (name?             . -> . string?)]
-  [name-list->string ((listof name?)    . -> . string?)])
+  [name-list->string ((listof name?)    . -> . string?)]
+  [string->name-list (string?           . -> . (listof name?))])

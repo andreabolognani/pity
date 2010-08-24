@@ -22,12 +22,6 @@
          pity)
 
 
-; Make a list of names out of a string
-(define (string->name-list str)
-  (cond [(equal? str "") '()]
-        [else (map name (regexp-split #rx", *" str))]))
-
-
 ; Act like (format "~a" lst), but use display-list instead of
 ; plain display for list pretty-printing
 (define (format~a/list lst)
