@@ -19,28 +19,31 @@
 
 
 (require rackunit
-         rackunit/text-ui
-         "contracts-tests.rkt"
-         "misc-tests.rkt"
-         "print-tests.rkt"
-         "conversion-tests.rkt"
-         "parser-tests.rkt"
-         "process-tests.rkt"
-         "names-tests.rkt")
+         pity)
 
 
-(define pity-tests
+(define conversion-tests
   (test-suite
-    "Tests for pity"
+    "Tests for conversion routines"
 
-    contracts-tests
-    misc-tests
-    print-tests
-    conversion-tests
-    parser-tests
-    process-tests
-    names-tests))
+    (test-case
+      "Make a list of names out of an empty string"
+      (let ([str ""]
+            [lst '()])
+        (check-equal? (string->name-list str) lst)))
+
+    (test-case
+      "Make a list of names out of a single name"
+      (let ([str "x"]
+            [lst (list (name "x"))])
+        (check-equal? (string->name-list str) lst)))
+
+    (test-case
+      "Make a list of names out of a string"
+      (let ([str "x,y"]
+            [lst (list (name "x") (name "y"))])
+        (check-equal? (string->name-list str) lst)))))
 
 
-; Run all the test suites
-(exit (run-tests pity-tests))
+; Export public symbols
+(provide conversion-tests)
