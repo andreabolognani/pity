@@ -35,7 +35,7 @@
       (display-list (cdr lst) out #:separator separator))))
 
 
-;; Export public symbols
+; Export public symbols
 (provide/contract
   [list->set    (list?                                    . ->  . set?)]
   [display-list ((list?) (output-port? #:separator any/c) . ->* . void?)])

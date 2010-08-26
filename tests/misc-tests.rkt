@@ -15,30 +15,28 @@
 ;
 ; You should have received a copy of the GNU General Public License along
 ; with this program; if not, write to the Free Software Foundation, Inc.,
-; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 (require rackunit
-         rackunit/text-ui
-         "contracts-tests.rkt"
-         "misc-tests.rkt"
-         "print-tests.rkt"
-         "parser-tests.rkt"
-         "process-tests.rkt"
-         "names-tests.rkt")
+         pity)
 
 
-(define pity-tests
+(define misc-tests
   (test-suite
-    "Tests for pity"
+    "Tests for miscellaneous procedures"
 
-    contracts-tests
-    misc-tests
-    print-tests
-    parser-tests
-    process-tests
-    names-tests))
+    (test-case
+      "Make a set out of an empty list"
+      (check-equal? (list->set '()) (set)))
+
+    (test-case
+      "Make a set out of a list containing no duplicates"
+      (check-equal? (list->set '(1 2 3)) (set 1 2 3)))
+
+    (test-case
+      "Make a set out of a list containing duplicates"
+      (check-equal? (list->set '(1 2 1 3 2)) (set 1 2 3)))))
 
 
-; Run all the test suites
-(exit (run-tests pity-tests))
+; Export public symbols
+(provide misc-tests)
