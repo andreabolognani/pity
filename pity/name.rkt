@@ -21,17 +21,7 @@
 (require "contracts.rkt")
 
 
-; Custom write handler
-(define (name-custom-write n out mode)
-  (when mode (write-string "(name " out))
-  (if (not mode)
-      (display (name-n n) out)
-      (write (name-n n) out))
-  (when mode (write-string ")" out)))
-
-
-(define-struct name (n) #:transparent
-                        #:property prop:custom-write name-custom-write)
+(define-struct name (n) #:transparent)
 
 
 ; Conversion routines

@@ -22,30 +22,6 @@
          pity)
 
 
-; Act like (format "~a" lst), but use display-list instead of
-; plain display for list pretty-printing
-(define (format~a/list lst)
-  (let ([out (open-output-string)])
-    (display-list lst out #:separator ",")
-	(get-output-string out)))
-
-
-; Wrappers around format
-(define (format~a x)
-  (if (list? x)
-      (format~a/list x)
-      (format "~a" x)))
-(define format~s (curry format "~s"))
-(define format~v (curry format "~v"))
-
-
-; Reusable test body
-(define (test-body v display-string read-string [eval-string read-string])
-  (check-equal? (format~a v) display-string)
-  (check-equal? (format~s v) read-string)
-  (check-equal? (format~v v) eval-string))
-
-
 (define print-tests
   (test-suite
     "Tests for print functionality"
@@ -53,48 +29,117 @@
     (test-case
       "Print a name"
       (let* ([display-string "x"]
-             [read-string "(name \"x\")"]
              [name (name display-string)])
-        (test-body name display-string read-string)))
+        (check-equal? (name->string name) display-string)))
 
     (test-case
       "Print an empty name list"
       (let* ([display-string ""]
-             [read-string "()"]
-             [eval-string (string-append "'" read-string)]
              [names (string->name-list display-string)])
-        (test-body names display-string read-string eval-string)))
+        (check-equal? (name-list->string names) display-string)))
 
     (test-case
       "Print a list containing a single name"
       (let* ([display-string "x"]
-             [read-string "((name \"x\"))"]
-             [eval-string (string-append "'" read-string)]
              [names (string->name-list display-string)])
-        (test-body names display-string read-string eval-string)))
+        (check-equal? (name-list->string names) display-string)))
 
     (test-case
       "Print a list containing two names"
       (let* ([display-string "x,y"]
-             [read-string "((name \"x\") (name \"y\"))"]
-             [eval-string (string-append "'" read-string)]
              [names (string->name-list display-string)])
-        (test-body names display-string read-string eval-string)))
-
-    (test-case
-      "Print a list containing three names"
-      (let* ([display-string "x,y,z"]
-             [read-string "((name \"x\") (name \"y\") (name \"z\"))"]
-             [eval-string (string-append "'" read-string)]
-             [names (string->name-list display-string)])
-        (test-body names display-string read-string eval-string)))
+        (check-equal? (name-list->string names) display-string)))
 
     (test-case
       "Print a nil process"
       (let* ([display-string "0"]
-             [read-string "(nil)"]
              [process (string->process display-string)])
-        (test-body process display-string read-string)))))
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print a replicated nil process"
+      (let* ([display-string "!0"]
+             [read-string "(replication (nil))"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print an input action to a single name"
+      (let* ([display-string "x(y)"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print an input action to two names"
+      (let* ([display-string "x(y,z)"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print an output action of a single name"
+      (let* ([display-string "x<y>"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print an output action of two names"
+      (let* ([display-string "x<y,z>"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print the restriction over a name"
+      (let* ([display-string "(x)x(y)"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print the restriction over a restriction over a name"
+      (let* ([display-string "(x)(y)x<y>"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print the replication of a restriction over a name"
+      (let* ([display-string "!(x)x<y>"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print a composition"
+      (let* ([display-string "0|0"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print a composition with a restriction and a replication"
+      (let* ([display-string "(y)x<y>|!x(z)"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print a composition under restriction"
+      (let* ([display-string "(x)(x<y>|x(z))"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print a replicated composition"
+      (let* ([display-string "!(x<y>|x(z))"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print a prefix"
+      (let* ([display-string "x<y>.x<z>"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print a replicated prefix"
+      (let* ([display-string "!x<y>.0"]
+             [process (string->process display-string)])
+        (check-equal? (process->string process) display-string)))))
 
 
 ; Export public symbols
