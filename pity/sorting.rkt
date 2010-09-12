@@ -21,34 +21,32 @@
 (require "sort.rkt")
 
 
-(define-struct sorting (function) #:transparent)
+(define-struct sorting (mappings) #:transparent)
 
 
 ; Empty sorting, to be used as a starting point.
 ; This is renamed to sorting when exporting; inside this module,
-; sorting is the real constructor
+; sorting is the actual constructor
 (define (empty-sorting)
-  (sorting (lambda (s) #f)))
+  (sorting (hash)))
 
 
 ; Get object sort for a subject sort
 (define (sorting-get self subj)
-  (let ([fun (sorting-function self)])
-    (fun subj)))
+  (let ([mappings (sorting-mappings self)])
+    (hash-ref mappings subj #f)))
 
 
 ; Add mappings to a sorting
 (define (sorting-add self subj obj)
-  (let* ([fun     (sorting-function self)]
-         [newfun  (lambda (s) (if (equal? s subj) obj (fun s)))])
-    (sorting newfun)))
+  (let ([mappings (sorting-mappings self)])
+    (sorting (hash-set mappings subj obj))))
 
 
 ; Remove mappings from a sorting
 (define (sorting-remove self subj)
-  (let* ([fun     (sorting-function self)]
-         [newfun  (lambda (s) (if (equal? s subj) #f (fun s)))])
-    (sorting newfun)))
+  (let ([mappings (sorting-mappings self)])
+    (sorting (hash-remove mappings subj))))
 
 
 (provide/contract
