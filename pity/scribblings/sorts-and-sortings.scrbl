@@ -83,4 +83,13 @@ replaced by the new one.
          sorting?]{
 		 
 Returns a new sorting which behaves as @racket[s], except that any mapping
-of @racket[subj] is removed.}
+of @racket[subj] is removed.
+}
+
+@defproc[(string->sorting [str string?]) sorting?]{
+
+Returns the sorting obtained by parsing @racket[str].
+
+Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
+correctly.
+}

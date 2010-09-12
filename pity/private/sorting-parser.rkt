@@ -18,32 +18,40 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "private/process-lexer.rkt"
-         "private/process-parser.rkt"
-         "private/sorting-lexer.rkt"
-         "private/sorting-parser.rkt"
-         "contracts.rkt"
-         "process.rkt"
-         "sorting.rkt")
+(require parser-tools/yacc
+         "../sort.rkt"
+         "../sorting.rkt"
+         "sorting-lexer.rkt")
 
 
-; These really belong to the process and sorting modules, and are
-; documented as such, but putting it there causes a require cycle.
-;
-; Another way to work around the cycle would be to embed the parsers
-; into the respective modules. I might end up doing that.
+(define sorting-parser
+  (parser
 
-(define (string->process str)
-  (let ([ip (open-input-string str)])
-    (process-parser (lambda () (process-lexer ip)))))
+    (start  sorting)
+    (end    EOF)
+    (tokens sorting-symbols sorting-values)
+    (error  (lambda (a b c) (void)))
 
+    (grammar
 
-(define (string->sorting str)
-  (let ([ip (open-input-string str)])
-    (sorting-parser (lambda () (sorting-lexer ip)))))
+      (sorting
+        [(part)                    (sorting-add (sorting) (car $1) (cdr $1))]
+        [(sorting SEMICOLON part)  (sorting-add $1 (car $3) (cdr $3))])
+
+      (part
+        [(sort EQUALS maybe-sorts) (cons $1 $3)])
+
+      (maybe-sorts
+        [(L_PAREN R_PAREN)         (list)]
+        [(L_PAREN sorts R_PAREN)   $2])
+
+      (sorts
+        [(sort)                    (list $1)]
+        [(sort COMMA sorts)        (list* $1 $3)])
+
+      (sort
+        [(SORT)                    (sort $1)]))))
 
 
 ; Export public symbols
-(provide/contract
-  [string->process (string? . -> . process?)]
-  [string->sorting (string? . -> . any/c)])
+(provide sorting-parser)

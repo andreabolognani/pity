@@ -18,32 +18,33 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "private/process-lexer.rkt"
-         "private/process-parser.rkt"
-         "private/sorting-lexer.rkt"
-         "private/sorting-parser.rkt"
-         "contracts.rkt"
-         "process.rkt"
-         "sorting.rkt")
+(require parser-tools/lex)
 
 
-; These really belong to the process and sorting modules, and are
-; documented as such, but putting it there causes a require cycle.
-;
-; Another way to work around the cycle would be to embed the parsers
-; into the respective modules. I might end up doing that.
-
-(define (string->process str)
-  (let ([ip (open-input-string str)])
-    (process-parser (lambda () (process-lexer ip)))))
+(define-empty-tokens sorting-symbols (EOF COMMA SEMICOLON EQUALS
+                                      L_PAREN R_PAREN))
+(define-tokens       sorting-values  (SORT))
 
 
-(define (string->sorting str)
-  (let ([ip (open-input-string str)])
-    (sorting-parser (lambda () (sorting-lexer ip)))))
+(define-lex-abbrevs
+  (letter (union (char-range "a" "z") (char-range "A" "Z")))
+  (digit (char-range "0" "9"))
+  (sort (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
+
+
+(define sorting-lexer
+  (lexer
+    [sort   (token-SORT lexeme)]
+    [","    (token-COMMA)]
+    [";"    (token-SEMICOLON)]
+    ["="    (token-EQUALS)]
+    ["("    (token-L_PAREN)]
+    [")"    (token-R_PAREN)]
+    [(eof)  (token-EOF)]))
 
 
 ; Export public symbols
-(provide/contract
-  [string->process (string? . -> . process?)]
-  [string->sorting (string? . -> . any/c)])
+(provide
+  sorting-symbols
+  sorting-values
+  sorting-lexer)
