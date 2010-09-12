@@ -21,15 +21,15 @@
 (require parser-tools/yacc
          "../name.rkt"
          "../process.rkt"
-         "lexer.rkt")
+         "process-lexer.rkt")
 
 
-(define private-parser
+(define process-parser
   (parser
 
     (start  process)
     (end    EOF)
-    (tokens value-tokens op-tokens)
+    (tokens process-symbols process-values)
     (error  (lambda (a b c) (void)))
 
     (grammar
@@ -58,4 +58,4 @@
 
 
 ; Export public symbols
-(provide private-parser)
+(provide process-parser)

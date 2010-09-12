@@ -18,8 +18,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "private/lexer.rkt"
-         "private/parser.rkt"
+(require "private/process-lexer.rkt"
+         "private/process-parser.rkt"
          "contracts.rkt"
          "process.rkt")
 
@@ -31,7 +31,7 @@
 ; into the process module. I might end up doing that.
 (define (string->process str)
   (let ([ip (open-input-string str)])
-    (private-parser (lambda () (private-lexer ip)))))
+    (process-parser (lambda () (process-lexer ip)))))
 
 
 ; Export public symbols

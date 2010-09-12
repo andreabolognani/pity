@@ -21,9 +21,9 @@
 (require parser-tools/lex)
 
 
-(define-empty-tokens op-tokens (EOF NIL DOT COMMA PIPE BANG
-                                L_PAREN R_PAREN L_BRACKET R_BRACKET))
-(define-tokens value-tokens (NAME))
+(define-empty-tokens process-symbols (EOF NIL DOT COMMA PIPE BANG
+                                      L_PAREN R_PAREN L_BRACKET R_BRACKET))
+(define-tokens       process-values  (NAME))
 
 
 (define-lex-abbrevs
@@ -32,7 +32,7 @@
   (name (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
 
 
-(define private-lexer
+(define process-lexer
   (lexer
     [name   (token-NAME lexeme)]
     ["0"    (token-NIL)]
@@ -49,6 +49,6 @@
 
 ; Export public symbols
 (provide
-  op-tokens
-  value-tokens
-  private-lexer)
+  process-symbols
+  process-values
+  process-lexer)
