@@ -24,8 +24,10 @@
 (define-struct sorting (function) #:transparent)
 
 
-; Empty sorting, to be used as a starting point
-(define empty-sorting
+; Empty sorting, to be used as a starting point.
+; This is renamed to sorting when exporting; inside this module,
+; sorting is the real constructor
+(define (empty-sorting)
   (sorting (lambda (s) #f)))
 
 
@@ -50,7 +52,8 @@
 
 
 (provide/contract
-  [empty-sorting  sorting?]
+  [rename empty-sorting
+   sorting        (                                ->   sorting?)]
   [sorting?       (any/c                         . -> . boolean?)]
   [sorting-get    (sorting? sort?                . -> . (or/c (listof sort?) #f))]
   [sorting-add    (sorting? sort? (listof sort?) . -> . sorting?)]

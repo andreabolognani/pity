@@ -46,9 +46,9 @@ was created.
 
 @section{Sortings}
 
-@defthing[empty-sorting sorting?]{
+@defproc[(sorting) sorting?]{
 
-Empty sorting.
+Returns an empty sorting.
 
 All sortings are derived by adding mappings to the empty sorting.
 }
