@@ -27,6 +27,7 @@ This is the documentation for Pity.
 
 @include-section["name.scrbl"]
 @include-section["process.scrbl"]
+@include-section["sorts-and-sortings.scrbl"]
 @include-section["contracts.scrbl"]
 @include-section["misc.scrbl"]
 

@@ -18,7 +18,7 @@
 @; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 @(require scribble/manual
-          (for-label (except-in racket prefix) ; Avoid name clash
+          (for-label (except-in racket prefix sort) ; Avoid name clash
                      pity))
 
 @title[#:tag "misc"]{Miscellaneous}

@@ -18,20 +18,15 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "name.rkt"
-         "process.rkt"
-         "sort.rkt"
-         "sorting.rkt"
-         "contracts.rkt"
-         "private.rkt"
-         "misc.rkt")
+(define-struct sort (s) #:transparent)
 
 
-; Export all imported symbols
-(provide (all-from-out "name.rkt"
-                       "process.rkt"
-                       "sort.rkt"
-                       "sorting.rkt"
-                       "contracts.rkt"
-                       "private.rkt"
-                       "misc.rkt"))
+(define (sort->string s)
+  (sort-s s))
+
+
+; Export public symbols
+(provide/contract
+  [sort         (string? . -> . sort?)]
+  [sort?        (any/c   . -> . boolean?)]
+  [sort->string (sort?   . -> . string?)])
