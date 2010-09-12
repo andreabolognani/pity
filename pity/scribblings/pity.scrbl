@@ -25,10 +25,10 @@ This is the documentation for Pity.
 
 @table-of-contents[]
 
-@include-section["name.scrbl"]
-@include-section["process.scrbl"]
+@include-section["names.scrbl"]
+@include-section["processes.scrbl"]
 @include-section["sorts-and-sortings.scrbl"]
 @include-section["contracts.scrbl"]
-@include-section["misc.scrbl"]
+@include-section["miscellaneous.scrbl"]
 
 @index-section[]

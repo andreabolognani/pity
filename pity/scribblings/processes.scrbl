@@ -21,7 +21,7 @@
           (for-label (except-in racket prefix sort) ; Avoid name clash
                      pity))
 
-@title[#:tag "process"]{Processes}
+@title[#:tag "processes"]{Processes}
 
 @declare-exporting[pity]
 

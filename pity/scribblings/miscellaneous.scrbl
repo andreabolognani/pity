@@ -21,7 +21,7 @@
           (for-label (except-in racket prefix sort) ; Avoid name clash
                      pity))
 
-@title[#:tag "misc"]{Miscellaneous}
+@title[#:tag "miscellaneous"]{Miscellaneous}
 
 @declare-exporting[pity]
 
