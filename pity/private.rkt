@@ -39,8 +39,10 @@
 
 
 (define (string->sorting str)
-  (let ([ip (open-input-string str)])
-    (sorting-parser (lambda () (sorting-lexer ip)))))
+  (if (not (equal? str ""))
+    (let ([ip (open-input-string str)])
+      (sorting-parser (lambda () (sorting-lexer ip))))
+    (sorting)))
 
 
 ; Export public symbols
