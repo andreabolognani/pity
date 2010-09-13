@@ -25,8 +25,14 @@
   (sort-s s))
 
 
+; Make a string out of a list of sorts
+(define (sort-list->string lst)
+  (string-join (map sort->string lst) ","))
+
+
 ; Export public symbols
 (provide/contract
-  [sort         (string? . -> . sort?)]
-  [sort?        (any/c   . -> . boolean?)]
-  [sort->string (sort?   . -> . string?)])
+  [sort              (string?        . -> . sort?)]
+  [sort?             (any/c          . -> . boolean?)]
+  [sort->string      (sort?          . -> . string?)]
+  [sort-list->string ((listof sort?) . -> . string?)])

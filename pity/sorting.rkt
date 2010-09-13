@@ -49,10 +49,24 @@
     (sorting (hash-remove mappings subj))))
 
 
+; Convert a sorting to a string
+(define (sorting->string self)
+  (let ([mappings (sorting-mappings self)])
+    (string-join (hash-map mappings mapping->string) ";")))
+
+
+; Convert a single mapping to its string representation
+(define (mapping->string key value)
+  (string-append (sort->string key) "=("
+                 (sort-list->string value) ")"))
+
+
+; Export public symbols
 (provide/contract
   [rename empty-sorting
-   sorting        (                                ->   sorting?)]
-  [sorting?       (any/c                         . -> . boolean?)]
-  [sorting-get    (sorting? sort?                . -> . (or/c (listof sort?) #f))]
-  [sorting-add    (sorting? sort? (listof sort?) . -> . sorting?)]
-  [sorting-remove (sorting? sort?                . -> . sorting?)])
+   sorting         (                                ->   sorting?)]
+  [sorting?        (any/c                         . -> . boolean?)]
+  [sorting-get     (sorting? sort?                . -> . (or/c (listof sort?) #f))]
+  [sorting-add     (sorting? sort? (listof sort?) . -> . sorting?)]
+  [sorting-remove  (sorting? sort?                . -> . sorting?)]
+  [sorting->string (sorting?                      . -> . string?)])

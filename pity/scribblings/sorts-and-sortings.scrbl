@@ -44,6 +44,12 @@ Returns a string @racket[equal?] to the one passed in when @racket[s]
 was created.
 }
 
+@defproc[(sort-list->string [lst (listof sort?)]) string?]{
+
+Returns a string representation of @racket[lst], where sorts are
+comma-separated.
+}
+
 @section{Sortings}
 
 @defproc[(sorting) sorting?]{
@@ -92,4 +98,12 @@ Returns the sorting obtained by parsing @racket[str].
 
 Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
 correctly.
+}
+
+@defproc[(sorting->string [s sorting?]) string?]{
+
+Returns a string representation of @racket[s].
+
+The returned string can be passed to @racket[string->sorting] to
+obtain a process which is @racket[equal?] to @racket[s].
 }
