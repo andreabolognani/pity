@@ -28,16 +28,26 @@
     (string-append "{" (string-join names ",") "}")))
 
 
-; Try to parse the line into a process.
-; If succesful, print the process followed by its free and bound names
-(define (action line)
-  (with-handlers ([(lambda (e) (exn:fail:read? e))
-                   (lambda (e) (printf "ERR: Exception caught~n"))])
+; Try to parse the line as a process: if succesful, print the process
+; followed by its free and bound names, otherwise try parsing the line
+; as a sorting
+(define (try-process-and-sorting line)
+  (with-handlers ([exn:fail:read?
+                   (lambda (e) (try-sorting line))])
     (let ([process (string->process line)])
       (printf "Process     : ~a~n" (process->string process))
       (printf "Free names  : ~a~n" (pretty-set (free-names process)))
       (printf "Bound names : ~a~n" (pretty-set (bound-names process))))))
 
 
+; Try to parse the line as a sorting, and print an error message if
+; the sorting cannot be parsed
+(define (try-sorting line)
+  (with-handlers ([exn:fail:read?
+                   (lambda (e) (printf "ERR: Exception caught~n"))])
+    (let ([sorting (string->sorting line)])
+      (printf "Sorting : ~a~n" (sorting->string sorting)))))
+
+
 ; Start the evaluation loop
-(repl action "pity> ")
+(repl try-process-and-sorting "pity> ")
