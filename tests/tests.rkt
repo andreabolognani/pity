@@ -22,9 +22,9 @@
          rackunit/text-ui
          "contracts-tests.rkt"
          "misc-tests.rkt"
-         "print-tests.rkt"
          "conversion-tests.rkt"
          "parsers-tests.rkt"
+         "print-tests.rkt"
          "process-tests.rkt"
          "names-tests.rkt")
 
@@ -35,9 +35,9 @@
 
     contracts-tests
     misc-tests
-    print-tests
     conversion-tests
     parsers-tests
+    print-tests
     process-tests
     names-tests))
 
