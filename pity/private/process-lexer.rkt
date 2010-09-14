@@ -29,6 +29,7 @@
 (define-lex-abbrevs
   (letter (union (char-range "a" "z") (char-range "A" "Z")))
   (digit (char-range "0" "9"))
+  (space (union #\tab #\space))
   (name (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
 
 
@@ -44,6 +45,7 @@
     [")"    (token-R_PAREN)]
     ["<"    (token-L_BRACKET)]
     [">"    (token-R_BRACKET)]
+    [space  (process-lexer input-port)] ; Skip whitespace
     [(eof)  (token-EOF)]))
 
 
