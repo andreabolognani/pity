@@ -24,7 +24,7 @@
          "misc-tests.rkt"
          "print-tests.rkt"
          "conversion-tests.rkt"
-         "parser-tests.rkt"
+         "parsers-tests.rkt"
          "process-tests.rkt"
          "names-tests.rkt")
 
@@ -37,7 +37,7 @@
     misc-tests
     print-tests
     conversion-tests
-    parser-tests
+    parsers-tests
     process-tests
     names-tests))
 

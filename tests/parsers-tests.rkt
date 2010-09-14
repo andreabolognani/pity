@@ -22,9 +22,9 @@
          pity)
 
 
-(define parser-tests
+(define parsers-tests
   (test-suite
-    "Tests for the parser"
+    "Tests for the parsers"
 
     (test-case
       "Parse an empty string"
@@ -187,8 +187,94 @@
       "Parse a restriction over both parts of a composition"
       (let ([string "(x)(0|0)"]
             [process (restriction (name "x") (composition (nil) (nil)))])
-        (check-equal? (string->process string) process)))))
+        (check-equal? (string->process string) process)))
+
+    (test-case
+      "Parse a sorting containing an illegal symbol"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "s=(r_,t)"))))
+
+    (test-case
+      "Parse a sorting with no opening parenthesis"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "s=r,t)"))))
+
+    (test-case
+      "Parse a sorting with no closing parenthesis"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "s=(r,t"))))
+
+    (test-case
+      "Parse a sorting with an extra comma in the object sort"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "s=(r,)"))))
+
+    (test-case
+      "Parse a sorting with an object sort in subject position"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "(s,r)=(t)"))))
+
+    (test-case
+      "Parse a sorting with a subject sort in object position"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "s=r"))))
+
+    (test-case
+      "Parse a sorting with an object sort in subject position"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "(s,r)=(t)"))))
+
+    (test-case
+      "Parse an empty sorting"
+      (let ([str ""]
+            [srt (sorting)])
+        (check-equal? (string->sorting str) srt)))
+
+    (test-case
+      "Parse a sorting with a single case (empty object sort)"
+      (let* ([str "s=()"]
+             [subj (sort "s")]
+             [obj (list)]
+             [srt (sorting-add (sorting) subj obj)])
+        (check-equal? (string->sorting str) srt)))
+
+    (test-case
+      "Parse a sorting with a single case (one object sort)"
+      (let* ([str "s=(r)"]
+             [subj (sort "s")]
+             [obj (list (sort "r"))]
+             [srt (sorting-add (sorting) subj obj)])
+        (check-equal? (string->sorting str) srt)))
+
+    (test-case
+      "Parse a sorting with a single case (two object sorts)"
+      (let* ([str "s=(r,t)"]
+             [subj (sort "s")]
+             [obj (list (sort "r") (sort "t"))]
+             [srt (sorting-add (sorting) subj obj)])
+        (check-equal? (string->sorting str) srt)))
+
+    (test-case
+      "Parse a sorting with two cases (different subjects)"
+      (let* ([str "s=(r);r=()"]
+             [subj (sort "s")]
+             [obj (list (sort "r"))]
+             [srt (sorting-add (sorting) subj obj)]
+             [subj (sort "r")]
+             [obj (list)]
+             [srt (sorting-add srt subj obj)])
+        (check-equal? (string->sorting str) srt)))
+
+    (test-case
+      "Parse a sorting with two cases (same subject)"
+      (let* ([str "s=(r);s=()"]
+             [subj (sort "s")]
+             [obj (list (sort "r"))]
+             [srt (sorting-add (sorting) subj obj)]
+             [obj (list)]
+             [srt (sorting-add srt subj obj)])
+        (check-equal? (string->sorting str) srt)))))
 
 
 ; Export public symbols
-(provide parser-tests)
+(provide parsers-tests)
