@@ -35,8 +35,8 @@
     (grammar
 
       (sorting
-        [(part)                    (sorting-add (sorting) (car $1) (cdr $1))]
-        [(sorting SEMICOLON part)  (sorting-add $1 (car $3) (cdr $3))])
+        [(part)                    (sorting-set (sorting) (car $1) (cdr $1))]
+        [(sorting SEMICOLON part)  (sorting-set $1 (car $3) (cdr $3))])
 
       (part
         [(sort EQUALS maybe-sorts) (cons $1 $3)])

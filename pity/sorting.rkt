@@ -32,13 +32,13 @@
 
 
 ; Get object sort for a subject sort
-(define (sorting-get self subj)
+(define (sorting-ref self subj)
   (let ([mappings (sorting-mappings self)])
     (hash-ref mappings subj #f)))
 
 
 ; Add mappings to a sorting
-(define (sorting-add self subj obj)
+(define (sorting-set self subj obj)
   (let ([mappings (sorting-mappings self)])
     (sorting (hash-set mappings subj obj))))
 
@@ -66,7 +66,7 @@
   [rename empty-sorting
    sorting         (                                ->   sorting?)]
   [sorting?        (any/c                         . -> . boolean?)]
-  [sorting-get     (sorting? sort?                . -> . (or/c (listof sort?) #f))]
-  [sorting-add     (sorting? sort? (listof sort?) . -> . sorting?)]
+  [sorting-ref     (sorting? sort?                . -> . (or/c (listof sort?) #f))]
+  [sorting-set     (sorting? sort? (listof sort?) . -> . sorting?)]
   [sorting-remove  (sorting? sort?                . -> . sorting?)]
   [sorting->string (sorting?                      . -> . string?)])

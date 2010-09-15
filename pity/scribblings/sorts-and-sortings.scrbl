@@ -64,7 +64,7 @@ All sortings are derived by adding mappings to the empty sorting.
 Returns @racket[#t] if @racket[v] is a sorting, @racket[#f] otherwise.
 }
 
-@defproc[(sorting-get [s sorting?]
+@defproc[(sorting-ref [s sorting?]
                       [subj sort?])
          (or/c (listof sort?) #f)]{
 
@@ -72,7 +72,7 @@ Returns the object sorting for @racket[subj], or @racket[#f] if
 @racket[subj] has no object sorting in @racket[s].
 }
 
-@defproc[(sorting-add [s sorting?]
+@defproc[(sorting-set [s sorting?]
                       [subj sort?]
                       [obj (listof sort?)])
          sorting?]{

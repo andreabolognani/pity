@@ -235,7 +235,7 @@
       (let* ([str "s=()"]
              [subj (sort "s")]
              [obj (list)]
-             [srt (sorting-add (sorting) subj obj)])
+             [srt (sorting-set (sorting) subj obj)])
         (check-equal? (string->sorting str) srt)))
 
     (test-case
@@ -243,7 +243,7 @@
       (let* ([str "s=(r)"]
              [subj (sort "s")]
              [obj (list (sort "r"))]
-             [srt (sorting-add (sorting) subj obj)])
+             [srt (sorting-set (sorting) subj obj)])
         (check-equal? (string->sorting str) srt)))
 
     (test-case
@@ -251,7 +251,7 @@
       (let* ([str "s=(r,t)"]
              [subj (sort "s")]
              [obj (list (sort "r") (sort "t"))]
-             [srt (sorting-add (sorting) subj obj)])
+             [srt (sorting-set (sorting) subj obj)])
         (check-equal? (string->sorting str) srt)))
 
     (test-case
@@ -259,10 +259,10 @@
       (let* ([str "s=(r);r=()"]
              [subj (sort "s")]
              [obj (list (sort "r"))]
-             [srt (sorting-add (sorting) subj obj)]
+             [srt (sorting-set (sorting) subj obj)]
              [subj (sort "r")]
              [obj (list)]
-             [srt (sorting-add srt subj obj)])
+             [srt (sorting-set srt subj obj)])
         (check-equal? (string->sorting str) srt)))
 
     (test-case
@@ -270,9 +270,9 @@
       (let* ([str "s=(r);s=()"]
              [subj (sort "s")]
              [obj (list (sort "r"))]
-             [srt (sorting-add (sorting) subj obj)]
+             [srt (sorting-set (sorting) subj obj)]
              [obj (list)]
-             [srt (sorting-add srt subj obj)])
+             [srt (sorting-set srt subj obj)])
         (check-equal? (string->sorting str) srt)))))
 
 
