@@ -139,7 +139,44 @@
       "Print a replicated prefix"
       (let* ([display-string "!x<y>.0"]
              [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))))
+        (check-equal? (process->string process) display-string)))
+
+    (test-case
+      "Print an empty sorting"
+      (let* ([display-string ""]
+             [sorting (string->sorting display-string)])
+        (check-equal? (sorting->string sorting) display-string)))
+
+    (test-case
+      "Print a simple sorting (empty object sort)"
+      (let* ([display-string "s=()"]
+             [sorting (string->sorting display-string)])
+        (check-equal? (sorting->string sorting) display-string)))
+
+    (test-case
+      "Print a simple sorting (one object sort)"
+      (let* ([display-string "s=(r)"]
+             [sorting (string->sorting display-string)])
+        (check-equal? (sorting->string sorting) display-string)))
+
+    (test-case
+      "Print a simple sorting (two object sorts)"
+      (let* ([display-string "s=(r,t)"]
+             [sorting (string->sorting display-string)])
+        (check-equal? (sorting->string sorting) display-string)))
+
+    (test-case
+      "Print a sorting on two subjects"
+      (let* ([display-string "s=(r,t);t=(s)"]
+             [sorting (string->sorting display-string)])
+        (check-equal? (sorting->string sorting) display-string)))
+
+    (test-case
+      "Print a sorting with two cases on the same subject"
+      (let* ([original "s=(r,t);s=()"]
+             [canonical "s=()"]
+             [sorting (string->sorting original)])
+        (check-equal? (sorting->string sorting) canonical)))))
 
 
 ; Export public symbols
