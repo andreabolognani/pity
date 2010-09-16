@@ -66,7 +66,7 @@ Returns @racket[#t] if @racket[v] is a sorting, @racket[#f] otherwise.
 
 @defproc[(sorting-ref [s sorting?]
                       [subj sort?])
-         (or/c (listof sort?) #f)]{
+         (or/c (non-empty-listof sort?) #f)]{
 
 Returns the object sorting for @racket[subj], or @racket[#f] if
 @racket[subj] has no object sorting in @racket[s].
@@ -74,7 +74,7 @@ Returns the object sorting for @racket[subj], or @racket[#f] if
 
 @defproc[(sorting-set [s sorting?]
                       [subj sort?]
-                      [obj (listof sort?)])
+                      [obj (non-empty-listof sort?)])
          sorting?]{
 
 Returns a new sorting which behaves as @racket[s], but maps @racket[subj]
