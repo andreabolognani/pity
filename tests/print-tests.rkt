@@ -148,12 +148,6 @@
         (check-equal? (sorting->string sorting) display-string)))
 
     (test-case
-      "Print a simple sorting (empty object sort)"
-      (let* ([display-string "s=()"]
-             [sorting (string->sorting display-string)])
-        (check-equal? (sorting->string sorting) display-string)))
-
-    (test-case
       "Print a simple sorting (one object sort)"
       (let* ([display-string "s=(r)"]
              [sorting (string->sorting display-string)])
@@ -173,8 +167,8 @@
 
     (test-case
       "Print a sorting with two cases on the same subject"
-      (let* ([original "s=(r,t);s=()"]
-             [canonical "s=()"]
+      (let* ([original "s=(r);s=(t)"]
+             [canonical "s=(t)"]
              [sorting (string->sorting original)])
         (check-equal? (sorting->string sorting) canonical)))))
 

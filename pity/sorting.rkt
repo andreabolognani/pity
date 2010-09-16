@@ -18,7 +18,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "sort.rkt")
+(require "contracts.rkt"
+         "sort.rkt")
 
 
 (define-struct sorting (mappings) #:transparent)
@@ -64,9 +65,9 @@
 ; Export public symbols
 (provide/contract
   [rename empty-sorting
-   sorting         (                                ->   sorting?)]
-  [sorting?        (any/c                         . -> . boolean?)]
-  [sorting-ref     (sorting? sort?                . -> . (or/c (listof sort?) #f))]
-  [sorting-set     (sorting? sort? (listof sort?) . -> . sorting?)]
-  [sorting-remove  (sorting? sort?                . -> . sorting?)]
-  [sorting->string (sorting?                      . -> . string?)])
+   sorting         (                                          ->   sorting?)]
+  [sorting?        (any/c                                   . -> . boolean?)]
+  [sorting-ref     (sorting? sort?                          . -> . (or/c (non-empty-listof sort?) #f))]
+  [sorting-set     (sorting? sort? (non-empty-listof sort?) . -> . sorting?)]
+  [sorting-remove  (sorting? sort?                          . -> . sorting?)]
+  [sorting->string (sorting?                                . -> . string?)])

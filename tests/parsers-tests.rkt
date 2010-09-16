@@ -225,17 +225,14 @@
         (lambda () (string->sorting "(s,r)=(t)"))))
 
     (test-case
+      "Parse a sorting with an empty object sort"
+      (check-exn exn:fail:read?
+        (lambda () (string->sorting "s=()"))))
+
+    (test-case
       "Parse an empty sorting"
       (let ([str ""]
             [srt (sorting)])
-        (check-equal? (string->sorting str) srt)))
-
-    (test-case
-      "Parse a sorting with a single case (empty object sort)"
-      (let* ([str "s=()"]
-             [subj (sort "s")]
-             [obj (list)]
-             [srt (sorting-set (sorting) subj obj)])
         (check-equal? (string->sorting str) srt)))
 
     (test-case
@@ -256,22 +253,22 @@
 
     (test-case
       "Parse a sorting with two cases (different subjects)"
-      (let* ([str "s=(r);r=()"]
+      (let* ([str "s=(r);r=(t)"]
              [subj (sort "s")]
              [obj (list (sort "r"))]
              [srt (sorting-set (sorting) subj obj)]
              [subj (sort "r")]
-             [obj (list)]
+             [obj (list (sort "t"))]
              [srt (sorting-set srt subj obj)])
         (check-equal? (string->sorting str) srt)))
 
     (test-case
       "Parse a sorting with two cases (same subject)"
-      (let* ([str "s=(r);s=()"]
+      (let* ([str "s=(r);s=(t)"]
              [subj (sort "s")]
              [obj (list (sort "r"))]
              [srt (sorting-set (sorting) subj obj)]
-             [obj (list)]
+             [obj (list (sort "t"))]
              [srt (sorting-set srt subj obj)])
         (check-equal? (string->sorting str) srt)))))
 

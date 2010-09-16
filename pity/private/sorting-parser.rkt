@@ -39,15 +39,14 @@
         [(sorting SEMICOLON part)  (sorting-set $1 (car $3) (cdr $3))])
 
       (part
-        [(sort EQUALS maybe-sorts) (cons $1 $3)])
+        [(sort EQUALS sorts)       (cons $1 $3)])
 
-      (maybe-sorts
-        [(L_PAREN R_PAREN)         (list)]
-        [(L_PAREN sorts R_PAREN)   $2])
+     (sorts
+       [(L_PAREN sort-list R_PAREN) $2])
 
-      (sorts
+      (sort-list
         [(sort)                    (list $1)]
-        [(sort COMMA sorts)        (list* $1 $3)])
+        [(sort COMMA sort-list)    (list* $1 $3)])
 
       (sort
         [(SORT)                    (sort $1)]))))
