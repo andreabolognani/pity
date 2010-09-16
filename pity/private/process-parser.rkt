@@ -35,33 +35,33 @@
     (grammar
 
       (process
-        [(subprocess)                     $1]
-        [(subprocess PIPE process)        (composition $1 $3)])
+        [(subprocess)              $1]
+        [(subprocess PIPE process) (composition $1 $3)])
 
       (subprocess
-        [(part)                           $1]
-        [(BANG subprocess)                (replication $2)])
+        [(part)                    $1]
+        [(BANG subprocess)         (replication $2)])
 
       (part
-        [(term)                           $1]
-        [(L_PAREN name R_PAREN part)      (restriction $2 $4)])
+        [(term)                    $1]
+        [(LP name RP part)         (restriction $2 $4)])
 
       (term
-        [(action)                         $1]
-        [(action DOT term)                (prefix $1 $3)])
+        [(action)                  $1]
+        [(action DOT term)         (prefix $1 $3)])
 
       (action
-        [(NIL)                            (nil)]
-        [(name L_PAREN names R_PAREN)     (input $1 $3)]
-        [(name L_BRACKET names R_BRACKET) (output $1 $3)]
-        [(L_PAREN process R_PAREN)        $2])
+        [(NIL)                     (nil)]
+        [(name LP names RP)        (input $1 $3)]
+        [(name LAB names RAB)      (output $1 $3)]
+        [(LP process RP)           $2])
 
       (names
-        [(name)                           (list $1)]
-        [(name COMMA names)               (list* $1 $3)])
+        [(name)                    (list $1)]
+        [(name COMMA names)        (list* $1 $3)])
 
       (name
-        [(NAME)                           (name $1)]))))
+        [(NAME)                    (name $1)]))))
 
 
 ; Export public symbols

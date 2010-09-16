@@ -22,7 +22,7 @@
 
 
 (define-empty-tokens process-symbols (EOF NIL DOT COMMA PIPE BANG
-                                      L_PAREN R_PAREN L_BRACKET R_BRACKET))
+                                      LP RP LAB RAB))
 (define-tokens       process-values  (NAME))
 
 
@@ -41,10 +41,10 @@
     [","    (token-COMMA)]
     ["|"    (token-PIPE)]
     ["!"    (token-BANG)]
-    ["("    (token-L_PAREN)]
-    [")"    (token-R_PAREN)]
-    ["<"    (token-L_BRACKET)]
-    [">"    (token-R_BRACKET)]
+    ["("    (token-LP)]
+    [")"    (token-RP)]
+    ["<"    (token-LAB)]
+    [">"    (token-RAB)]
     [space  (process-lexer input-port)] ; Skip whitespace
     [(eof)  (token-EOF)]))
 

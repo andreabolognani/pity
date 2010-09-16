@@ -35,21 +35,18 @@
     (grammar
 
       (sorting
-        [(part)                    (sorting-set (sorting) (car $1) (cdr $1))]
-        [(sorting SEMICOLON part)  (sorting-set $1 (car $3) (cdr $3))])
+        [(part)                   (sorting-set (sorting) (car $1) (cdr $1))]
+        [(sorting SEMICOLON part) (sorting-set $1 (car $3) (cdr $3))])
 
       (part
-        [(sort EQUALS sorts)       (cons $1 $3)])
+        [(sort EQ LP sorts RP)    (cons $1 $4)])
 
-     (sorts
-       [(L_PAREN sort-list R_PAREN) $2])
-
-      (sort-list
-        [(sort)                    (list $1)]
-        [(sort COMMA sort-list)    (list* $1 $3)])
+      (sorts
+        [(sort)                   (list $1)]
+        [(sort COMMA sorts)       (list* $1 $3)])
 
       (sort
-        [(SORT)                    (sort $1)]))))
+        [(SORT)                   (sort $1)]))))
 
 
 ; Export public symbols

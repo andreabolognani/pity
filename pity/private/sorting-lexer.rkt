@@ -21,8 +21,8 @@
 (require parser-tools/lex)
 
 
-(define-empty-tokens sorting-symbols (EOF COMMA SEMICOLON EQUALS
-                                      L_PAREN R_PAREN))
+(define-empty-tokens sorting-symbols (EOF COMMA SEMICOLON
+                                      EQ LP RP))
 (define-tokens       sorting-values  (SORT))
 
 
@@ -38,9 +38,9 @@
     [sort   (token-SORT lexeme)]
     [","    (token-COMMA)]
     [";"    (token-SEMICOLON)]
-    ["="    (token-EQUALS)]
-    ["("    (token-L_PAREN)]
-    [")"    (token-R_PAREN)]
+    ["="    (token-EQ)]
+    ["("    (token-LP)]
+    [")"    (token-RP)]
     [space  (sorting-lexer input-port)] ; Skip whitespace
     [(eof)  (token-EOF)]))
 
