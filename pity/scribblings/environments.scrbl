@@ -1,0 +1,78 @@
+#lang scribble/doc
+
+@; Pity: Pi-Calculus Type Checking
+@; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
+@;
+@; This program is free software; you can redistribute it and/or modify
+@; it under the terms of the GNU General Public License as published by
+@; the Free Software Foundation; either version 2 of the License, or
+@; (at your option) any later version.
+@;
+@; This program is distributed in the hope that it will be useful,
+@; but WITHOUT ANY WARRANTY; without even the implied warranty of
+@; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+@; GNU General Public License for more details.
+@;
+@; You should have received a copy of the GNU General Public License along
+@; with this program; if not, write to the Free Software Foundation, Inc.,
+@; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+@(require scribble/manual
+          (for-label (except-in racket prefix sort) ; Avoid name clash
+                     pity))
+
+@title[#:tag "environments"]{Environments}
+
+@declare-exporting[pity]
+
+Procedures to create and modify environments.
+
+An environment is used to hold mappings from names to sorts when
+typing a process.
+
+@defproc[(environment) environment?]{
+
+Returns an empty environment.
+
+All environments are derived by adding mappings to the empty
+environment.
+}
+
+@defproc[(environment? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is an environment, @racket[#f]
+otherwise.
+}
+
+@defproc[(environment-ref [env environment?]
+                          [n name?])
+         (or/c sort? #f)]{
+
+Returns the sort for @racket[n], or @racket[#f] if @racket[n] has no
+sort in @racket[env].
+}
+
+@defproc[(environment-set [env environment?]
+                          [n name?]
+                          [s sort?])
+         environment?]{
+
+Returns a new environment which behaves as @racket[env], but maps
+@racket[n] to @racket[s].
+
+If a mapping for @racket[n] is already present in @racket[env], it is
+replaced by the new one.
+}
+
+@defproc[(environment-remove [env environment?]
+                             [n name?])
+         environment?]{
+
+Returns a new environment which behaves as @racket[env], except that any
+mapping of @racket[n] is removed.
+}
+
+@defproc[(environment->string [env environment?]) string?]{
+
+Returns a string representation of @racket[env].
+}

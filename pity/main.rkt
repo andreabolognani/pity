@@ -22,6 +22,7 @@
          "process.rkt"
          "sort.rkt"
          "sorting.rkt"
+         "environment.rkt"
          "contracts.rkt"
          "private.rkt"
          "misc.rkt")
@@ -32,6 +33,7 @@
                        "process.rkt"
                        "sort.rkt"
                        "sorting.rkt"
+                       "environment.rkt"
                        "contracts.rkt"
                        "private.rkt"
                        "misc.rkt"))
