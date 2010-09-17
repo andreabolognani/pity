@@ -105,5 +105,5 @@ correctly.
 Returns a string representation of @racket[s].
 
 The returned string can be passed to @racket[string->sorting] to
-obtain a process which is @racket[equal?] to @racket[s].
+obtain a sorting which is @racket[equal?] to @racket[s].
 }
