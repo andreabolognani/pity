@@ -29,7 +29,7 @@ Procedures to create and modify sorts and sortings.
 
 @section{Sorts}
 
-@defproc[(sort [s string?]) sort?]{
+@defproc[(sort [s non-empty-string?]) sort?]{
 
 Returns a new sort.}
 

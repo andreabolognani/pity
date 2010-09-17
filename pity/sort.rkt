@@ -18,6 +18,9 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+(require "contracts.rkt")
+
+
 (define-struct sort (s) #:transparent)
 
 
@@ -32,7 +35,7 @@
 
 ; Export public symbols
 (provide/contract
-  [sort              (string?        . -> . sort?)]
-  [sort?             (any/c          . -> . boolean?)]
-  [sort->string      (sort?          . -> . string?)]
-  [sort-list->string ((listof sort?) . -> . string?)])
+  [sort              (non-empty-string? . -> . sort?)]
+  [sort?             (any/c             . -> . boolean?)]
+  [sort->string      (sort?             . -> . string?)]
+  [sort-list->string ((listof sort?)    . -> . string?)])
