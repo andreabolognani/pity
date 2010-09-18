@@ -47,7 +47,7 @@ Returns the replication of the process @racket[p].
 Returns @racket[#t] if @racket[v] is a replication, @racket[#f] otherwise.
 }
 
-@defproc[(input [x name?] [y (listof name?)]) input?]{
+@defproc[(input [x name?] [y (non-empty-listof name?)]) input?]{
 
 Returns an input over the channel @racket[x] to the names contained
 in @racket[y].
@@ -58,7 +58,7 @@ in @racket[y].
 Returns @racket[#t] if @racket[v] is an input, @racket[#f] otherwise.
 }
 
-@defproc[(output [x name?] [y (listof name?)]) output?]{
+@defproc[(output [x name?] [y (non-empty-listof name?)]) output?]{
 
 Returns an output over the channel @racket[x] of the names contained
 in @racket[y].
