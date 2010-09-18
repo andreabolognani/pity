@@ -18,8 +18,9 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "contracts.rkt"
-         "sort.rkt")
+(require "sort.rkt"
+         "contracts.rkt"
+         "misc.rkt")
 
 
 (define-struct sorting (mappings) #:transparent)
@@ -50,6 +51,12 @@
     (sorting (hash-remove mappings subj))))
 
 
+; Get domain for a sorting
+(define (sorting-domain self)
+  (let ([mappings (sorting-mappings self)])
+    (list->set (hash-map mappings (lambda (s o) s)))))
+
+
 ; Convert a sorting to a string
 (define (sorting->string self)
   (let ([mappings (sorting-mappings self)])
@@ -70,4 +77,5 @@
   [sorting-ref     (sorting? sort?                          . -> . (or/c (non-empty-listof sort?) #f))]
   [sorting-set     (sorting? sort? (non-empty-listof sort?) . -> . sorting?)]
   [sorting-remove  (sorting? sort?                          . -> . sorting?)]
+  [sorting-domain  (sorting?                                . -> . (setof sort?))]
   [sorting->string (sorting?                                . -> . string?)])

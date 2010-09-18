@@ -92,6 +92,11 @@ Returns a new sorting which behaves as @racket[s], except that any mapping
 of @racket[subj] is removed.
 }
 
+@defproc[(sorting-domain [s sorting?]) (setof sort?)]{
+
+Returns the set of sorts which have mappings in @racket[s].
+}
+
 @defproc[(string->sorting [str string?]) sorting?]{
 
 Returns the sorting obtained by parsing @racket[str].
