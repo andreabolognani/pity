@@ -18,4 +18,6 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+(define name "Pity")
+(define blurb "Pi-Calculus Type Checking")
 (define scribblings '(("scribblings/pity.scrbl" (multi-page))))
