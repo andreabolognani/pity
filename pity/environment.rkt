@@ -56,6 +56,17 @@
     (list->set (hash-map mappings (lambda (n s) n)))))
 
 
+; Check environment compatibility
+(define (environment-compatible? self n s)
+  (let ([r (environment-ref self n)])
+    (or (not r)
+        (equal? r s))))
+
+
+; Conversion functions
+; --------------------
+
+
 ; Convert an environment to a string
 (define (environment->string self)
   (let ([mappings (environment-mappings self)])
@@ -74,10 +85,11 @@
 ; Export public symbols
 (provide/contract
   [rename empty-environment
-   environment         (                           ->   environment?)]
-  [environment?        (any/c                    . -> . boolean?)]
-  [environment-ref     (environment? name?       . -> . (or/c sort? #f))]
-  [environment-set     (environment? name? sort? . -> . environment?)]
-  [environment-remove  (environment? name?       . -> . environment?)]
-  [environment-domain  (environment?             . -> . (setof name?))]
-  [environment->string (environment?             . -> . string?)])
+   environment             (                           ->   environment?)]
+  [environment?            (any/c                    . -> . boolean?)]
+  [environment-ref         (environment? name?       . -> . (or/c sort? #f))]
+  [environment-set         (environment? name? sort? . -> . environment?)]
+  [environment-remove      (environment? name?       . -> . environment?)]
+  [environment-domain      (environment?             . -> . (setof name?))]
+  [environment-compatible? (environment? name? sort? . -> . boolean?)]
+  [environment->string     (environment?             . -> . string?)])

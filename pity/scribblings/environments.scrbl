@@ -77,6 +77,14 @@ mapping of @racket[n] is removed.
 Returns the set of names which have a mapping in @racket[env].
 }
 
+@defproc[(environment-compatible? [env environment?]
+                                  [n name?]
+                                  [s sort?])
+         boolean?]{
+
+Returns @racket[#t] if the mapping from @racket[n] to @racket[s] is
+compatible with the mappings in @racket[env].}
+
 @defproc[(environment->string [env environment?]) string?]{
 
 Returns a string representation of @racket[env].
