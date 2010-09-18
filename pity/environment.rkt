@@ -19,7 +19,9 @@
 
 
 (require "name.rkt"
-         "sort.rkt")
+         "sort.rkt"
+         "contracts.rkt"
+         "misc.rkt")
 
 
 (define-struct environment (mappings) #:transparent)
@@ -48,6 +50,12 @@
     (environment (hash-remove mappings n))))
 
 
+; Get domain for an environment
+(define (environment-domain self)
+  (let ([mappings (environment-mappings self)])
+    (list->set (hash-map mappings (lambda (n s) n)))))
+
+
 ; Convert an environment to a string
 (define (environment->string self)
   (let ([mappings (environment-mappings self)])
@@ -71,4 +79,5 @@
   [environment-ref     (environment? name?       . -> . (or/c sort? #f))]
   [environment-set     (environment? name? sort? . -> . environment?)]
   [environment-remove  (environment? name?       . -> . environment?)]
+  [environment-domain  (environment?             . -> . (setof name?))]
   [environment->string (environment?             . -> . string?)])

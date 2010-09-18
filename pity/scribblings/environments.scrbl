@@ -72,6 +72,11 @@ Returns a new environment which behaves as @racket[env], except that any
 mapping of @racket[n] is removed.
 }
 
+@defproc[(environment-domain [env environment?]) (setof name?)]{
+
+Returns the set of names which have a mapping in @racket[env].
+}
+
 @defproc[(environment->string [env environment?]) string?]{
 
 Returns a string representation of @racket[env].
