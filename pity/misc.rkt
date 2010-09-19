@@ -25,6 +25,11 @@
   (foldl (lambda (i acc) (set-add acc i)) (set) lst))
 
 
+; Checks if any of a list of elements is in a set
+(define (set-member-any? s lst)
+  (not (set-empty? (set-intersect s (list->set lst)))))
+
+
 (define (display-list lst
                       [out (current-output-port)]
                       #:separator [separator #\newline])
@@ -37,5 +42,6 @@
 
 ; Export public symbols
 (provide/contract
-  [list->set    (list?                                    . ->  . set?)]
-  [display-list ((list?) (output-port? #:separator any/c) . ->* . void?)])
+  [list->set       (list?                                    . ->  . set?)]
+  [set-member-any? (set? list?                               . ->  . boolean?)]
+  [display-list    ((list?) (output-port? #:separator any/c) . ->* . void?)])

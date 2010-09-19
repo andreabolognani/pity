@@ -32,6 +32,12 @@ Miscellaneous procedures.
 Returns a set containing all the items in @racket[lst].
 }
 
+@defproc[(set-member-any? [s set?] [lst list?]) boolean?]{
+
+Returns @racket[#t] if any of the items in @racket[lst] is a
+member of @racket[s], @racket[#f] otherwise.
+}
+
 @defproc[(display-list [lst list?]
                        [out output-port? (current-output-port)]
                        [#:separator separator any/c #\newline])

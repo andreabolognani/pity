@@ -35,7 +35,37 @@
 
     (test-case
       "Make a set out of a list containing duplicates"
-      (check-equal? (list->set '(1 2 1 3 2)) (set 1 2 3)))))
+      (check-equal? (list->set '(1 2 1 3 2)) (set 1 2 3)))
+
+    (test-case
+      "Check no element of the empty list is member of an empty set"
+      (let ([s (set)]
+            [lst (list)])
+        (check-false (set-member-any? s lst))))
+
+    (test-case
+      "Check no elment of the empty list is member of a set"
+      (let ([s (set 1 2 3)]
+            [lst (list)])
+        (check-false (set-member-any? s lst))))
+
+    (test-case
+      "Check no element is member of the empty set"
+      (let ([s (set)]
+            [lst (list 1 2 3)])
+        (check-false (set-member-any? s lst))))
+
+    (test-case
+      "Check members are reported correctly if none is found"
+      (let ([s (set 1 2 3)]
+            [lst (list 4 5 6)])
+        (check-false (set-member-any? s lst))))
+
+    (test-case
+      "Check members are reported correctly if any is found"
+      (let ([s (set 1 2 3)]
+            [lst (list 2)])
+        (check-true (set-member-any? s lst))))))
 
 
 ; Export public symbols
