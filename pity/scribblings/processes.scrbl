@@ -127,6 +127,15 @@ Returns a @racket[set] containing all the names that have an
 occurence in @racket[p].
 }
 
+@defproc[(process-respects? [p process?]
+                            [srt sorting?]
+                            [env environment?])
+         (or/c environment? #f)]{
+
+Returns @racket[#f] if @racket[p] doesn't respect @racket[srt] in the
+environment @racket[env], @racket[env] if it does.
+}
+
 @defproc[(string->process [str string?]) process?]{
 
 Returns the process obtained by parsing @racket[str].

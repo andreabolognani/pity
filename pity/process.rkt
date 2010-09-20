@@ -19,6 +19,9 @@
 
 
 (require "name.rkt"
+         "sort.rkt"
+         "sorting.rkt"
+         "environment.rkt"
          "contracts.rkt"
          "misc.rkt")
 
@@ -253,6 +256,73 @@
                      (process->string q))))
 
 
+; Process typing
+; --------------
+;
+;  The following procedures are used to check that a process respects
+;  a given sorting. As usual, the main procedure acts as a glue for
+;  the smaller functions implementing the actual type checking.
+
+
+; Check whether a process respects a given sorting
+(define (process-respects? p srt env)
+  (if (check-typing p srt env)
+      env
+      #f))
+
+
+; Glue procedure
+(define (check-typing process srt env)
+  (match process
+    [(nil)                   #t]
+    [(replication p)         (check-typing p srt env)]
+    [(prefix (input x y) p)  (check-typing/input x y p srt env)]
+    [(prefix (output x y) p) (check-typing/output x y p srt env)]
+    [(restriction x p)       (check-typing/restriction x p srt env)]
+    [(composition p q)       (check-typing/composition p q srt env)]))
+
+
+; Check typing for an input action
+(define (check-typing/input x y p srt env)
+  (let* ([names (environment-domain env)]
+         [s (environment-ref env x)]
+         [obj-srt (if (not s) #f (sorting-ref srt s))]
+         [newenv (environment-remove env x)])
+    (if (or (set-member-any? names y) (not obj-srt))
+        #f
+        (check-typing p srt (environment-set-multiple newenv y obj-srt)))))
+
+
+; Check typing for an output action
+(define (check-typing/output x y p srt env)
+  (let* ([s (environment-ref env x)]
+         [sorts (map (curry environment-ref env) y)]
+         [obj-srt (if (not s) #f (sorting-ref srt s))])
+    (if (or (not obj-srt) (not (equal? sorts obj-srt)))
+        #f
+        (check-typing p srt (environment-remove-multiple env (cons x y))))))
+
+
+; Check typing for a restriction
+(define (check-typing/restriction x p srt env)
+  (let ([names (environment-domain env)]
+        [sorts (sorting-domain srt)]
+        [bor (lambda (x y) (or x y))] ; Binary or wrapper
+        [recur (lambda (s)
+                 (if (environment-compatible? env x s)
+                     (check-typing p srt (environment-set env x s))
+                     #f))])
+    (if (set-member? names x)
+        #f
+        (foldl bor #f (set-map sorts recur)))))
+
+
+; Check typing for a composition
+(define (check-typing/composition p q srt env)
+  (and (check-typing p srt env)
+       (check-typing q srt env)))
+
+
 ; Utility functions
 ; -----------------
 
@@ -278,22 +348,23 @@
 
 ; Export public symbols
 (provide/contract
-  [nil             (                                 ->   nil?)]
-  [nil?            (any/c                          . -> . boolean?)]
-  [replication     (process?                       . -> . replication?)]
-  [replication?    (any/c                          . -> . boolean?)]
-  [input           (name? (non-empty-listof name?) . -> . input?)]
-  [input?          (any/c                          . -> . boolean?)]
-  [output          (name? (non-empty-listof name?) . -> . output?)]
-  [output?         (any/c                          . -> . boolean?)]
-  [restriction     (name? process?                 . -> . restriction?)]
-  [restriction?    (any/c                          . -> . boolean?)]
-  [composition     (process? process?              . -> . composition?)]
-  [composition?    (any/c                          . -> . boolean?)]
-  [prefix          (process? process?              . -> . prefix?)]
-  [prefix?         (any/c                          . -> . boolean?)]
-  [process?        (any/c                          . -> . boolean?)]
-  [free-names      (process?                       . -> . (setof name?))]
-  [bound-names     (process?                       . -> . (setof name?))]
-  [names           (process?                       . -> . (setof name?))]
-  [process->string (process?                       . -> . string?)])
+  [nil               (                                 ->   nil?)]
+  [nil?              (any/c                          . -> . boolean?)]
+  [replication       (process?                       . -> . replication?)]
+  [replication?      (any/c                          . -> . boolean?)]
+  [input             (name? (non-empty-listof name?) . -> . input?)]
+  [input?            (any/c                          . -> . boolean?)]
+  [output            (name? (non-empty-listof name?) . -> . output?)]
+  [output?           (any/c                          . -> . boolean?)]
+  [restriction       (name? process?                 . -> . restriction?)]
+  [restriction?      (any/c                          . -> . boolean?)]
+  [composition       (process? process?              . -> . composition?)]
+  [composition?      (any/c                          . -> . boolean?)]
+  [prefix            (process? process?              . -> . prefix?)]
+  [prefix?           (any/c                          . -> . boolean?)]
+  [process?          (any/c                          . -> . boolean?)]
+  [free-names        (process?                       . -> . (setof name?))]
+  [bound-names       (process?                       . -> . (setof name?))]
+  [names             (process?                       . -> . (setof name?))]
+  [process-respects? (process? sorting? environment? . -> . (or/c environment? #f))]
+  [process->string   (process?                       . -> . string?)])
