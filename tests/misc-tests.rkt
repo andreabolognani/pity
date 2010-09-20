@@ -27,16 +27,16 @@
 
     (test-case
       "Reverse arguments of +"
-      (check-equal? ((reverse-arguments +) 3 1) 4))
+      (check-equal? ((flip +) 3 1) 4))
 
     (test-case
       "Reverse arguments of string-append"
-      (check-equal? ((reverse-arguments string-append) "a" "b" "c") "cba"))
+      (check-equal? ((flip string-append) "a" "b" "c") "cba"))
 
     (test-case
       "Reverse arguments of string-append two times"
-      (let ([dneppa-gnirts (reverse-arguments string-append)])
-        (check-equal? ((reverse-arguments dneppa-gnirts) "a" "b" "c") "abc")))
+      (let ([dneppa-gnirts (flip string-append)])
+        (check-equal? ((flip dneppa-gnirts) "a" "b" "c") "abc")))
 
     (test-case
       "Make a set out of an empty list"

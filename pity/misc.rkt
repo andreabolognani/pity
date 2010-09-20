@@ -23,12 +23,12 @@
 
 ; Make a procedure which accepts the same
 ; arguments as proc, only in reverse order
-(define (reverse-arguments proc)
+(define (flip proc)
   (lambda rest (apply proc (reverse rest))))
 
 
 (define (list->set lst)
-  (foldl (reverse-arguments set-add) (set) lst))
+  (foldl (flip set-add) (set) lst))
 
 
 ; Checks if any of a list of elements is in a set
@@ -48,7 +48,7 @@
 
 ; Export public symbols
 (provide/contract
-  [reverse-arguments (procedure?                               . ->  . procedure?)]
-  [list->set         (list?                                    . ->  . set?)]
-  [set-member-any?   (set? list?                               . ->  . boolean?)]
-  [display-list      ((list?) (output-port? #:separator any/c) . ->* . void?)])
+  [flip            (procedure?                               . ->  . procedure?)]
+  [list->set       (list?                                    . ->  . set?)]
+  [set-member-any? (set? list?                               . ->  . boolean?)]
+  [display-list    ((list?) (output-port? #:separator any/c) . ->* . void?)])

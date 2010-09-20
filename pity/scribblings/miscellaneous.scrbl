@@ -27,7 +27,7 @@
 
 Miscellaneous procedures.
 
-@defproc[(reverse-arguments [proc procedure?]) procedure?]{
+@defproc[(flip [proc procedure?]) procedure?]{
 
 Returns a procedure which behaves like @racket[proc], but takes its
 arguments in reverse order.

@@ -61,7 +61,7 @@
 
 ; Remove multiple mappings from an environment
 (define (environment-remove-multiple self n)
-  (foldl (reverse-arguments environment-remove) self n))
+  (foldl (flip environment-remove) self n))
 
 
 ; Get domain for an environment
