@@ -38,10 +38,19 @@
     (hash-ref mappings n #f)))
 
 
-; Add mappings to an environment
+; Add a single mapping to an environment
 (define (environment-set self n s)
   (let ([mappings (environment-mappings self)])
     (environment (hash-set mappings n s))))
+
+
+; Add multiple mappings to an environment
+(define (environment-set-multiple self n s)
+  (if (or (empty? n) (empty? s))
+    self
+    (environment-set-multiple (environment-set self (car n) (car s))
+                              (cdr n)
+                              (cdr s))))
 
 
 ; Remove mappings from an environment
@@ -85,11 +94,12 @@
 ; Export public symbols
 (provide/contract
   [rename empty-environment
-   environment             (                           ->   environment?)]
-  [environment?            (any/c                    . -> . boolean?)]
-  [environment-ref         (environment? name?       . -> . (or/c sort? #f))]
-  [environment-set         (environment? name? sort? . -> . environment?)]
-  [environment-remove      (environment? name?       . -> . environment?)]
-  [environment-domain      (environment?             . -> . (setof name?))]
-  [environment-compatible? (environment? name? sort? . -> . boolean?)]
-  [environment->string     (environment?             . -> . string?)])
+   environment              (                                             ->   environment?)]
+  [environment?             (any/c                                      . -> . boolean?)]
+  [environment-ref          (environment? name?                         . -> . (or/c sort? #f))]
+  [environment-set          (environment? name? sort?                   . -> . environment?)]
+  [environment-set-multiple (environment? (listof name?) (listof sort?) . -> . environment?)]
+  [environment-remove       (environment? name?                         . -> . environment?)]
+  [environment-domain       (environment?                               . -> . (setof name?))]
+  [environment-compatible?  (environment? name? sort?                   . -> . boolean?)]
+  [environment->string      (environment?                               . -> . string?)])

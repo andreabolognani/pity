@@ -64,6 +64,18 @@ If a mapping for @racket[n] is already present in @racket[env], it is
 replaced by the new one.
 }
 
+@defproc[(environment-set-multiple [env environment?]
+                                   [n (listof name?)]
+                                   [s (listof sort?)])
+         environment?]{
+
+Like @racket[environment-set], but the mappings to be added to @racket[env]
+are taken from two lists.
+
+If the lenghts of the lists don't match, the tail of the longest list is
+ignored.
+}
+
 @defproc[(environment-remove [env environment?]
                              [n name?])
          environment?]{
