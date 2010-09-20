@@ -25,6 +25,7 @@
          "conversion-tests.rkt"
          "parsers-tests.rkt"
          "print-tests.rkt"
+         "sortings-tests.rkt"
          "process-tests.rkt"
          "names-tests.rkt")
 
@@ -38,6 +39,7 @@
     conversion-tests
     parsers-tests
     print-tests
+    sortings-tests
     process-tests
     names-tests))
 
