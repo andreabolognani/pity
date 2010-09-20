@@ -84,6 +84,14 @@ Returns a new environment which behaves as @racket[env], except that any
 mapping of @racket[n] is removed.
 }
 
+@defproc[(environment-remove-multiple [env environment?]
+                                      [n (listof name?)])
+         environment?]{
+
+Like @racket[environment-remove], but removes the mappings to all
+elements of @racket[n].
+}
+
 @defproc[(environment-domain [env environment?]) (setof name?)]{
 
 Returns the set of names which have a mapping in @racket[env].

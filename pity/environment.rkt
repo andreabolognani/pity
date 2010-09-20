@@ -53,10 +53,15 @@
                               (cdr s))))
 
 
-; Remove mappings from an environment
+; Remove a single mapping from an environment
 (define (environment-remove self n)
   (let ([mappings (environment-mappings self)])
     (environment (hash-remove mappings n))))
+
+
+; Remove multiple mappings from an environment
+(define (environment-remove-multiple self n)
+  (foldl (reverse-arguments environment-remove) self n))
 
 
 ; Get domain for an environment
@@ -94,12 +99,13 @@
 ; Export public symbols
 (provide/contract
   [rename empty-environment
-   environment              (                                             ->   environment?)]
-  [environment?             (any/c                                      . -> . boolean?)]
-  [environment-ref          (environment? name?                         . -> . (or/c sort? #f))]
-  [environment-set          (environment? name? sort?                   . -> . environment?)]
-  [environment-set-multiple (environment? (listof name?) (listof sort?) . -> . environment?)]
-  [environment-remove       (environment? name?                         . -> . environment?)]
-  [environment-domain       (environment?                               . -> . (setof name?))]
-  [environment-compatible?  (environment? name? sort?                   . -> . boolean?)]
+   environment                 (                                             ->   environment?)]
+  [environment?                (any/c                                      . -> . boolean?)]
+  [environment-ref             (environment? name?                         . -> . (or/c sort? #f))]
+  [environment-set             (environment? name? sort?                   . -> . environment?)]
+  [environment-set-multiple    (environment? (listof name?) (listof sort?) . -> . environment?)]
+  [environment-remove          (environment? name?                         . -> . environment?)]
+  [environment-remove-multiple (environment (listof name?)                 . -> . environment?)]
+  [environment-domain          (environment?                               . -> . (setof name?))]
+  [environment-compatible?     (environment? name? sort?                   . -> . boolean?)]
   [environment->string      (environment?                               . -> . string?)])

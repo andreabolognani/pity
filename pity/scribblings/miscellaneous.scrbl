@@ -27,6 +27,17 @@
 
 Miscellaneous procedures.
 
+@defproc[(reverse-arguments [proc procedure?]) procedure?]{
+
+Returns a procedure which behaves like @racket[proc], but takes its
+arguments in reverse order.
+
+This is mainly useful when calling @racket[foldl] on a list with
+a function like @racket[set-add] as argument.
+
+Caveat: it doesn't work when keyword arguments are involved.
+}
+
 @defproc[(list->set [lst list?]) set?]{
 
 Returns a set containing all the items in @racket[lst].
