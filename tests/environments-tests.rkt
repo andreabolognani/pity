@@ -41,6 +41,27 @@
         (check-equal? (environment-ref env n) s)))
 
     (test-case
+      "Get sorts for two non existing names"
+      (let ([env (string->environment "")]
+            [n (list (name "x") (name "y"))]
+            [s (list #f #f)])
+        (check-equal? (environment-ref-multiple env n) s)))
+
+    (test-case
+      "Get sorts for one existing and one non existing names"
+      (let ([env (string->environment "x:s")]
+            [n (list (name "x") (name "y"))]
+            [s (list (sort "s") #f)])
+        (check-equal? (environment-ref-multiple env n) s)))
+
+    (test-case
+      "Get sorts for two existing names"
+      (let ([env (string->environment "x:s,y:t")]
+            [n (list (name "x") (name "y"))]
+            [s (list (sort "s") (sort "t"))])
+        (check-equal? (environment-ref-multiple env n) s)))
+
+    (test-case
       "Add a new mapping to an environment"
       (let* ([env (environment)]
              [n (name "x")]
@@ -74,6 +95,53 @@
         (check-equal? env1 env2)))
 
     (test-case
+      "Add an empty list of mappings"
+      (let* ([env (string->environment "x:s,y:t")]
+             [n (list)]
+             [s (list)]
+             [env1 (environment-set-multiple env n s)])
+        (check-equal? env env1)))
+
+    (test-case
+      "Add two mappings at the same time"
+      (let* ([env (string->environment "")]
+             [n (list (name "x") (name "y"))]
+             [s (list (sort "s") (sort "t"))]
+             [env1 (environment-set-multiple env n s)])
+        (check-equal? (environment-ref-multiple env1 n) s)))
+
+    (test-case
+      "Order doesn't matter when adding multiple mappings"
+      (let* ([env (string->environment "")]
+             [n1 (list (name "x") (name "y"))]
+             [s1 (list (sort "s") (sort "t"))]
+             [env1 (environment-set-multiple env n1 s1)]
+             [n2 (reverse n1)]
+             [s2 (reverse s1)]
+             [env2 (environment-set-multiple env n2 s2)])
+        (check-equal? env1 env2)))
+
+    (test-case
+      "Add one name and two sorts"
+      (let* ([env (string->environment "")]
+             [n1 (list (name "x"))]
+             [s1 (list (sort "s") (sort "t"))]
+             [env1 (environment-set-multiple env n1 s1)]
+             [n2 (list (name "x") (name "y"))]
+             [s2 (list (sort "s") #f)])
+        (check-equal? (environment-ref-multiple env1 n2) s2)))
+
+    (test-case
+      "Add one sort and two names"
+      (let* ([env (string->environment "")]
+             [n1 (list (name "x") (name "y"))]
+             [s1 (list (sort "s"))]
+             [env1 (environment-set-multiple env n1 s1)]
+             [n2 (list (name "x") (name "y"))]
+             [s2 (list (sort "s") #f)])
+        (check-equal? (environment-ref-multiple env1 n2) s2)))
+
+    (test-case
       "Remove an existing mapping from an environment"
       (let* ([env1 (string->environment "x:s")]
              [n1 (name "x")]
@@ -92,6 +160,36 @@
              [env2 (environment-remove env1 n)])
         (check-equal? (environment-ref env1 n) s)
         (check-equal? (environment-ref env2 n) s)))
+
+    (test-case
+      "Remove no mappings from an environment"
+      (let* ([env1 (string->environment "x:s")]
+             [n (list)]
+             [env2 (environment-remove-multiple env1 n)])
+        (check-equal? env1 env2)))
+
+    (test-case
+      "Remove a non existing mapping from an environment"
+      (let* ([env1 (string->environment "x:s")]
+             [n (list (name "y"))]
+             [env2 (environment-remove-multiple env1 n)])
+        (check-equal? env1 env2)))
+
+    (test-case
+      "Remove an existing mapping from an environment"
+      (let* ([env1 (string->environment "x:s,y:t")]
+             [n (list (name "x"))]
+             [env2 (environment-remove-multiple env1 n)]
+             [s (list #f)])
+        (check-equal? (environment-ref-multiple env2 n) s)))
+
+    (test-case
+      "Remove an existing and a non existing mapping"
+      (let* ([env1 (string->environment "x:s")]
+             [n (list (name "x") (name "y"))]
+             [env2 (environment-remove-multiple env1 n)]
+             [s (list #f #f)])
+        (check-equal? (environment-ref-multiple env2 n) s)))
 
     (test-case
       "Check domain of the empty environment"
