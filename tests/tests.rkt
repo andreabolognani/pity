@@ -26,6 +26,7 @@
          "parsers-tests.rkt"
          "print-tests.rkt"
          "sortings-tests.rkt"
+         "environments-tests.rkt"
          "process-tests.rkt"
          "names-tests.rkt")
 
@@ -40,6 +41,7 @@
     parsers-tests
     print-tests
     sortings-tests
+    environments-tests
     process-tests
     names-tests))
 
