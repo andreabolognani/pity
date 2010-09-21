@@ -18,9 +18,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "private/process-lexer.rkt"
+(require "private/common-lexer.rkt"
          "private/process-parser.rkt"
-         "private/sorting-lexer.rkt"
          "private/sorting-parser.rkt"
          "contracts.rkt"
          "process.rkt"
@@ -35,13 +34,13 @@
 
 (define (string->process str)
   (let ([ip (open-input-string str)])
-    (process-parser (lambda () (process-lexer ip)))))
+    (process-parser (lambda () (common-lexer ip)))))
 
 
 (define (string->sorting str)
   (if (not (equal? str ""))
     (let ([ip (open-input-string str)])
-      (sorting-parser (lambda () (sorting-lexer ip))))
+      (sorting-parser (lambda () (common-lexer ip))))
     (sorting)))
 
 

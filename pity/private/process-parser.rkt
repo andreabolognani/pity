@@ -21,7 +21,7 @@
 (require parser-tools/yacc
          "../name.rkt"
          "../process.rkt"
-         "process-lexer.rkt")
+         "common-lexer.rkt")
 
 
 (define process-parser
@@ -29,7 +29,7 @@
 
     (start  process)
     (end    EOF)
-    (tokens process-symbols process-values)
+    (tokens common-symbols common-values)
     (error  (lambda (a b c) (void)))
 
     (grammar
@@ -61,7 +61,7 @@
         [(name COMMA names)        (list* $1 $3)])
 
       (name
-        [(NAME)                    (name $1)]))))
+        [(ID)                      (name $1)]))))
 
 
 ; Export public symbols

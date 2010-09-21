@@ -21,32 +21,38 @@
 (require parser-tools/lex)
 
 
-(define-empty-tokens sorting-symbols (EOF COMMA SEMICOLON
-                                      EQ LP RP))
-(define-tokens       sorting-values  (SORT))
+(define-empty-tokens common-symbols (EOF NIL DOT COMMA PIPE BANG
+                                     SEMICOLON EQ LP RP LAB RAB))
+(define-tokens       common-values  (ID))
 
 
 (define-lex-abbrevs
   (letter (union (char-range "a" "z") (char-range "A" "Z")))
   (digit (char-range "0" "9"))
   (space (union #\tab #\space))
-  (sort (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
+  (id (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
 
 
-(define sorting-lexer
+(define common-lexer
   (lexer
-    [sort   (token-SORT lexeme)]
+    [id     (token-ID lexeme)]
+    ["0"    (token-NIL)]
+    ["."    (token-DOT)]
     [","    (token-COMMA)]
+    ["|"    (token-PIPE)]
+    ["!"    (token-BANG)]
     [";"    (token-SEMICOLON)]
     ["="    (token-EQ)]
     ["("    (token-LP)]
     [")"    (token-RP)]
-    [space  (sorting-lexer input-port)] ; Skip whitespace
+    ["<"    (token-LAB)]
+    [">"    (token-RAB)]
+    [space  (common-lexer input-port)] ; Skip whitespace
     [(eof)  (token-EOF)]))
 
 
 ; Export public symbols
 (provide
-  sorting-symbols
-  sorting-values
-  sorting-lexer)
+  common-symbols
+  common-values
+  common-lexer)

@@ -21,7 +21,7 @@
 (require parser-tools/yacc
          "../sort.rkt"
          "../sorting.rkt"
-         "sorting-lexer.rkt")
+         "common-lexer.rkt")
 
 
 (define sorting-parser
@@ -29,7 +29,7 @@
 
     (start  sorting)
     (end    EOF)
-    (tokens sorting-symbols sorting-values)
+    (tokens common-symbols common-values)
     (error  (lambda (a b c) (void)))
 
     (grammar
@@ -46,7 +46,7 @@
         [(sort COMMA sorts)       (list* $1 $3)])
 
       (sort
-        [(SORT)                   (sort $1)]))))
+        [(ID)                     (sort $1)]))))
 
 
 ; Export public symbols
