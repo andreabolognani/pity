@@ -28,26 +28,35 @@
     (string-append "{" (string-join names ",") "}")))
 
 
-; Try to parse the line as a process: if succesful, print the process
+; Try parsing the line as a process: if succesful, print the process
 ; followed by its free and bound names, otherwise try parsing the line
-; as a sorting
-(define (try-process-and-sorting line)
+; as a sorting or as an environment
+(define (try-process-and-sorting-and-environment line)
   (with-handlers ([exn:fail:read?
-                   (lambda (e) (try-sorting line))])
+                   (lambda (e) (try-sorting-and-environment line))])
     (let ([process (string->process line)])
       (printf "Process     : ~a~n" (process->string process))
       (printf "Free names  : ~a~n" (pretty-set (free-names process)))
       (printf "Bound names : ~a~n" (pretty-set (bound-names process))))))
 
 
-; Try to parse the line as a sorting, and print an error message if
-; the sorting cannot be parsed
-(define (try-sorting line)
+; Try parsing the line as a sorting; if succesful, print the sorting,
+; otherwise try parsing the line as an environment
+(define (try-sorting-and-environment line)
   (with-handlers ([exn:fail:read?
-                   (lambda (e) (printf "ERR: Exception caught~n"))])
+                   (lambda (e) (try-environment line))])
     (let ([sorting (string->sorting line)])
       (printf "Sorting : ~a~n" (sorting->string sorting)))))
 
 
+; Try parsing the line as an environment and print an error message if
+; the environment cannot be parsed
+(define (try-environment line)
+  (with-handlers ([exn:fail:read?
+                   (lambda (e) (printf "ERR: Exception caught~n"))])
+    (let ([environment (string->environment line)])
+      (printf "Environment : ~a~n" (environment->string environment)))))
+
+
 ; Start the evaluation loop
-(repl try-process-and-sorting "pity> ")
+(repl try-process-and-sorting-and-environment "pity> ")
