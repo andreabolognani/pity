@@ -52,6 +52,14 @@ Returns the sort for @racket[n], or @racket[#f] if @racket[n] has no
 sort in @racket[env].
 }
 
+@defproc[(environment-ref-multiple [env environment?]
+                                   [n (listof name?)])
+         (listof (or/c sort? #f))]{
+
+Like @racket[environment-ref], but returns the sorts for all elements
+of @racket[n].
+}
+
 @defproc[(environment-set [env environment?]
                           [n name?]
                           [s sort?])

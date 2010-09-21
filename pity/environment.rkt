@@ -32,10 +32,15 @@
   (environment (hash)))
 
 
-; Get sort for a name
+; Get sort for a single name
 (define (environment-ref self n)
   (let ([mappings (environment-mappings self)])
     (hash-ref mappings n #f)))
+
+
+; Get sorts for multiple names
+(define (environment-ref-multiple self n)
+  (map (curry environment-ref self) n))
 
 
 ; Add a single mapping to an environment
@@ -102,10 +107,11 @@
    environment                 (                                             ->   environment?)]
   [environment?                (any/c                                      . -> . boolean?)]
   [environment-ref             (environment? name?                         . -> . (or/c sort? #f))]
+  [environment-ref-multiple    (environment? (listof name?)                . -> . (listof (or/c sort? #f)))]
   [environment-set             (environment? name? sort?                   . -> . environment?)]
   [environment-set-multiple    (environment? (listof name?) (listof sort?) . -> . environment?)]
   [environment-remove          (environment? name?                         . -> . environment?)]
   [environment-remove-multiple (environment (listof name?)                 . -> . environment?)]
   [environment-domain          (environment?                               . -> . (setof name?))]
   [environment-compatible?     (environment? name? sort?                   . -> . boolean?)]
-  [environment->string      (environment?                               . -> . string?)])
+  [environment->string         (environment?                               . -> . string?)])
