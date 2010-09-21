@@ -270,7 +270,56 @@
              [srt (sorting-set (sorting) subj obj)]
              [obj (list (sort "t"))]
              [srt (sorting-set srt subj obj)])
-        (check-equal? (string->sorting str) srt)))))
+        (check-equal? (string->sorting str) srt)))
+
+    (test-case
+      "Parse an environment with no sort for a name"
+      (check-exn exn:fail:read?
+        (lambda () (string->environment "x:,y:t"))))
+
+    (test-case
+      "Parse an environment with no name for a sort"
+      (check-exn exn:fail:read?
+        (lambda () (string->environment "x:s,:t"))))
+
+    (test-case
+      "Parse an environment with a leading comma"
+      (check-exn exn:fail:read?
+        (lambda () (string->environment "x:s,"))))
+
+    (test-case
+      "Parse an environment with an invalid character"
+      (check-exn exn:fail:read?
+        (lambda () (string->environment "x=s"))))
+
+    (test-case
+      "Parse an empty environment"
+      (let ([str ""]
+            [env (environment)])
+        (check-equal? (string->environment str) env)))
+
+    (test-case
+      "Parse an environment with a single binding"
+      (let* ([str "x:s"]
+             [env (environment)]
+             [env (environment-set env (name "x") (sort "s"))])
+        (check-equal? (string->environment str) env)))
+
+    (test-case
+      "Parse an environment with two bindings"
+      (let* ([str "x:s,y:t"]
+             [env (environment)]
+             [env (environment-set env (name "x") (sort "s"))]
+             [env (environment-set env (name "y") (sort "t"))])
+        (check-equal? (string->environment str) env)))
+
+    (test-case
+      "Parse an environment with repeated bindings"
+      (let* ([str "x:s,y:t,x:r"]
+             [env (environment)]
+             [env (environment-set env (name "x") (sort "r"))]
+             [env (environment-set env (name "y") (sort "t"))])
+        (check-equal? (string->environment str) env)))))
 
 
 ; Export public symbols

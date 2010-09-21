@@ -105,6 +105,14 @@ Returns the set of names which have a mapping in @racket[env].
 Returns @racket[#t] if the mapping from @racket[n] to @racket[s] is
 compatible with the mappings in @racket[env].}
 
+@defproc[(string->environment [str string?]) environment?]{
+
+Returns the environment obtained by parsing @racket[str].
+
+Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
+correctly.
+}
+
 @defproc[(environment->string [env environment?]) string?]{
 
 Returns a string representation of @racket[env].

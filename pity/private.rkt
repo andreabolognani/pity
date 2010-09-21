@@ -21,12 +21,14 @@
 (require "private/common-lexer.rkt"
          "private/process-parser.rkt"
          "private/sorting-parser.rkt"
-         "contracts.rkt"
+         "private/environment-parser.rkt"
          "process.rkt"
-         "sorting.rkt")
+         "sorting.rkt"
+         "environment.rkt"
+         "contracts.rkt")
 
 
-; These really belong to the process and sorting modules, and are
+; These really belong to the corresponding modules, and are
 ; documented as such, but putting it there causes a require cycle.
 ;
 ; Another way to work around the cycle would be to embed the parsers
@@ -44,7 +46,15 @@
     (sorting)))
 
 
+(define (string->environment str)
+  (if (not (equal? str ""))
+    (let ([ip (open-input-string str)])
+      (environment-parser (lambda () (common-lexer ip))))
+    (environment)))
+
+
 ; Export public symbols
 (provide/contract
-  [string->process (string? . -> . process?)]
-  [string->sorting (string? . -> . any/c)])
+  [string->process     (string? . -> . process?)]
+  [string->sorting     (string? . -> . sorting?)]
+  [string->environment (string? . -> . environment?)])

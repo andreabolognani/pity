@@ -22,7 +22,7 @@
 
 
 (define-empty-tokens common-symbols (EOF NIL DOT COMMA PIPE BANG
-                                     SEMICOLON EQ LP RP LAB RAB))
+                                     COLON SEMICOLON EQ LP RP LAB RAB))
 (define-tokens       common-values  (ID))
 
 
@@ -41,6 +41,7 @@
     [","    (token-COMMA)]
     ["|"    (token-PIPE)]
     ["!"    (token-BANG)]
+    [":"    (token-COLON)]
     [";"    (token-SEMICOLON)]
     ["="    (token-EQ)]
     ["("    (token-LP)]
