@@ -27,8 +27,14 @@
   (lambda rest (apply proc (reverse rest))))
 
 
+; Convert a list to a set
 (define (list->set lst)
   (foldl (flip set-add) (set) lst))
+
+
+; Convert a set to a list
+(define (set->list s)
+  (set-map s (lambda (x) x)))
 
 
 ; Checks if any of a list of elements is in a set
@@ -50,5 +56,6 @@
 (provide/contract
   [flip            (procedure?                               . ->  . procedure?)]
   [list->set       (list?                                    . ->  . set?)]
+  [set->list       (set?                                     . ->  . list?)]
   [set-member-any? (set? list?                               . ->  . boolean?)]
   [display-list    ((list?) (output-port? #:separator any/c) . ->* . void?)])

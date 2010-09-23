@@ -43,6 +43,16 @@ Caveat: it doesn't work when keyword arguments are involved.
 Returns a set containing all the items in @racket[lst].
 }
 
+@defproc[(set->list [s set?]) list?]{
+
+Returns a list containing all the items in @racket[s], in unspecified
+order.
+
+The returned list is guaranteed to have no duplicate items, and to be
+such that calling @racket[list->set] on it will return a set that is
+@racket[equal?] to @racket[s].
+}
+
 @defproc[(set-member-any? [s set?] [lst list?]) boolean?]{
 
 Returns @racket[#t] if any of the items in @racket[lst] is a

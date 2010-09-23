@@ -51,6 +51,16 @@
       (check-equal? (list->set '(1 2 1 3 2)) (set 1 2 3)))
 
     (test-case
+      "Make a list out of an empty set"
+      (check-equal? (set->list (set)) (list)))
+
+    (test-case
+      "Make a list out of a set"
+      (let* ([s (set "c" "b" "a")]
+             [lst (set->list s)])
+        (check-equal? (list->set lst) s)))
+
+    (test-case
       "Check no element of the empty list is member of an empty set"
       (let ([s (set)]
             [lst (list)])
