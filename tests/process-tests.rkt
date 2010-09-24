@@ -30,14 +30,53 @@
       "Test whether process? works correctly"
       (check-true (process? (string->process "0")))
       (check-true (process? (string->process "!0")))
-      (check-true (process? (string->process "x(y)"))))
+      (check-true (process? (string->process "x(y)")))
       (check-true (process? (string->process "x<y>")))
       (check-true (process? (string->process "(x)0")))
       (check-true (process? (string->process "0|0")))
       (check-true (process? (string->process "0.0")))
       (check-false (process? "x<y>|x(z)"))
       (check-false (process? (name "x")))
-      (check-false (process? 42))))
+      (check-false (process? 42)))
+
+    (test-case
+      "Find environments (no free names)"
+      (let* ([p (string->process "0")]
+             [srt (string->sorting "s=(r,t)")]
+             [envs (set)])
+        (check-equal? (process-environments p srt) envs)))
+
+    (test-case
+      "Find environments (empty sorting)"
+      (let* ([p (string->process "x(y).0")]
+             [srt (string->sorting "")]
+             [envs (set)])
+        (check-equal? (process-environments p srt) envs)))
+
+    (test-case
+      "Find environments (one free name)"
+      (let* ([p (string->process "x(y).0")]
+             [srt (string->sorting "s=(r,t);t=(r);r=(r)")]
+             [envs (set)]
+             [envs (set-add envs (string->environment "x:s"))]
+             [envs (set-add envs (string->environment "x:t"))]
+             [envs (set-add envs (string->environment "x:r"))])
+        (check-equal? (process-environments p srt) envs)))
+
+    (test-case
+      "Find environments (three free names)"
+      (let* ([p (string->process "x<y,z>.0")]
+             [srt (string->sorting "s=(r,t);t=(r)")]
+             [envs (set)]
+             [envs (set-add envs (string->environment "x:s,y:s,z:s"))]
+             [envs (set-add envs (string->environment "x:s,y:s,z:t"))]
+             [envs (set-add envs (string->environment "x:s,y:t,z:s"))]
+             [envs (set-add envs (string->environment "x:s,y:t,z:t"))]
+             [envs (set-add envs (string->environment "x:t,y:s,z:s"))]
+             [envs (set-add envs (string->environment "x:t,y:s,z:t"))]
+             [envs (set-add envs (string->environment "x:t,y:t,z:s"))]
+             [envs (set-add envs (string->environment "x:t,y:t,z:t"))])
+        (check-equal? (process-environments p srt) envs)))))
 
 
 ; Export public symbols

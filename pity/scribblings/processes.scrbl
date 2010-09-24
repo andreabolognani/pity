@@ -127,6 +127,14 @@ Returns a @racket[set] containing all the names that have an
 occurence in @racket[p].
 }
 
+@defproc[(process-environments [p process?]
+                               [srt sorting?])
+         (setof environment?)]{
+
+Returns a set containing all the environments where @racket[p] has a
+chance of respecting @racket[srt].
+}
+
 @defproc[(process-respects? [p process?]
                             [srt sorting?]
                             [env environment?])

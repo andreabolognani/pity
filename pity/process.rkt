@@ -256,6 +256,50 @@
                      (process->string q))))
 
 
+; Environments creation
+; ---------------------
+;
+;  The following procedures are used to calculate all the possible
+;  environments, given a process and a sorting.
+
+
+(define (process-environments p srt)
+  (let ([names (set->list (free-names p))]
+        [sorts (set->list (sorting-domain srt))])
+    (process-environments-real names sorts)))
+
+
+; Build all the possible environments.
+;
+; If the list of free names is empty, there are no environments;
+; otherwise, take the first name, fold over all the sorts, and for
+; each sort fold over all the environments obtained by recurring
+; with all the names except for the first.
+;
+; In the inner fold call, you have a name, a sort and an environment:
+; add the mapping from the name to the sort to the environment, and
+; collect all the environments obtained this way. In the outer fold
+; call, perform the union of all the sets obtained with the inner fold.
+(define (process-environments-real names sorts)
+  (let ([collect (lambda (n envs)
+                   (foldl (lambda (s acc)
+                            (set-union
+                              acc
+                              (foldl (lambda (env int-acc)
+                                       (set-add
+                                         int-acc
+                                         (environment-set env n s)))
+                                     (set)
+                                     envs)))
+                          (set)
+                          sorts))])
+  (cond
+    [(empty? names) (set)]
+    [(empty? (cdr names)) (collect (car names) (list (environment)))]
+    [else (collect (car names)
+                   (set->list (process-environments-real (cdr names) sorts)))])))
+
+
 ; Process typing
 ; --------------
 ;
@@ -348,23 +392,24 @@
 
 ; Export public symbols
 (provide/contract
-  [nil               (                                 ->   nil?)]
-  [nil?              (any/c                          . -> . boolean?)]
-  [replication       (process?                       . -> . replication?)]
-  [replication?      (any/c                          . -> . boolean?)]
-  [input             (name? (non-empty-listof name?) . -> . input?)]
-  [input?            (any/c                          . -> . boolean?)]
-  [output            (name? (non-empty-listof name?) . -> . output?)]
-  [output?           (any/c                          . -> . boolean?)]
-  [restriction       (name? process?                 . -> . restriction?)]
-  [restriction?      (any/c                          . -> . boolean?)]
-  [composition       (process? process?              . -> . composition?)]
-  [composition?      (any/c                          . -> . boolean?)]
-  [prefix            (process? process?              . -> . prefix?)]
-  [prefix?           (any/c                          . -> . boolean?)]
-  [process?          (any/c                          . -> . boolean?)]
-  [free-names        (process?                       . -> . (setof name?))]
-  [bound-names       (process?                       . -> . (setof name?))]
-  [names             (process?                       . -> . (setof name?))]
-  [process-respects? (process? sorting? environment? . -> . (or/c environment? #f))]
-  [process->string   (process?                       . -> . string?)])
+  [nil                  (                                 ->   nil?)]
+  [nil?                 (any/c                          . -> . boolean?)]
+  [replication          (process?                       . -> . replication?)]
+  [replication?         (any/c                          . -> . boolean?)]
+  [input                (name? (non-empty-listof name?) . -> . input?)]
+  [input?               (any/c                          . -> . boolean?)]
+  [output               (name? (non-empty-listof name?) . -> . output?)]
+  [output?              (any/c                          . -> . boolean?)]
+  [restriction          (name? process?                 . -> . restriction?)]
+  [restriction?         (any/c                          . -> . boolean?)]
+  [composition          (process? process?              . -> . composition?)]
+  [composition?         (any/c                          . -> . boolean?)]
+  [prefix               (process? process?              . -> . prefix?)]
+  [prefix?              (any/c                          . -> . boolean?)]
+  [process?             (any/c                          . -> . boolean?)]
+  [free-names           (process?                       . -> . (setof name?))]
+  [bound-names          (process?                       . -> . (setof name?))]
+  [names                (process?                       . -> . (setof name?))]
+  [process-environments (process? sorting?              . -> . (setof environment?))]
+  [process-respects?    (process? sorting? environment? . -> . (or/c environment? #f))]
+  [process->string      (process?                       . -> . string?)])
