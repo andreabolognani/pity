@@ -331,8 +331,9 @@
   (let* ([names (environment-domain env)]
          [s (environment-ref env x)]
          [obj-srt (if (not s) #f (sorting-ref srt s))]
-         [newenv (environment-remove env x)])
-    (if (or (set-member-any? names y) (not obj-srt))
+         [newenv (environment-remove env x)]
+         [arity-ok (and obj-srt (= (length y) (length obj-srt)))])
+    (if (or (set-member-any? names y) (not obj-srt) (not arity-ok))
         #f
         (check-typing p srt (environment-set-multiple newenv y obj-srt)))))
 
