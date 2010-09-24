@@ -136,12 +136,11 @@ chance of respecting @racket[srt].
 }
 
 @defproc[(process-respects? [p process?]
-                            [srt sorting?]
-                            [env environment?])
-         (or/c environment? #f)]{
+                            [srt sorting?])
+         (or/c (non-empty-setof environment?) #f)]{
 
-Returns @racket[#f] if @racket[p] doesn't respect @racket[srt] in the
-environment @racket[env], @racket[env] if it does.
+Returns @racket[#f] if @racket[p] doesn't respect @racket[srt], or a set
+of valid environments if it does.
 }
 
 @defproc[(string->process [str string?]) process?]{

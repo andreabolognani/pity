@@ -76,8 +76,15 @@
              [envs (set-add envs (string->environment "x:t,y:s,z:t"))]
              [envs (set-add envs (string->environment "x:t,y:t,z:s"))]
              [envs (set-add envs (string->environment "x:t,y:t,z:t"))])
-        (check-equal? (process-environments p srt) envs)))))
+        (check-equal? (process-environments p srt) envs)))
 
+    (test-case
+      "Check typing for a simple process"
+      (let* ([p (string->process "!(a)(a<b,c>.0|a(u,v).0)")]
+             [srt (string->sorting "s=(t,r);t=(s);r=(r)")]
+             [envs (set)]
+             [envs (set-add envs (string->environment "b:t,c:r"))])
+        (check-equal? (process-respects? p srt) envs)))))
 
 ; Export public symbols
 (provide process-tests)

@@ -309,10 +309,11 @@
 
 
 ; Check whether a process respects a given sorting
-(define (process-respects? p srt env)
-  (if (check-typing p srt env)
-      env
-      #f))
+(define (process-respects? p srt)
+  (let* ([envs (process-environments p srt)]
+         [collect (lambda (env) (if (check-typing p srt env) env #f))]
+         [res (filter (lambda (x) x) (set-map envs collect))])
+    (if (empty? res) #f (list->set res))))
 
 
 ; Glue procedure
@@ -412,5 +413,5 @@
   [bound-names          (process?                       . -> . (setof name?))]
   [names                (process?                       . -> . (setof name?))]
   [process-environments (process? sorting?              . -> . (setof environment?))]
-  [process-respects?    (process? sorting? environment? . -> . (or/c environment? #f))]
+  [process-respects?    (process? sorting?              . -> . (or/c (non-empty-setof environment?) #f))]
   [process->string      (process?                       . -> . string?)])
