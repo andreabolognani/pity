@@ -72,22 +72,8 @@
   (printf "  HELP                          Show this help message~n"))
 
 
-; Allow the procedure called by the REPL to maintain some state.
-;
-; The action-with-state procedure is called with two additional
-; arguments: the line number, and a hash table containing mappings
-; from variable names to values. The value returned by the procedure
-; is the updated hash table.
-(define action #f)
-(let ([lineno 0]
-      [vars (hash)])
-  (set! action (lambda (line)
-                 (set! vars (action-with-state line lineno vars))
-                 (set! lineno (+ lineno 1)))))
-
-
 ; Parse the input and act accordingly
-(define (action-with-state line lineno vars)
+(define (action line lineno vars)
   (let* ([parts (regexp-split #rx" +" line)]
          [op (car parts)]
          [lop (if (< (length parts) 2) "" (cadr parts))]
@@ -102,4 +88,5 @@
 
 
 ; Start the evaluation loop
-(repl action "pity> ")
+(let ([ignored (repl action (hash) "pity> ")])
+  (display ""))

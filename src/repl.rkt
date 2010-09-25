@@ -18,11 +18,23 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(define (repl action prompt)
-  (printf "~a" prompt)
-  (let ([line (read-line)])
-    (unless (eq? line eof)
-      (begin (action line) (repl action prompt)))))
+; Stateful REPL.
+;
+; The action procedure is called until an EOF is read, or it returns #f.
+; Every time it is called, it is passed the contents of the last line
+; read, the progressive number of said line, and the current REPL state;
+; its return value is the new REPL state.
+(define (repl action initial-state prompt)
+  (letrec ([recur (lambda (state lineno)
+                    (printf "~a" prompt)
+                    (let ([line (read-line)])
+                      (if (eq? line eof)
+                          state
+                          (let ([new-state (action line lineno state)])
+                            (if (not new-state)
+                                state
+                                (recur new-state (+ lineno 1)))))))])
+    (recur initial-state 0)))
 
 
 ; Export public symbols
