@@ -24,22 +24,22 @@
 
 ; Assign a value to a name, parsing it as a process.
 ; If parsing as a process fails, try to parse it as a sorting.
-(define (op-set! vars n v)
+(define (cmd-set! vars n v)
   (with-handlers ([exn:fail:read?
-                   (lambda (e) (op-set!/sorting vars n v))])
+                   (lambda (e) (cmd-set!/sorting vars n v))])
     (hash-set vars n (string->process v))))
 
 
 ; Assign a value to a name, parsing it as a sorting.
 ; If parsing fails, print an error message.
-(define (op-set!/sorting vars n v)
+(define (cmd-set!/sorting vars n v)
   (with-handlers ([exn:fail:read?
                    (lambda (e) (printf "SET!: Invalid value~n") vars)])
     (hash-set vars n (string->sorting v))))
 
 
 ; Display a value according to its type.
-(define (op-display vars n)
+(define (cmd-display vars n)
   (let ([v (hash-ref vars n #f)])
     (cond
       [(process? v) (printf "~a~n" (process->string v))]
@@ -49,7 +49,7 @@
 
 ; Check whether the process pointed to by n1 respects the sorting
 ; pointed to by n2. If it does, print all the valid environments.
-(define (op-respects? vars n1 n2)
+(define (cmd-respects? vars n1 n2)
   (let ([p (hash-ref vars n1 #f)]
         [srt (hash-ref vars n2 #f)])
     (if (and (process? p) (sorting? srt))
@@ -63,8 +63,8 @@
 
 
 ; Display an help message
-(define (op-help)
-  (printf "Operation   Arguments         Description ~n")
+(define (cmd-help)
+  (printf "Command     Arguments         Description ~n")
   (printf "  SET!        NAME VALUE        Assign VALUE to NAME~n")
   (printf "  DISPLAY     NAME              Show the value of NAME~n")
   (printf "  RESPECTS?   PROCESS SORTING   Show environments in which ~n")
@@ -76,16 +76,16 @@
 ; Parse the input and act accordingly
 (define (action line lineno vars)
   (let* ([parts (regexp-split #rx" +" line)]
-         [op (car parts)]
+         [cmd (car parts)]
          [lop (if (< (length parts) 2) "" (cadr parts))]
          [rop (if (< (length parts) 3) "" (apply string-append (cddr parts)))])
     (cond
-      [(string-ci=? op "SET!") (set! vars (op-set! vars lop rop))]
-      [(string-ci=? op "DISPLAY") (op-display vars lop)]
-      [(string-ci=? op "RESPECTS?") (op-respects? vars lop rop)]
-      [(string-ci=? op "HELP") (op-help)]
-      [(string-ci=? op "QUIT") (set! vars #f)]
-      [else (printf "Operation not supported ~a~n" op)])
+      [(string-ci=? cmd "SET!") (set! vars (cmd-set! vars lop rop))]
+      [(string-ci=? cmd "DISPLAY") (cmd-display vars lop)]
+      [(string-ci=? cmd "RESPECTS?") (cmd-respects? vars lop rop)]
+      [(string-ci=? cmd "HELP") (cmd-help)]
+      [(string-ci=? cmd "QUIT") (set! vars #f)]
+      [else (printf "Unknown command ~a~n" cmd)])
     vars))
 
 
