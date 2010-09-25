@@ -34,7 +34,7 @@
                             (if (not new-state)
                                 state
                                 (recur new-state (+ lineno 1)))))))])
-    (recur initial-state 0)))
+    (recur initial-state 1)))
 
 
 ; Export public symbols
