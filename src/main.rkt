@@ -69,7 +69,8 @@
   (printf "  DISPLAY     NAME              Show the value of NAME~n")
   (printf "  RESPECTS?   PROCESS SORTING   Show environments in which ~n")
   (printf "                                PROCESS respects SORTING~n")
-  (printf "  HELP                          Show this help message~n"))
+  (printf "  HELP                          Show this help message~n")
+  (printf "  QUIT                          Quit~n"))
 
 
 ; Parse the input and act accordingly
@@ -83,6 +84,7 @@
       [(string-ci=? op "DISPLAY") (op-display vars lop)]
       [(string-ci=? op "RESPECTS?") (op-respects? vars lop rop)]
       [(string-ci=? op "HELP") (op-help)]
+      [(string-ci=? op "QUIT") (set! vars #f)]
       [else (printf "Operation not supported ~a~n" op)])
     vars))
 
