@@ -24,17 +24,20 @@
 
 ; Assign a value to a name, parsing it as a process.
 ; If parsing as a process fails, try to parse it as a sorting.
-(define (cmd-set! vars n v)
+(define (cmd-set! vars n v lineno)
   (with-handlers ([exn:fail:read?
-                   (lambda (e) (cmd-set!/sorting vars n v))])
+                   (lambda (e)
+                     (cmd-set!/sorting vars n v lineno))])
     (hash-set vars n (string->process v))))
 
 
 ; Assign a value to a name, parsing it as a sorting.
 ; If parsing fails, print an error message.
-(define (cmd-set!/sorting vars n v)
+(define (cmd-set!/sorting vars n v lineno)
   (with-handlers ([exn:fail:read?
-                   (lambda (e) (printf "SET!: Invalid value~n") vars)])
+                   (lambda (e)
+                     (printf "~a: SET!: Invalid value~n" lineno)
+                     vars)])
     (hash-set vars n (string->sorting v))))
 
 
@@ -49,7 +52,7 @@
 
 ; Check whether the process pointed to by n1 respects the sorting
 ; pointed to by n2. If it does, print all the valid environments.
-(define (cmd-respects? vars n1 n2)
+(define (cmd-respects? vars n1 n2 lineno)
   (let ([p (hash-ref vars n1 #f)]
         [srt (hash-ref vars n2 #f)])
     (if (and (process? p) (sorting? srt))
@@ -59,7 +62,7 @@
                   res
                   (lambda (env)
                     (printf "~a~n" (environment->string env))))))
-        (printf "RESPECTS?: Need a process and a sorting~n"))))
+        (printf "~a: RESPECTS?: Need a process and a sorting~n" lineno))))
 
 
 ; Display an help message
@@ -80,9 +83,9 @@
          [lop (if (< (length parts) 2) "" (cadr parts))]
          [rop (if (< (length parts) 3) "" (apply string-append (cddr parts)))])
     (cond
-      [(string-ci=? cmd "SET!") (set! vars (cmd-set! vars lop rop))]
+      [(string-ci=? cmd "SET!") (set! vars (cmd-set! vars lop rop lineno))]
       [(string-ci=? cmd "DISPLAY") (cmd-display vars lop)]
-      [(string-ci=? cmd "RESPECTS?") (cmd-respects? vars lop rop)]
+      [(string-ci=? cmd "RESPECTS?") (cmd-respects? vars lop rop lineno)]
       [(string-ci=? cmd "HELP") (cmd-help)]
       [(string-ci=? cmd "QUIT") (set! vars #f)]
       [else (printf "Unknown command ~a~n" cmd)])
