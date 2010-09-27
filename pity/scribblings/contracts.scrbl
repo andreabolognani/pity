@@ -33,7 +33,7 @@ Returns a contract that recognizes a set whose every element matches
 the contract @racket[c].
 }
 
-@defproc[(non-empty-setof? [c contract?]) contract?]{
+@defproc[(non-empty-setof [c contract?]) contract?]{
 
 Returns a contract that recognizes a non-empty set whose every element
 matches the contract @racket[c].
