@@ -109,19 +109,19 @@ Returns @racket[#t] if @racket[v] is a prefix, @racket[#f] otherwise.
 Returns @racket[#t] if @racket[v] is a process, @racket[#f] otherwise.
 }
 
-@defproc[(free-names [p process?]) (setof name?)]{
+@defproc[(process-free-names [p process?]) (setof name?)]{
 
 Returns a @racket[set] containing all the names that have a free
 occurence in @racket[p].
 }
 
-@defproc[(bound-names [p process?]) (setof name?)]{
+@defproc[(process-bound-names [p process?]) (setof name?)]{
 
 Returns a @racket[set] containing all the names that have a bound
 occurence in @racket[p].
 }
 
-@defproc[(names [p process?]) (setof name?)]{
+@defproc[(process-names [p process?]) (setof name?)]{
 
 Returns a @racket[set] containing all the names that have an
 occurence in @racket[p].

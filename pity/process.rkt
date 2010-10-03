@@ -56,7 +56,7 @@
 
 
 ; Find the names that have free occurences in a process
-(define (free-names process)
+(define (process-free-names process)
   (match process
     [(nil)             (free-names/nil)]
     [(replication p)   (free-names/replication p)]
@@ -68,7 +68,7 @@
 
 
 ; Find the names that have bound occurences in a process
-(define (bound-names process)
+(define (process-bound-names process)
   (match process
     [(nil)             (bound-names/nil)]
     [(replication p)   (bound-names/replication p)]
@@ -80,7 +80,7 @@
 
 
 ; Find all the names occurring in a process
-(define (names process)
+(define (process-names process)
   (match process
     [(nil)             (names/nil)]
     [(replication p)   (names/replication p)]
@@ -106,13 +106,13 @@
 ; Names, free names and bound names in a replication
 
 (define (free-names/replication p)
-  (free-names p))
+  (process-free-names p))
 
 (define (bound-names/replication p)
-  (bound-names p))
+  (process-bound-names p))
 
 (define (names/replication p)
-  (names p))
+  (process-names p))
 
 
 ; Names, free names and bound names in an input action
@@ -145,47 +145,47 @@
 ; Names, free names and bound names under a restriction
 
 (define (free-names/restriction x p)
-  (set-remove (free-names p) x))
+  (set-remove (process-free-names p) x))
 
 (define (bound-names/restriction x p)
   (set-union (set x)
-             (bound-names p)))
+             (process-bound-names p)))
 
 (define (names/restriction x p)
   (set-union (set x)
-             (names p)))
+             (process-names p)))
 
 
 ; Names, free names and bound names in a composition
 
 (define (free-names/composition p q)
-  (set-union (free-names p)
-             (free-names q)))
+  (set-union (process-free-names p)
+             (process-free-names q)))
 
 (define (bound-names/composition p q)
-  (set-union (bound-names p)
-             (bound-names q)))
+  (set-union (process-bound-names p)
+             (process-bound-names q)))
 
 (define (names/composition p q)
-  (set-union (names p)
-             (names q)))
+  (set-union (process-names p)
+             (process-names q)))
 
 
 ; Names, free names and bound names under a prefix
 
 (define (free-names/prefix p q)
   (set-subtract
-    (set-union (free-names p)
-               (free-names q))
-    (bound-names p)))
+    (set-union (process-free-names p)
+               (process-free-names q))
+    (process-bound-names p)))
 
 (define (bound-names/prefix p q)
-  (set-union (bound-names p)
-             (bound-names q)))
+  (set-union (process-bound-names p)
+             (process-bound-names q)))
 
 (define (names/prefix p q)
-  (set-union (names p)
-             (names q)))
+  (set-union (process-names p)
+             (process-names q)))
 
 
 ; Process pretty-printing
@@ -264,7 +264,7 @@
 
 
 (define (process-environments p srt)
-  (let ([names (set->list (free-names p))]
+  (let ([names (set->list (process-free-names p))]
         [sorts (set->list (sorting-domain srt))])
     (process-environments-real names sorts)))
 
@@ -409,9 +409,9 @@
   [prefix               (process? process?              . -> . prefix?)]
   [prefix?              (any/c                          . -> . boolean?)]
   [process?             (any/c                          . -> . boolean?)]
-  [free-names           (process?                       . -> . (setof name?))]
-  [bound-names          (process?                       . -> . (setof name?))]
-  [names                (process?                       . -> . (setof name?))]
+  [process-free-names   (process?                       . -> . (setof name?))]
+  [process-bound-names  (process?                       . -> . (setof name?))]
+  [process-names        (process?                       . -> . (setof name?))]
   [process-environments (process? sorting?              . -> . (setof environment?))]
   [process-respects?    (process? sorting?              . -> . (or/c (non-empty-setof environment?) #f))]
   [process->string      (process?                       . -> . string?)])

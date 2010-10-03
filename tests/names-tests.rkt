@@ -37,9 +37,9 @@
             [free (string->name-set "")]
             [bound (string->name-set "")]
             [all (string->name-set "")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in an input action"
@@ -47,9 +47,9 @@
             [free (string->name-set "x")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in an output action"
@@ -57,9 +57,9 @@
             [free (string->name-set "x,y")]
             [bound (string->name-set "")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names under a restriction (input to private name)"
@@ -67,9 +67,9 @@
             [free (string->name-set "y")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names under a restriction (input on private name)"
@@ -77,9 +77,9 @@
             [free (string->name-set "")]
             [bound (string->name-set "x,y")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names under a restriction (output to private name)"
@@ -87,9 +87,9 @@
             [free (string->name-set "y")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names under a restriction (output on private name)"
@@ -97,9 +97,9 @@
             [free (string->name-set "y")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a composition (nil processs)"
@@ -107,9 +107,9 @@
             [free (string->name-set "")]
             [bound (string->name-set "")]
             [all (string->name-set "")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a composition (input and output)"
@@ -117,9 +117,9 @@
             [free (string->name-set "x,z")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y,z")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a composition (output and input)"
@@ -127,9 +127,9 @@
             [free (string->name-set "x,y")]
             [bound (string->name-set "z")]
             [all (string->name-set "x,y,z")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a composition (output and input)"
@@ -137,9 +137,9 @@
             [free (string->name-set "x,y,z")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y,z")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a prefix (two nil processs)"
@@ -147,9 +147,9 @@
             [free (string->name-set "")]
             [bound (string->name-set "")]
             [all (string->name-set "")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a prefix (output, then input)"
@@ -157,9 +157,9 @@
             [free (string->name-set "x,y")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a prefix (output, then input)"
@@ -167,9 +167,9 @@
             [free (string->name-set "x,y")]
             [bound (string->name-set "z")]
             [all (string->name-set  "x,y,z")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a prefix (input, then output)"
@@ -177,9 +177,9 @@
             [free (string->name-set "x")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a prefix (input, then output)"
@@ -187,9 +187,9 @@
             [free (string->name-set "x,z")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y,z")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a replication (nil process)"
@@ -197,9 +197,9 @@
             [free (string->name-set "")]
             [bound (string->name-set "")]
             [all (string->name-set "")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a replication (input)"
@@ -207,9 +207,9 @@
             [free (string->name-set "x")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
 
     (test-case
       "Free and bound names in a replication (output)"
@@ -217,9 +217,9 @@
             [free (string->name-set "x,y")]
             [bound (string->name-set "")]
             [all (string->name-set "x,y")])
-        (check-equal? (free-names process) free)
-        (check-equal? (bound-names process) bound)
-        (check-equal? (names process) all)))))
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))))
 
 
 ; Export public symbols
