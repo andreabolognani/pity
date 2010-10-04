@@ -1,5 +1,6 @@
 THESIS_OUT=thesis.pdf
-THESIS_IN=thesis.tex listings.tex
+THESIS_IN=thesis.tex listings.tex \
+          pi-calcolo.tex
 BUILD_DIR=.build
 
 PDFLATEX_OPTIONS=-halt-on-error \
