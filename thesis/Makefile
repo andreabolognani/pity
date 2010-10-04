@@ -1,14 +1,17 @@
 THESIS_OUT=thesis.pdf
 THESIS_IN=thesis.tex
+BUILD_DIR=.build
 
-$(THESIS_OUT): $(THESIS_IN)
-	pdflatex thesis.tex
-	pdflatex thesis.tex
+$(THESIS_OUT): $(BUILD_DIR) $(THESIS_IN)
+	@pdflatex --output-dir $(BUILD_DIR) $(THESIS_IN)
+	@pdflatex --output-dir $(BUILD_DIR) $(THESIS_IN)
+	@cp $(BUILD_DIR)/$(THESIS_OUT) $(THESIS_OUT)
+
+$(BUILD_DIR):
+	@mkdir $(BUILD_DIR) >/dev/null 2>&1
 
 clean:
-	@rm -f *.aux
-	@rm -f *.log
-	@rm -f *.pdf
-	@rm -f *.toc
+	@rm -f $(THESIS_OUT) >/dev/null 2>&1
+	@rm -rf $(BUILD_DIR) >/dev/null 2>&1
 
 .PHONY: clean
