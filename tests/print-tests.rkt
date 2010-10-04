@@ -28,142 +28,141 @@
 
     (test-case
       "Print a name"
-      (let* ([display-string "x"]
-             [name (name display-string)])
-        (check-equal? (name->string name) display-string)))
+      (let* ([str "x"]
+             [name (name str)])
+        (check-equal? (name->string name) str)))
 
     (test-case
       "Print an empty name list"
-      (let* ([display-string ""]
-             [names (string->name-list display-string)])
-        (check-equal? (name-list->string names) display-string)))
+      (let* ([str ""]
+             [names (string->name-list str)])
+        (check-equal? (name-list->string names) str)))
 
     (test-case
       "Print a list containing a single name"
-      (let* ([display-string "x"]
-             [names (string->name-list display-string)])
-        (check-equal? (name-list->string names) display-string)))
+      (let* ([str "x"]
+             [names (string->name-list str)])
+        (check-equal? (name-list->string names) str)))
 
     (test-case
       "Print a list containing two names"
-      (let* ([display-string "x,y"]
-             [names (string->name-list display-string)])
-        (check-equal? (name-list->string names) display-string)))
+      (let* ([str "x,y"]
+             [names (string->name-list str)])
+        (check-equal? (name-list->string names) str)))
 
     (test-case
       "Print a nil process"
-      (let* ([display-string "0"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print a replicated nil process"
-      (let* ([display-string "!0"]
-             [read-string "(replication (nil))"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "!0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print an input action to a single name"
-      (let* ([display-string "x(y)"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "x(y).0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print an input action to two names"
-      (let* ([display-string "x(y,z)"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "x(y,z).0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print an output action of a single name"
-      (let* ([display-string "x<y>"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "x<y>.0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print an output action of two names"
-      (let* ([display-string "x<y,z>"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "x<y,z>.0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print the restriction over a name"
-      (let* ([display-string "(x)x(y)"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "(x)x(y).0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print the restriction over a restriction over a name"
-      (let* ([display-string "(x)(y)x<y>"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "(x)(y)x<y>.0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print the replication of a restriction over a name"
-      (let* ([display-string "!(x)x<y>"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "!(x)x<y>.0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print a composition"
-      (let* ([display-string "0|0"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "0|0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print a composition with a restriction and a replication"
-      (let* ([display-string "(y)x<y>|!x(z)"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "(y)x<y>.0|!x(z).0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print a composition under restriction"
-      (let* ([display-string "(x)(x<y>|x(z))"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "(x)(x<y>.0|x(z).0)"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print a replicated composition"
-      (let* ([display-string "!(x<y>|x(z))"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "!(x<y>.0|x(z).0)"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print a prefix"
-      (let* ([display-string "x<y>.x<z>"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "x<y>.x<z>.0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print a replicated prefix"
-      (let* ([display-string "!x<y>.0"]
-             [process (string->process display-string)])
-        (check-equal? (process->string process) display-string)))
+      (let* ([str "!x<y>.0"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
 
     (test-case
       "Print an empty sorting"
-      (let* ([display-string ""]
-             [sorting (string->sorting display-string)])
-        (check-equal? (sorting->string sorting) display-string)))
+      (let* ([str ""]
+             [sorting (string->sorting str)])
+        (check-equal? (sorting->string sorting) str)))
 
     (test-case
       "Print a simple sorting (one object sort)"
-      (let* ([display-string "s=(r)"]
-             [sorting (string->sorting display-string)])
-        (check-equal? (sorting->string sorting) display-string)))
+      (let* ([str "s=(r)"]
+             [sorting (string->sorting str)])
+        (check-equal? (sorting->string sorting) str)))
 
     (test-case
       "Print a simple sorting (two object sorts)"
-      (let* ([display-string "s=(r,t)"]
-             [sorting (string->sorting display-string)])
-        (check-equal? (sorting->string sorting) display-string)))
+      (let* ([str "s=(r,t)"]
+             [sorting (string->sorting str)])
+        (check-equal? (sorting->string sorting) str)))
 
     (test-case
       "Print a sorting on two subjects"
-      (let* ([display-string "s=(r,t);t=(s)"]
-             [sorting (string->sorting display-string)])
-        (check-equal? (sorting->string sorting) display-string)))
+      (let* ([str "s=(r,t);t=(s)"]
+             [sorting (string->sorting str)])
+        (check-equal? (sorting->string sorting) str)))
 
     (test-case
       "Print a sorting with two cases on the same subject"

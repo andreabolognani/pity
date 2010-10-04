@@ -93,9 +93,9 @@ Returns @racket[#t] if @racket[v] is a composition, @racket[#f]
 otherwise.
 }
 
-@defproc[(prefix [p process?] [q process?]) prefix?]{
+@defproc[(prefix [a action?] [p process?]) prefix?]{
 
-Returns a process which has @racket[p] as prefix and @racket[q]
+Returns a process which has @racket[a] as prefix and @racket[p]
 as continuation.
 }
 
@@ -107,6 +107,12 @@ Returns @racket[#t] if @racket[v] is a prefix, @racket[#f] otherwise.
 @defproc[(process? [v any/c]) boolean?]{
 
 Returns @racket[#t] if @racket[v] is a process, @racket[#f] otherwise.
+}
+
+@defproc[(action? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a input or output action,
+@racket[#f] otherwise.
 }
 
 @defproc[(process-free-names [p process?]) (setof name?)]{

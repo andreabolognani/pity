@@ -43,18 +43,17 @@
         [(BANG subprocess)         (replication $2)])
 
       (part
-        [(term)                    $1]
+        [(agent)                   $1]
         [(LP name RP part)         (restriction $2 $4)])
 
-      (term
-        [(action)                  $1]
-        [(action DOT term)         (prefix $1 $3)])
+      (agent
+        [(NIL)                     (nil)]
+        [(action DOT agent)        (prefix $1 $3)]
+        [(LP process RP)           $2])
 
       (action
-        [(NIL)                     (nil)]
         [(name LP names RP)        (input $1 $3)]
-        [(name LAB names RAB)      (output $1 $3)]
-        [(LP process RP)           $2])
+        [(name LAB names RAB)      (output $1 $3)])
 
       (names
         [(name)                    (list $1)]

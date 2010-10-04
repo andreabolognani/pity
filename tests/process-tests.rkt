@@ -29,15 +29,22 @@
     (test-case
       "Test whether process? works correctly"
       (check-true (process? (string->process "0")))
-      (check-true (process? (string->process "!0")))
-      (check-true (process? (string->process "x(y)")))
-      (check-true (process? (string->process "x<y>")))
+      (check-true (process? (string->process "!a<b>.0")))
+      (check-true (process? (string->process "x(y).0")))
+      (check-true (process? (string->process "x<y>.0")))
       (check-true (process? (string->process "(x)0")))
       (check-true (process? (string->process "0|0")))
-      (check-true (process? (string->process "0.0")))
-      (check-false (process? "x<y>|x(z)"))
+      (check-false (process? "x<y>.0|x(z).0"))
       (check-false (process? (name "x")))
       (check-false (process? 42)))
+
+    (test-case
+      "Test whether action? works correctly"
+      (check-false (action? (string->process "0")))
+      (check-false (action? (string->process "a(b).0")))
+      (check-false (action? (string->process "a<b>.a<c>.0")))
+      (check-true (action? (input (name "a") (list (name "b")))))
+      (check-true (action? (output (name "a") (list (name "b"))))))
 
     (test-case
       "Find environments (no free names)"

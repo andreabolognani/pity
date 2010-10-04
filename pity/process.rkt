@@ -32,7 +32,7 @@
 (define-struct output      (x y) #:transparent)
 (define-struct restriction (x p) #:transparent)
 (define-struct composition (p q) #:transparent)
-(define-struct prefix      (p q) #:transparent)
+(define-struct prefix      (a p) #:transparent)
 
 
 ; Recognize any kind of process
@@ -40,11 +40,16 @@
   (or
     (nil? v)
     (replication? v)
-    (input? v)
-    (output? v)
     (restriction? v)
     (composition? v)
     (prefix? v)))
+
+
+; Recognize an action
+(define (action? v)
+  (or
+    (input? v)
+    (output? v)))
 
 
 ; Routines to get names, free names and bound names in a process
@@ -60,11 +65,9 @@
   (match process
     [(nil)             (free-names/nil)]
     [(replication p)   (free-names/replication p)]
-    [(input x y)       (free-names/input x y)]
-    [(output x y)      (free-names/output x y)]
     [(restriction x p) (free-names/restriction x p)]
     [(composition p q) (free-names/composition p q)]
-    [(prefix p q)      (free-names/prefix p q)]))
+    [(prefix a p)      (free-names/prefix a p)]))
 
 
 ; Find the names that have bound occurences in a process
@@ -72,11 +75,9 @@
   (match process
     [(nil)             (bound-names/nil)]
     [(replication p)   (bound-names/replication p)]
-    [(input x y)       (bound-names/input x y)]
-    [(output x y)      (bound-names/output x y)]
     [(restriction x p) (bound-names/restriction x p)]
     [(composition p q) (bound-names/composition p q)]
-    [(prefix p q)      (bound-names/prefix p q)]))
+    [(prefix a p)      (bound-names/prefix a p)]))
 
 
 ; Find all the names occurring in a process
@@ -84,11 +85,9 @@
   (match process
     [(nil)             (names/nil)]
     [(replication p)   (names/replication p)]
-    [(input x y)       (names/input x y)]
-    [(output x y)      (names/output x y)]
     [(restriction x p) (names/restriction x p)]
     [(composition p q) (names/composition p q)]
-    [(prefix p q)      (names/prefix p q)]))
+    [(prefix a p)      (names/prefix a p)]))
 
 
 ; Names, free names and bound names in the nil process
@@ -142,6 +141,24 @@
              (list->set y)))
 
 
+; Names, free names and bound names in an action
+
+(define (free-names/action a)
+  (match a
+    [(input x y)  (free-names/input x y)]
+    [(output x y) (free-names/output x y)]))
+
+(define (bound-names/action a)
+  (match a
+    [(input x y)  (bound-names/input x y)]
+    [(output x y) (bound-names/output x y)]))
+
+(define (names/action a)
+  (match a
+    [(input x y)  (names/input x y)]
+    [(output x y) (names/output x y)]))
+
+
 ; Names, free names and bound names under a restriction
 
 (define (free-names/restriction x p)
@@ -173,19 +190,19 @@
 
 ; Names, free names and bound names under a prefix
 
-(define (free-names/prefix p q)
+(define (free-names/prefix a p)
   (set-subtract
-    (set-union (process-free-names p)
-               (process-free-names q))
-    (process-bound-names p)))
+    (set-union (free-names/action a)
+               (process-free-names p))
+    (bound-names/action a)))
 
-(define (bound-names/prefix p q)
-  (set-union (process-bound-names p)
-             (process-bound-names q)))
+(define (bound-names/prefix a p)
+  (set-union (bound-names/action a)
+             (process-bound-names p)))
 
-(define (names/prefix p q)
-  (set-union (process-names p)
-             (process-names q)))
+(define (names/prefix a p)
+  (set-union (names/action a)
+             (process-names p)))
 
 
 ; Process pretty-printing
@@ -203,11 +220,9 @@
   (match process
     [(nil)             "0"]
     [(replication p)   (process->string/replication p)]
-    [(input x y)       (process->string/input x y)]
-    [(output x y)      (process->string/output x y)]
     [(restriction x p) (process->string/restriction x p)]
     [(composition p q) (process->string/composition p q)]
-    [(prefix p q)      (process->string/prefix p q)]))
+    [(prefix a p)      (process->string/prefix a p)]))
 
 
 ; Convert a replication to a string
@@ -216,6 +231,13 @@
                  (if (contains-composition? p)
                      (enclose (process->string p))
                      (process->string p))))
+
+
+; Convert an action to a string
+(define (process->string/action a)
+  (match a
+    [(input x y)  (process->string/input x y)]
+    [(output x y) (process->string/output x y)]))
 
 
 ; Convert an input to a string
@@ -246,14 +268,12 @@
 
 
 ; Convert a prefix to a string
-(define (process->string/prefix p q)
-  (string-append (if (contains-composition? p)
-                     (enclose (process->string p))
-                     (process->string p))
+(define (process->string/prefix a p)
+  (string-append (process->string/action a)
                  "."
-                 (if (contains-composition? q)
-                     (enclose (process->string q))
-                     (process->string q))))
+                 (if (contains-composition? p)
+                     (enclose (process->string p))
+                     (process->string p))))
 
 
 ; Environments creation
@@ -388,8 +408,7 @@
     [(output x y)      #f]
     [(restriction x p) (contains-composition? p)]
     [(composition p q) #t]
-    [(prefix p q)      (or (contains-composition? p)
-                           (contains-composition? q))]))
+    [(prefix a p)      (contains-composition? p)]))
 
 
 ; Export public symbols
@@ -406,9 +425,10 @@
   [restriction?         (any/c                          . -> . boolean?)]
   [composition          (process? process?              . -> . composition?)]
   [composition?         (any/c                          . -> . boolean?)]
-  [prefix               (process? process?              . -> . prefix?)]
+  [prefix               (action? process?               . -> . prefix?)]
   [prefix?              (any/c                          . -> . boolean?)]
   [process?             (any/c                          . -> . boolean?)]
+  [action?              (any/c                          . -> . boolean?)]
   [process-free-names   (process?                       . -> . (setof name?))]
   [process-bound-names  (process?                       . -> . (setof name?))]
   [process-names        (process?                       . -> . (setof name?))]

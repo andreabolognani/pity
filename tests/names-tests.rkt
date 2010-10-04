@@ -43,7 +43,7 @@
 
     (test-case
       "Free and bound names in an input action"
-      (let ([process (string->process "x(y)")]
+      (let ([process (string->process "x(y).0")]
             [free (string->name-set "x")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
@@ -53,7 +53,7 @@
 
     (test-case
       "Free and bound names in an output action"
-      (let ([process (string->process "x<y>")]
+      (let ([process (string->process "x<y>.0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "")]
             [all (string->name-set "x,y")])
@@ -63,7 +63,7 @@
 
     (test-case
       "Free and bound names under a restriction (input to private name)"
-      (let ([process (string->process "(x)y(x)")]
+      (let ([process (string->process "(x)y(x).0")]
             [free (string->name-set "y")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y")])
@@ -73,7 +73,7 @@
 
     (test-case
       "Free and bound names under a restriction (input on private name)"
-      (let ([process (string->process "(x)x(y)")]
+      (let ([process (string->process "(x)x(y).0")]
             [free (string->name-set "")]
             [bound (string->name-set "x,y")]
             [all (string->name-set "x,y")])
@@ -83,7 +83,7 @@
 
     (test-case
       "Free and bound names under a restriction (output to private name)"
-      (let ([process (string->process "(x)y<x>")]
+      (let ([process (string->process "(x)y<x>.0")]
             [free (string->name-set "y")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y")])
@@ -93,7 +93,7 @@
 
     (test-case
       "Free and bound names under a restriction (output on private name)"
-      (let ([process (string->process "(x)x<y>")]
+      (let ([process (string->process "(x)x<y>.0")]
             [free (string->name-set "y")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y")])
@@ -113,7 +113,7 @@
 
     (test-case
       "Free and bound names in a composition (input and output)"
-      (let ([process (string->process "x(y)|x<z>")]
+      (let ([process (string->process "x(y).0|x<z>.0")]
             [free (string->name-set "x,z")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y,z")])
@@ -123,7 +123,7 @@
 
     (test-case
       "Free and bound names in a composition (output and input)"
-      (let ([process (string->process "x<y>|x(z)")]
+      (let ([process (string->process "x<y>.0|x(z).0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "z")]
             [all (string->name-set "x,y,z")])
@@ -133,7 +133,7 @@
 
     (test-case
       "Free and bound names in a composition (output and input)"
-      (let ([process (string->process "y<x>|z(x)")]
+      (let ([process (string->process "y<x>.0|z(x).0")]
             [free (string->name-set "x,y,z")]
             [bound (string->name-set "x")]
             [all (string->name-set "x,y,z")])
@@ -142,18 +142,8 @@
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a prefix (two nil processs)"
-      (let ([process (string->process "0.0")]
-            [free (string->name-set "")]
-            [bound (string->name-set "")]
-            [all (string->name-set "")])
-        (check-equal? (process-free-names process) free)
-        (check-equal? (process-bound-names process) bound)
-        (check-equal? (process-names process) all)))
-
-    (test-case
       "Free and bound names in a prefix (output, then input)"
-      (let ([process (string->process "x<y>.x(y)")]
+      (let ([process (string->process "x<y>.x(y).0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
@@ -163,7 +153,7 @@
 
     (test-case
       "Free and bound names in a prefix (output, then input)"
-      (let ([process (string->process "x<y>.y(z)")]
+      (let ([process (string->process "x<y>.y(z).0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "z")]
             [all (string->name-set  "x,y,z")])
@@ -173,7 +163,7 @@
 
     (test-case
       "Free and bound names in a prefix (input, then output)"
-      (let ([process (string->process "x(y).x<y>")]
+      (let ([process (string->process "x(y).x<y>.0")]
             [free (string->name-set "x")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
@@ -183,7 +173,7 @@
 
     (test-case
       "Free and bound names in a prefix (input, then output)"
-      (let ([process (string->process "x(y).y<z>")]
+      (let ([process (string->process "x(y).y<z>.0")]
             [free (string->name-set "x,z")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y,z")])
@@ -203,7 +193,7 @@
 
     (test-case
       "Free and bound names in a replication (input)"
-      (let ([process (string->process "!x(y)")]
+      (let ([process (string->process "!x(y).0")]
             [free (string->name-set "x")]
             [bound (string->name-set "y")]
             [all (string->name-set "x,y")])
@@ -213,7 +203,7 @@
 
     (test-case
       "Free and bound names in a replication (output)"
-      (let ([process (string->process "!x<y>")]
+      (let ([process (string->process "!x<y>.0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "")]
             [all (string->name-set "x,y")])
