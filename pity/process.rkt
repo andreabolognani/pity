@@ -205,77 +205,6 @@
              (process-names p)))
 
 
-; Process pretty-printing
-; -----------------------
-;
-;  When a process is converted to a string, only strictly needed
-;  parentheses should be present.
-;
-;  More importantly, it must be possible to parse the returned string
-;  and obtain the same process once again.
-
-
-; Convert a process to a string
-(define (process->string process)
-  (match process
-    [(nil)             "0"]
-    [(replication p)   (process->string/replication p)]
-    [(restriction x p) (process->string/restriction x p)]
-    [(composition p q) (process->string/composition p q)]
-    [(prefix a p)      (process->string/prefix a p)]))
-
-
-; Convert a replication to a string
-(define (process->string/replication p)
-  (string-append "!"
-                 (if (contains-composition? p)
-                     (enclose (process->string p))
-                     (process->string p))))
-
-
-; Convert an action to a string
-(define (process->string/action a)
-  (match a
-    [(input x y)  (process->string/input x y)]
-    [(output x y) (process->string/output x y)]))
-
-
-; Convert an input to a string
-(define (process->string/input x y)
-  (string-append (name->string x) "("
-                 (name-list->string y) ")"))
-
-
-; Convert an output to a string
-(define (process->string/output x y)
-  (string-append (name->string x) "<"
-                 (name-list->string y) ">"))
-
-
-; Convert a restriction to a string
-(define (process->string/restriction x p)
-  (string-append (enclose (name->string x))
-                 (if (contains-composition? p)
-                     (enclose (process->string p))
-                     (process->string p))))
-
-
-; Convert a composition to a string
-(define (process->string/composition p q)
-  (string-append (process->string p)
-                 "|"
-                 (process->string q)))
-
-
-; Convert a prefix to a string
-(define (process->string/prefix a p)
-  (string-append (process->string/action a)
-                 "."
-                 (if (contains-composition? p)
-                     (enclose (process->string p))
-                     (process->string p))))
-
-
 ; Environments creation
 ; ---------------------
 ;
@@ -389,6 +318,77 @@
        (check-typing q srt env)))
 
 
+; Process pretty-printing
+; -----------------------
+;
+;  When a process is converted to a string, only strictly needed
+;  parentheses should be present.
+;
+;  More importantly, it must be possible to parse the returned string
+;  and obtain the same process once again.
+
+
+; Convert a process to a string
+(define (process->string process)
+  (match process
+    [(nil)             "0"]
+    [(replication p)   (process->string/replication p)]
+    [(restriction x p) (process->string/restriction x p)]
+    [(composition p q) (process->string/composition p q)]
+    [(prefix a p)      (process->string/prefix a p)]))
+
+
+; Convert a replication to a string
+(define (process->string/replication p)
+  (string-append "!"
+                 (if (composition? p)
+                     (enclose (process->string p))
+                     (process->string p))))
+
+
+; Convert an action to a string
+(define (process->string/action a)
+  (match a
+    [(input x y)  (process->string/input x y)]
+    [(output x y) (process->string/output x y)]))
+
+
+; Convert an input to a string
+(define (process->string/input x y)
+  (string-append (name->string x) "("
+                 (name-list->string y) ")"))
+
+
+; Convert an output to a string
+(define (process->string/output x y)
+  (string-append (name->string x) "<"
+                 (name-list->string y) ">"))
+
+
+; Convert a restriction to a string
+(define (process->string/restriction x p)
+  (string-append (enclose (name->string x))
+                 (if (composition? p)
+                     (enclose (process->string p))
+                     (process->string p))))
+
+
+; Convert a composition to a string
+(define (process->string/composition p q)
+  (string-append (process->string p)
+                 "|"
+                 (process->string q)))
+
+
+; Convert a prefix to a string
+(define (process->string/prefix a p)
+  (string-append (process->string/action a)
+                 "."
+                 (if (composition? p)
+                     (enclose (process->string p))
+                     (process->string p))))
+
+
 ; Utility functions
 ; -----------------
 
@@ -396,19 +396,6 @@
 ; Enclose a string between matching parentheses
 (define (enclose stuff)
   (string-append "(" stuff ")"))
-
-
-; Checks whether a process contains a composition.
-; Processes containing compositions will need to be enclosed
-(define (contains-composition? process)
-  (match process
-    [(nil)             #f]
-    [(replication p)   (contains-composition? p)]
-    [(input x y)       #f]
-    [(output x y)      #f]
-    [(restriction x p) (contains-composition? p)]
-    [(composition p q) #t]
-    [(prefix a p)      (contains-composition? p)]))
 
 
 ; Export public symbols

@@ -129,6 +129,12 @@
         (check-equal? (process->string process) str)))
 
     (test-case
+      "Print a replicated restriction over a composition"
+      (let* ([str "!(x)(x<y>.0|x(z).0)"]
+             [process (string->process str)])
+        (check-equal? (process->string process) str)))
+
+    (test-case
       "Print a prefix"
       (let* ([str "x<y>.x<z>.0"]
              [process (string->process str)])
