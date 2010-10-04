@@ -2,9 +2,13 @@ THESIS_OUT=thesis.pdf
 THESIS_IN=thesis.tex
 BUILD_DIR=.build
 
+PDFLATEX_OPTIONS=-halt-on-error \
+                 -interaction=nonstopmode \
+                 -output-directory=$(BUILD_DIR)
+
 $(THESIS_OUT): $(BUILD_DIR) $(THESIS_IN)
-	@pdflatex --output-dir $(BUILD_DIR) $(THESIS_IN)
-	@pdflatex --output-dir $(BUILD_DIR) $(THESIS_IN)
+	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN)
+	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN)
 	@cp $(BUILD_DIR)/$(THESIS_OUT) $(THESIS_OUT)
 
 $(BUILD_DIR):
