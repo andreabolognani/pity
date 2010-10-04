@@ -1,5 +1,5 @@
 THESIS_OUT=thesis.pdf
-THESIS_IN=thesis.tex
+THESIS_IN=thesis.tex listings.tex
 BUILD_DIR=.build
 
 PDFLATEX_OPTIONS=-halt-on-error \

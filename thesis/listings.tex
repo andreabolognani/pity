@@ -1,0 +1,19 @@
+% Simple (and incomplete) Racket language definition
+\lstdefinelanguage{Racket}
+	{morekeywords={lambda, define, define-struct, let, let*, list},
+     sensitive=true,
+     morecomment=[l]{;},
+     morestring=[b]{"},}
+
+% Source code listings appearance
+\lstset{language=Racket,
+        basicstyle=\ttfamily\small,
+        keywordstyle=\bf,
+        emphstyle=\underbar,
+        showstringspaces=false,
+        numbers=left,
+        numberstyle=\tiny,
+        numbersep=10pt}
+
+% List of bindings we are defining
+\lstset{emph={double}}

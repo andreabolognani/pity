@@ -3,20 +3,7 @@
 \usepackage[italian]{babel}
 
 \usepackage{listings}
-\lstdefinelanguage{Racket}
-	{morekeywords={lambda, define, define-struct, let, let*, list},
-     sensitive=true,
-     morecomment=[l]{;},
-     morestring=[b]{"},}
-\lstset{language=Racket,
-        basicstyle=\ttfamily\small,
-        keywordstyle=\bf,
-        emphstyle=\underbar,
-        showstringspaces=false,
-        numbers=left,
-        numberstyle=\tiny,
-        numbersep=10pt}
-
+\input{listings.tex}
 
 \begin{document}
 
@@ -58,7 +45,6 @@ Uno o pi\`u capitoli dedicati al corpo vero e proprio della tesi.
 
 Vediamo ad esempio un pezzetto di codice Racket:
 
-\lstset{emph={double}}
 \begin{lstlisting}
 ; Returns the double of a number
 (define double
@@ -68,8 +54,8 @@ Vediamo ad esempio un pezzetto di codice Racket:
 (display (double 3))
 \end{lstlisting}
 
-In questo caso, la funzione \lstinline{double} era definita nel pezzo
-di codice, quindi il suo identificativo era sottolineato.
+La funzione \lstinline{double} \`e una delle funzioni trattate nella tesi,
+quindi il suo identificativo appare sottolineato.
 
 
 \section{Conclusioni}
