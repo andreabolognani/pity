@@ -1,0 +1,43 @@
+\section{Racket}
+
+\emph{Racket} \`e un linguaggio di programmazione appartenente alla
+famiglia LISP.
+
+Nato come implementazione del linguaggio di programmazione funzionale Scheme
+sotto il nome PLT Scheme, si \`e successivamente discostato da questo
+linguaggio abbastanza da convincere i suoi autori a modificarne il nome;
+nonostante questo, Racket si allontana ben poco da Scheme, e pu\`o
+ragionevolmente essere considerato una sua implementazione.
+
+Le ragioni che hanno portato ad utilizzare Racket anzich\'e una delle
+numerose implementazioni del linguaggio Scheme cos\`i come definito nello
+standard R5RS sono molteplici: innanzitutto, Scheme \`e un linguaggio
+progettato secondo criteri di minimalismo, e se questo ha da una parte
+portato ad un'encomiabile purezza del risultato, dall'altra rende necessario
+l'utilizzo di librerie esterne per svolgere compiti quali la generazione di
+parser, il pattern matching o lo sviluppo di una test suite; Racket, dal
+canto suo, fornisce implementazioni complete e solide di tutte queste
+funzionalit\`a.
+
+Racket \`e estremamente ben documentato, e fornisce al programmatore un
+sistema di typesetting, denominato \emph{Scribble}, che consente di
+realizzare con facilit\`a documentazione della stessa qualit\`a.
+
+Racket \`e \emph{Software Libero} rilasciato sotto licenza GNU LGPL, \`e
+disponibile su tutte le principali piattaforme, ed \`e in grado di compilare
+il codice sia in bytecode altamente efficiente che in formato eseguibile
+nativo, oltre ad interpretarlo. Tutte queste caratteristiche rendono Racket
+una piattaforma di sviluppo decisamente attrattiva.
+
+La sintassi di Racket \`e fortemente influenzata dalla sintassi del
+linguaggio LISP, ed \`e basata su \emph{S-expressions}, ovvero espressioni
+racchiuse tra parentesi tonde
+
+\begin{lstlisting}
+(define foo 42)
+(display foo)
+\end{lstlisting}
+
+Diversamente da quanto avviene con la maggior parte dei linguaggi di
+programmazione, praticamente ogni parte di Racket, compresi gli operatori
+matematici di base, \`e implementata sotto forma di funzione.
