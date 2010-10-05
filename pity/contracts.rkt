@@ -18,15 +18,15 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-;; Contracts
-;; ---------
-;;
-;;  Pretty generic contracts one would expect to find built-in.
+; Contracts
+; ---------
+;
+;  Pretty generic contracts one would expect to find built-in.
 
 
-;; Get the name for a contract.
-;; The name is the object-name of the contract if the contract has
-;; one, or the same string that would be printed by display
+; Get the name for a contract.
+; The name is the object-name of the contract if the contract has
+; one, or the same string that would be printed by display
 (define (contract-name c)
   (let ([name (object-name c)])
     (cond [(false? name) (format "~a" c)]
@@ -34,14 +34,15 @@
           [else name])))
 
 
-;; Create a procedure which checks a contract.
-;; Works with procedures, regexps and simple values.
+; Create a procedure which checks a contract.
+; Works with procedures, regexps and simple values.
 (define (contract-procedure c)
   (cond [(procedure? c) c]
         [(regexp? c) (lambda (x) (and (string? x) (regexp-match c x)))]
         [else (curry equal? c)]))
 
 
+; Recognize a set of items all matching the same contract
 (define (setof c)
   (flat-named-contract
     (string-append "(setof " (contract-name c) ")")
@@ -52,6 +53,7 @@
                   (set-map x (contract-procedure c)))))))
 
 
+; Recognize a non empty set of items all matching the same contract
 (define (non-empty-setof c)
   (flat-named-contract
     (string-append "(non-empty-setof " (contract-name c) ")")
@@ -59,12 +61,13 @@
            (not/c set-empty?))))
 
 
+; Recognize a non-empty string
 (define (non-empty-string? x)
   (and (string? x)
        (not (= (string-length x) 0))))
 
 
-;; Export public symbols
+; Export public symbols
 (provide/contract
   [setof             (contract? . -> . contract?)]
   [non-empty-setof   (contract? . -> . contract?)]
