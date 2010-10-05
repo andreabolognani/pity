@@ -1,5 +1,5 @@
 THESIS_OUT=thesis.pdf
-THESIS_IN=thesis.tex listings.tex \
+THESIS_IN=thesis.tex setup.tex \
           pi-calcolo.tex \
           racket.tex
 BUILD_DIR=.build
