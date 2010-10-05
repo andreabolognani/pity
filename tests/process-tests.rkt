@@ -91,6 +91,13 @@
              [srt (string->sorting "s=(t,r);t=(s);r=(r)")]
              [envs (set)]
              [envs (set-add envs (string->environment "{b:t,c:r}"))])
+        (check-equal? (process-respects? p srt) envs)))
+
+    (test-case
+      "Check typing for a process with arity mismatch"
+      (let* ([p (string->process "a<b,c>.0|a(u).0")]
+             [srt (string->sorting "s=(t,r);t=(s);r=(r)")]
+             [envs #f])
         (check-equal? (process-respects? p srt) envs)))))
 
 

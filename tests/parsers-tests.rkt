@@ -77,6 +77,16 @@
         (lambda () (string->process "a<>.0"))))
 
     (test-case
+      "Parse an input action with duplicated names"
+      (check-exn exn:fail?
+        (lambda () (string->process "a(b,b).0"))))
+
+    (test-case
+      "Parse an output action with duplicated names"
+      (check-exn exn:fail?
+        (lambda () (string->process "a<b,b>.0"))))
+
+    (test-case
       "Parse a nil process in prefix position"
       (check-exn exn:fail?
         (lambda () (string->process "0.0"))))
