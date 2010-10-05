@@ -1,12 +1,13 @@
 THESIS_OUT=thesis.pdf
-THESIS_IN=thesis.tex setup.tex \
+THESIS_IN=main.tex setup.tex \
           pi-calcolo.tex \
           racket.tex
 BUILD_DIR=.build
 
 PDFLATEX_OPTIONS=-halt-on-error \
-                 -interaction=nonstopmode \
-                 -output-directory=$(BUILD_DIR)
+                 -interaction nonstopmode \
+                 -output-directory $(BUILD_DIR) \
+                 -jobname $(THESIS_OUT:.pdf=)
 
 $(THESIS_OUT): $(BUILD_DIR) $(THESIS_IN)
 	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN)
