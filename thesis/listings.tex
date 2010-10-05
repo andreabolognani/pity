@@ -2,7 +2,9 @@
 \lstdefinelanguage{Racket}
 	{morekeywords={lambda,
                    define, define-struct, let, let*,
-                   list, display},
+                   list, car, cdr, map, foldl,
+                   +, -, *, /,
+                   display, newline},
      sensitive=true,
      morecomment=[l]{;},
      morestring=[b]{"},}
@@ -15,7 +17,7 @@
         showstringspaces=false,
         numbers=left,
         numberstyle=\tiny,
-        numbersep=10pt}
+        numbersep=-30pt}
 
 % List of bindings we are defining
-\lstset{emph={double}}
+\lstset{emph={}}

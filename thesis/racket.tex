@@ -1,7 +1,7 @@
 \section{Racket}
 
 \emph{Racket} \`e un linguaggio di programmazione appartenente alla
-famiglia LISP.
+famiglia Lisp.
 
 Nato come implementazione del linguaggio di programmazione funzionale Scheme
 sotto il nome PLT Scheme, si \`e successivamente discostato da questo
@@ -30,14 +30,117 @@ nativo, oltre ad interpretarlo. Tutte queste caratteristiche rendono Racket
 una piattaforma di sviluppo decisamente attrattiva.
 
 La sintassi di Racket \`e fortemente influenzata dalla sintassi del
-linguaggio LISP, ed \`e basata su \emph{S-expressions}, ovvero espressioni
-racchiuse tra parentesi tonde
+linguaggio Lisp, ed \`e basata su \emph{S-expressions}, ovvero espressioni
+racchiuse tra parentesi tonde dove il primo elemento \`e la procedura
+da chiamare e gli elementi successivi, se presenti, sono i suoi argomenti
 
 \begin{lstlisting}
-(define foo 42)
-(display foo)
+      (define greet "Hello!")
+      (display greet)
+      (newline)
 \end{lstlisting}
 
 Diversamente da quanto avviene con la maggior parte dei linguaggi di
 programmazione, praticamente ogni parte di Racket, compresi gli operatori
 matematici di base, \`e implementata sotto forma di funzione.
+
+Questo fatto, unito alla peculiare sintassi di Racket, pu\`o inizialmente
+causare confusione: \`e frequente incontrare espressioni simili a
+
+\begin{lstlisting}
+      (- p (* p p))
+\end{lstlisting}
+
+indubbiamente meno immediate di quanto la stessa espressione non sarebbe
+se espressa in un linguaggio derivato da C.
+
+Superato l'impatto iniziale, ci si rende conto che la sintassi estremamente
+regolare di Racket fornisce un vantaggio durante l'analisi del codice, e
+che l'avere la quasi totalit\`a del linguaggio implementato in termini di
+funzioni consente una flessibilit\`a difficilmente raggiungibile in altri
+linguaggi.
+
+Si prenda ad esempio il seguente frammento di codice:
+
+\begin{lstlisting}
+      (define lst (list 1 2 3))
+      (foldl + 0 lst) ; ==> 6
+\end{lstlisting}
+
+nella riga 1, la funzione \lstinline{list} viene chiamata con argomenti
+\lstinline{1}, \lstinline{2} e \lstinline{3} per creare una lista, alla
+quale viene assegnato il nome \lstinline{lst}.
+
+Nella riga 2, la lista \lstinline{lst} viene manipolata dalla funzione
+\lstinline{foldl}: questa funzione accetta come argomenti, nell'ordine,
+una funzione a due argomenti, un valore con cui inizializzare
+l'accumulatore, ed una lista su cui lavorare.
+
+Il fatto che l'operatore matematico \lstinline{+} sia implementato come
+funzione ci consente di passarlo direttamente alla \lstinline{foldl}, che
+sommer\`a uno alla volta i numeri contenuti nella lista all'accumulatore,
+ottenendo alla fine il valore \lstinline{6}. Questo esempio mostra anche
+come in Racket le funzioni siano un tipo di dato di prim'ordine.
+
+\`E possibile definire nuove funzioni utilizzando la sintassi
+\lstinline{lambda}, che crea funzioni anonime, combinata con la sintassi
+\lstinline{define}, oppure con una sintassi abbreviata. I seguenti esempi
+sono totalmente equivalenti tra di loro:
+
+\begin{lstlisting}
+      (define (double x)
+        (* 2 x))
+\end{lstlisting}
+
+\begin{lstlisting}
+      (define double
+        (lambda (x)
+          (* 2 x)))
+\end{lstlisting}
+
+In quanto discendente del linguaggio Lisp (il cui nome sta per LISt
+Processor), Racket pone una particolare enfasi sulla manipulazione di
+liste, fornendo diverse primitive utili: le funzioni \lstinline{car} e
+\lstinline{cdr} restituiscono rispettivamente il primo elemento di una
+lista, e gli elementi rimanenti:
+
+\begin{lstlisting}
+      (define three (lambda () 3))
+      (define lst (list 1 "two" three))
+      (car lst) ; ==> 1
+      (cdr lst) ; ==> (list "two" three)
+\end{lstlisting}
+
+Come si pu\`o vedere, una lista \`e in grado di contenere elementi
+eterogenei: nel nostro caso, il numero \lstinline{1}, la stringa
+\lstinline{"two"}, e una procedura che accetta zero argomenti e restituisce
+il numero \lstinline{3}.
+
+Altra procedura fondamentale di manipolazione liste \`e la \lstinline{map},
+che applica una funzione ad ogni elemento di una lista, restituendo la
+lista contenente gli elementi trasformati:
+
+\begin{lstlisting}
+      (define lst (list 6 2 4))
+      (map (curry max 4) lst) ; ==> (list 6 4 4)
+\end{lstlisting}
+
+La chiamata a \lstinline{map} applica la funzione \lstinline{(curry max 4)}
+ad ogni elemento di \lstinline{lst}, accumulando i risultati in una lista.
+
+La funzione \lstinline{curry}, non definita nello standard R5RS ma fornita
+da Racket, permette di generare funzioni curryficate: lo stesso effetto si
+sarebbe potuto ottenere, in maniera meno tersa, utilizzando la sintassi
+\lstinline{lambda} nel seguente modo:
+
+\begin{lstlisting}
+      (define lst (list 6 2 4))
+      (map (lambda (x) (max 4 x)) lst) ; ==> (list 6 4 4)
+\end{lstlisting}
+
+Questi esempi dovrebbero aver dato un'idea piuttosto precisa di come Racket
+funzioni, e su quali concetti si basi.
+
+Nelle pagine successive verr\`a analizzato il codice dell'implementazione
+del type system per il $\pi$-calcolo, e si incontreranno molte altre
+caratteristiche di questo linguaggio.
