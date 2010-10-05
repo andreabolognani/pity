@@ -349,41 +349,46 @@
         (check-equal? (string->sorting str) srt)))
 
     (test-case
+      "Parse the empty string as an environment"
+      (check-exn exn:fail?
+        (lambda () (string->environment ""))))
+
+    (test-case
       "Parse an environment with no sort for a name"
       (check-exn exn:fail?
-        (lambda () (string->environment "x:,y:t"))))
+        (lambda () (string->environment "{x:,y:t}"))))
 
     (test-case
       "Parse an environment with no name for a sort"
       (check-exn exn:fail?
-        (lambda () (string->environment "x:s,:t"))))
+        (lambda () (string->environment "{x:s,:t}"))))
 
     (test-case
       "Parse an environment with a leading comma"
       (check-exn exn:fail?
-        (lambda () (string->environment "x:s,"))))
+        (lambda () (string->environment "{x:s,}"))))
 
     (test-case
       "Parse an environment with an invalid character"
       (check-exn exn:fail?
-        (lambda () (string->environment "x=s"))))
+        (lambda () (string->environment "{x=s}"))))
 
     (test-case
       "Parse an empty environment"
-      (let ([str ""]
+      (let ([str "{}"]
             [env (environment)])
         (check-equal? (string->environment str) env)))
 
     (test-case
       "Parse an environment with a single binding"
-      (let* ([str "x:s"]
+      (let* ([str "{x:s}"]
              [env (environment)]
              [env (environment-set env (name "x") (sort "s"))])
         (check-equal? (string->environment str) env)))
 
     (test-case
       "Parse an environment with two bindings"
-      (let* ([str "x:s,y:t"]
+      (let* ([str "{x:s,y:t}"]
              [env (environment)]
              [env (environment-set env (name "x") (sort "s"))]
              [env (environment-set env (name "y") (sort "t"))])
@@ -391,7 +396,7 @@
 
     (test-case
       "Parse an environment with repeated bindings"
-      (let* ([str "x:s,y:t,x:r"]
+      (let* ([str "{x:s,y:t,x:r}"]
              [env (environment)]
              [env (environment-set env (name "x") (sort "r"))]
              [env (environment-set env (name "y") (sort "t"))])

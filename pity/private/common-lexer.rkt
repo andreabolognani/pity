@@ -22,7 +22,8 @@
 
 
 (define-empty-tokens common-symbols (EOF NIL DOT COMMA PIPE BANG
-                                     COLON SEMICOLON EQ LP RP LAB RAB))
+                                     COLON SEMICOLON EQ
+                                     LP RP LAB RAB LCB RCB))
 (define-tokens       common-values  (ID))
 
 
@@ -48,6 +49,8 @@
     [")"    (token-RP)]
     ["<"    (token-LAB)]
     [">"    (token-RAB)]
+    ["{"    (token-LCB)]
+    ["}"    (token-RCB)]
     [space  (common-lexer input-port)] ; Skip whitespace
     [(eof)  (token-EOF)]))
 

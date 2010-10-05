@@ -36,14 +36,17 @@
     (grammar
 
       (environment
-        [(binding)                   (environment-set (environment) (car $1) (cdr $1))]
-        [(environment COMMA binding) (environment-set $1 (car $3) (cdr $3))])
+        [(LCB contents RCB)       $2])
+
+      (contents
+        [(binding)                (environment-set (environment) (car $1) (cdr $1))]
+        [(contents COMMA binding) (environment-set $1 (car $3) (cdr $3))])
 
       (binding
-        [(id COLON id)               (cons (name $1) (sort $3))])
+        [(id COLON id)            (cons (name $1) (sort $3))])
 
       (id
-        [(ID)                        $1]))))
+        [(ID)                     $1]))))
 
 
 ; Export public symbols

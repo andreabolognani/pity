@@ -55,7 +55,7 @@
 
 
 (define (string->environment str)
-  (if (not (equal? str ""))
+  (if (not (equal? str "{}"))
     (with-handlers ([exn:fail?
                      (lambda (e)
                        (raise (exn:fail "Error while parsing environment"

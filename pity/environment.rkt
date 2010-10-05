@@ -89,7 +89,9 @@
 ; Convert an environment to a string
 (define (environment->string self)
   (let ([mappings (environment-mappings self)])
-    (string-join (hash-map mappings mapping->string) ",")))
+    (string-append "{"
+                   (string-join (hash-map mappings mapping->string) ",")
+                   "}")))
 
 
 ; Internal functions

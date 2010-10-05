@@ -175,7 +175,32 @@
       (let* ([original "s=(r);s=(t)"]
              [canonical "s=(t)"]
              [sorting (string->sorting original)])
-        (check-equal? (sorting->string sorting) canonical)))))
+        (check-equal? (sorting->string sorting) canonical)))
+
+    (test-case
+      "Print an empty environment"
+      (let* ([str "{}"]
+             [env (string->environment str)])
+        (check-equal? (environment->string env) str)))
+
+    (test-case
+      "Print an environment (one binding)"
+      (let* ([str "{x:s}"]
+             [env (string->environment str)])
+        (check-equal? (environment->string env) str)))
+
+    (test-case
+      "Print an environment (two bindings)"
+      (let* ([str "{x:s,y:t}"]
+             [env (string->environment str)])
+        (check-equal? (environment->string env) str)))
+
+    (test-case
+      "Print an environment (two sortings for the same name)"
+      (let* ([original "{x:s,x:t}"]
+             [canonical "{x:t}"]
+             [env (string->environment original)])
+        (check-equal? (environment->string env) canonical)))))
 
 
 ; Export public symbols
