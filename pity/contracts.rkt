@@ -61,6 +61,24 @@
            (not/c set-empty?))))
 
 
+; Recognize a list of items, all matching the same contract,
+; containing no repetitions
+(define (listof-distinct c)
+  (flat-named-contract
+    (string-append "(listof-distinct " (contract-name c) ")")
+    (lambda (x)
+      (and ((listof c) x)
+           (= (length x) (length (remove-duplicates x)))))))
+
+
+; Like listof-distinct, but requires the list not to be empty
+(define (non-empty-listof-distinct c)
+  (flat-named-contract
+    (string-append "(non-empty-listof-distinct " (contract-name c) ")")
+    (and/c (listof-distinct c)
+           (not/c null?))))
+
+
 ; Recognize a non-empty string
 (define (non-empty-string? x)
   (and (string? x)
@@ -69,6 +87,8 @@
 
 ; Export public symbols
 (provide/contract
-  [setof             (contract? . -> . contract?)]
-  [non-empty-setof   (contract? . -> . contract?)]
-  [non-empty-string? (any/c     . -> . boolean?)])
+  [setof                     (contract? . -> . contract?)]
+  [non-empty-setof           (contract? . -> . contract?)]
+  [listof-distinct           (contract? . -> . contract?)]
+  [non-empty-listof-distinct (contract? . -> . contract?)]
+  [non-empty-string?         (any/c     . -> . boolean?)])

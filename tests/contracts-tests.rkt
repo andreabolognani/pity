@@ -125,7 +125,22 @@
     (test-case
       "Test (setof #rx\"a|b\") on a single matching string"
       (check-false ((setof #rx"a|b") "a"))
-      (check-false ((non-empty-setof #rx"a|b") "a")))))
+      (check-false ((non-empty-setof #rx"a|b") "a")))
+
+    (test-case
+      "Test (listof-distinct string?) on the empty list"
+      (check-true ((listof-distinct string?) (list)))
+      (check-false ((non-empty-listof-distinct string?) (list))))
+
+    (test-case
+      "Test (listof-distinct string?) on a list of string with duplicates"
+      (check-false ((listof-distinct string?) (list "a" "a")))
+      (check-false ((non-empty-listof-distinct string?) (list "a" "a"))))
+
+    (test-case
+      "Test (listof-distinct string?) on a list of strings"
+      (check-true ((listof-distinct string?) (list "g" "a")))
+      (check-true ((non-empty-listof-distinct string?) (list "g" "a"))))))
 
 
 ; Export public symbols

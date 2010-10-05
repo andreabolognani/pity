@@ -39,6 +39,18 @@ Returns a contract that recognizes a non-empty set whose every element
 matches the contract @racket[c].
 }
 
+@defproc[(listof-distinct [c contract?]) contract?]{
+
+Returns a contract that recognizes a list with no duplicates whose
+every element matches the contract @racket[c].
+}
+
+@defproc[(non-empty-listof-distinct [c contract?]) contract?]{
+
+Returns a contract that recognizes a non-empty list with no duplicates
+whose every element matches the contract @racket[c].
+}
+
 @defproc[(non-empty-string? [v any/c]) boolean?]{
 
 Returns @racket[#t] if @racket[v] is a non-empty string, @racket[#f]
