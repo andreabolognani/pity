@@ -25,7 +25,7 @@
 ; Assign a value to a name, parsing it as a process.
 ; If parsing as a process fails, try to parse it as a sorting.
 (define (cmd-set! vars n v lineno)
-  (with-handlers ([exn:fail:read?
+  (with-handlers ([exn:fail?
                    (lambda (e)
                      (cmd-set!/sorting vars n v lineno))])
     (hash-set vars n (string->process v))))
@@ -34,7 +34,7 @@
 ; Assign a value to a name, parsing it as a sorting.
 ; If parsing fails, print an error message.
 (define (cmd-set!/sorting vars n v lineno)
-  (with-handlers ([exn:fail:read?
+  (with-handlers ([exn:fail?
                    (lambda (e)
                      (printf "~a: SET!: Invalid value~n" lineno)
                      vars)])

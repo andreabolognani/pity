@@ -101,8 +101,7 @@ Returns the set of sorts which have mappings in @racket[s].
 
 Returns the sorting obtained by parsing @racket[str].
 
-Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
-correctly.
+Raises @racket[exn:fail] if @racket[str] cannot be parsed correctly.
 }
 
 @defproc[(sorting->string [s sorting?]) string?]{

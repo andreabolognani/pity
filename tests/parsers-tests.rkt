@@ -28,57 +28,57 @@
 
     (test-case
       "Parse an empty string"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process ""))))
 
     (test-case
       "Parse an input action not in prefix position"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "a(b)"))))
 
     (test-case
       "Parse an output action not in prefix position"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "a<b>"))))
 
     (test-case
       "Parse a name containing illegal symbols"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "a_b(c).0"))))
 
     (test-case
       "Parse an input action with no closing paren"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "a(b.0"))))
 
     (test-case
       "Parse an input action with no opening paren"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "ab).0"))))
 
     (test-case
       "Parse an output action with no closing paren"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "a<b.0"))))
 
     (test-case
       "Parse an output action with no opening paren"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "ab>.0"))))
 
     (test-case
       "Parse an input action with no parameters"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "a().0"))))
 
     (test-case
       "Parse an output action with no parameters"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "a<>.0"))))
 
     (test-case
       "Parse a nil process in prefix position"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->process "0.0"))))
 
     (test-case
@@ -267,42 +267,42 @@
 
     (test-case
       "Parse a sorting containing an illegal symbol"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "s=(r_,t)"))))
 
     (test-case
       "Parse a sorting with no opening parenthesis"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "s=r,t)"))))
 
     (test-case
       "Parse a sorting with no closing parenthesis"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "s=(r,t"))))
 
     (test-case
       "Parse a sorting with an extra comma in the object sort"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "s=(r,)"))))
 
     (test-case
       "Parse a sorting with an object sort in subject position"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "(s,r)=(t)"))))
 
     (test-case
       "Parse a sorting with a subject sort in object position"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "s=r"))))
 
     (test-case
       "Parse a sorting with an object sort in subject position"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "(s,r)=(t)"))))
 
     (test-case
       "Parse a sorting with an empty object sort"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->sorting "s=()"))))
 
     (test-case
@@ -350,22 +350,22 @@
 
     (test-case
       "Parse an environment with no sort for a name"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->environment "x:,y:t"))))
 
     (test-case
       "Parse an environment with no name for a sort"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->environment "x:s,:t"))))
 
     (test-case
       "Parse an environment with a leading comma"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->environment "x:s,"))))
 
     (test-case
       "Parse an environment with an invalid character"
-      (check-exn exn:fail:read?
+      (check-exn exn:fail?
         (lambda () (string->environment "x=s"))))
 
     (test-case

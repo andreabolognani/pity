@@ -35,21 +35,33 @@
 ; into the respective modules. I might end up doing that.
 
 (define (string->process str)
-  (let ([ip (open-input-string str)])
-    (process-parser (lambda () (common-lexer ip)))))
+  (with-handlers ([exn:fail?
+                   (lambda (e)
+                     (raise (exn:fail "Error while parsing process"
+                                      (exn-continuation-marks e))))])
+    (let ([ip (open-input-string str)])
+      (process-parser (lambda () (common-lexer ip))))))
 
 
 (define (string->sorting str)
   (if (not (equal? str ""))
-    (let ([ip (open-input-string str)])
-      (sorting-parser (lambda () (common-lexer ip))))
+    (with-handlers ([exn:fail?
+                     (lambda (e)
+                       (raise (exn:fail "Error while parsing sorting"
+                                        (exn-continuation-marks e))))])
+      (let ([ip (open-input-string str)])
+        (sorting-parser (lambda () (common-lexer ip)))))
     (sorting)))
 
 
 (define (string->environment str)
   (if (not (equal? str ""))
-    (let ([ip (open-input-string str)])
-      (environment-parser (lambda () (common-lexer ip))))
+    (with-handlers ([exn:fail?
+                     (lambda (e)
+                       (raise (exn:fail "Error while parsing environment"
+                                        (exn-continuation-marks e))))])
+      (let ([ip (open-input-string str)])
+        (environment-parser (lambda () (common-lexer ip)))))
     (environment)))
 
 
