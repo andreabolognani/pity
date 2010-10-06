@@ -21,6 +21,8 @@
 (require racket/contract
          racket/function
          racket/string
+         parser-tools/yacc
+         "private/common-lexer.rkt"
          "name.rkt"
          "sort.rkt"
          "contracts.rkt"
@@ -85,7 +87,7 @@
         (equal? r s))))
 
 
-; Conversion functions
+; Conversion routines
 ; --------------------
 
 
@@ -95,6 +97,43 @@
     (string-append "{"
                    (string-join (hash-map mappings mapping->string) ",")
                    "}")))
+
+
+; Convert a string to an environment
+(define (string->environment str)
+  (if (not (equal? str "{}"))
+    (with-handlers ([exn:fail?
+                     (lambda (e)
+                       (raise (exn:fail "Error while parsing environment"
+                                        (exn-continuation-marks e))))])
+      (let ([ip (open-input-string str)])
+        (environment-parser (lambda () (common-lexer ip)))))
+    (empty-environment)))
+
+
+; Parser for environments
+(define environment-parser
+  (parser
+
+    (start  environment)
+    (end    EOF)
+    (tokens common-symbols common-values)
+    (error  (lambda (a b c) (void)))
+
+    (grammar
+
+      (environment
+        [(LCB contents RCB)       $2])
+
+      (contents
+        [(binding)                (environment-set (empty-environment) (car $1) (cdr $1))]
+        [(contents COMMA binding) (environment-set $1 (car $3) (cdr $3))])
+
+      (binding
+        [(id COLON id)            (cons (name $1) (sort $3))])
+
+      (id
+        [(ID)                     $1]))))
 
 
 ; Internal functions
@@ -119,4 +158,5 @@
   [environment-remove-multiple (environment (listof name?)                 . -> . environment?)]
   [environment-domain          (environment?                               . -> . (setof name?))]
   [environment-compatible?     (environment? name? sort?                   . -> . boolean?)]
-  [environment->string         (environment?                               . -> . string?)])
+  [environment->string         (environment?                               . -> . string?)]
+  [string->environment         (string?                                    . -> . environment?)])

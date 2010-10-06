@@ -22,6 +22,8 @@
          racket/function
          racket/set
          racket/match
+         parser-tools/yacc
+         "private/common-lexer.rkt"
          "name.rkt"
          "sort.rkt"
          "sorting.rkt"
@@ -54,6 +56,24 @@
   (or
     (input? v)
     (output? v)))
+
+
+; Checked input constructor
+(define (input/checked x y)
+  (if (and (name? x)
+           ((non-empty-listof-distinct name?) y))
+      (input x y)
+      (raise exn:fail:contract "Contract not respected"
+                               (current-continuation-marks))))
+
+
+; Checked output construction
+(define (output/checked x y)
+  (if (and (name? x)
+           ((non-empty-listof-distinct name?) y))
+      (output x y)
+      (raise exn:fail:contract "Contract not respected"
+                               (current-continuation-marks))))
 
 
 ; Routines to get names, free names and bound names in a process
@@ -393,6 +413,56 @@
                      (process->string p))))
 
 
+; Convert a string to a process
+(define (string->process str)
+  (with-handlers ([exn:fail?
+                   (lambda (e)
+                     (raise (exn:fail "Error while parsing process"
+                                      (exn-continuation-marks e))))])
+    (let ([ip (open-input-string str)])
+      (process-parser (lambda () (common-lexer ip))))))
+
+
+; Parser for processes
+(define process-parser
+  (parser
+
+    (start  process)
+    (end    EOF)
+    (tokens common-symbols common-values)
+    (error  (lambda (a b c) (void)))
+
+    (grammar
+
+      (process
+        [(subprocess)              $1]
+        [(subprocess PIPE process) (composition $1 $3)])
+
+      (subprocess
+        [(part)                    $1]
+        [(BANG subprocess)         (replication $2)])
+
+      (part
+        [(agent)                   $1]
+        [(LP name RP part)         (restriction $2 $4)])
+
+      (agent
+        [(NIL)                     (nil)]
+        [(action DOT agent)        (prefix $1 $3)]
+        [(LP process RP)           $2])
+
+      (action
+        [(name LP names RP)        (input/checked $1 $3)]
+        [(name LAB names RAB)      (output/checked $1 $3)])
+
+      (names
+        [(name)                    (list $1)]
+        [(name COMMA names)        (list* $1 $3)])
+
+      (name
+        [(ID)                      (name $1)]))))
+
+
 ; Utility functions
 ; -----------------
 
@@ -422,7 +492,8 @@
   [action?              (any/c                                   . -> . boolean?)]
   [process-free-names   (process?                                . -> . (setof name?))]
   [process-bound-names  (process?                                . -> . (setof name?))]
-  [process-names        (process?                       . -> . (setof name?))]
-  [process-environments (process? sorting?              . -> . (setof environment?))]
-  [process-respects?    (process? sorting?              . -> . (or/c (non-empty-setof environment?) #f))]
-  [process->string      (process?                       . -> . string?)])
+  [process-names        (process?                                . -> . (setof name?))]
+  [process-environments (process? sorting?                       . -> . (setof environment?))]
+  [process-respects?    (process? sorting?                       . -> . (or/c (non-empty-setof environment?) #f))]
+  [process->string      (process?                                . -> . string?)]
+  [string->process      (string?                                 . -> . process?)])

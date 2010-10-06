@@ -20,6 +20,8 @@
 
 (require racket/contract
          racket/string
+         parser-tools/yacc
+         "private/common-lexer.rkt"
          "sort.rkt"
          "contracts.rkt"
          "misc.rkt")
@@ -59,10 +61,52 @@
     (list->set (hash-map mappings (lambda (s o) s)))))
 
 
+; Conversion routines
+; -------------------
+
+
 ; Convert a sorting to a string
 (define (sorting->string self)
   (let ([mappings (sorting-mappings self)])
     (string-join (hash-map mappings mapping->string) ";")))
+
+
+; Convert a sorting to a string
+(define (string->sorting str)
+  (if (not (equal? str ""))
+    (with-handlers ([exn:fail?
+                     (lambda (e)
+                       (raise (exn:fail "Error while parsing sorting"
+                                        (exn-continuation-marks e))))])
+      (let ([ip (open-input-string str)])
+        (sorting-parser (lambda () (common-lexer ip)))))
+    (empty-sorting)))
+
+
+; Parser for sortings
+(define sorting-parser
+  (parser
+
+    (start  sorting)
+    (end    EOF)
+    (tokens common-symbols common-values)
+    (error  (lambda (a b c) (void)))
+
+    (grammar
+
+      (sorting
+        [(part)                   (sorting-set (empty-sorting) (car $1) (cdr $1))]
+        [(sorting SEMICOLON part) (sorting-set $1 (car $3) (cdr $3))])
+
+      (part
+        [(sort EQ LP sorts RP)    (cons $1 $4)])
+
+      (sorts
+        [(sort)                   (list $1)]
+        [(sort COMMA sorts)       (list* $1 $3)])
+
+      (sort
+        [(ID)                     (sort $1)]))))
 
 
 ; Convert a single mapping to its string representation
@@ -80,4 +124,5 @@
   [sorting-set     (sorting? sort? (non-empty-listof sort?) . -> . sorting?)]
   [sorting-remove  (sorting? sort?                          . -> . sorting?)]
   [sorting-domain  (sorting?                                . -> . (setof sort?))]
-  [sorting->string (sorting?                                . -> . string?)])
+  [sorting->string (sorting?                                . -> . string?)]
+  [string->sorting (string?                                 . -> . sorting?)])
