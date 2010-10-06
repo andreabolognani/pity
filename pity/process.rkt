@@ -32,15 +32,6 @@
          "misc.rkt")
 
 
-(define-struct nil         ()    #:transparent)
-(define-struct replication (p)   #:transparent)
-(define-struct input       (x y) #:transparent)
-(define-struct output      (x y) #:transparent)
-(define-struct restriction (x p) #:transparent)
-(define-struct composition (p q) #:transparent)
-(define-struct prefix      (a p) #:transparent)
-
-
 ; Recognize any kind of process
 (define (process? v)
   (or
@@ -58,22 +49,25 @@
     (output? v)))
 
 
-; Checked input constructor
-(define (input/checked x y)
-  (if (and (name? x)
-           ((non-empty-listof-distinct name?) y))
-      (input x y)
-      (raise exn:fail:contract "Contract not respected"
-                               (current-continuation-marks))))
-
-
-; Checked output construction
-(define (output/checked x y)
-  (if (and (name? x)
-           ((non-empty-listof-distinct name?) y))
-      (output x y)
-      (raise exn:fail:contract "Contract not respected"
-                               (current-continuation-marks))))
+(define-struct/contract             nil ()
+                                    #:transparent)
+(define-struct/contract replication ([p process?])
+                                    #:transparent)
+(define-struct/contract input       ([x name?]
+                                     [y (non-empty-listof-distinct name?)])
+                                    #:transparent)
+(define-struct/contract output      ([x name?]
+                                     [y (non-empty-listof-distinct name?)])
+                                    #:transparent)
+(define-struct/contract restriction ([x name?]
+                                     [p process?])
+                                    #:transparent)
+(define-struct/contract composition ([p process?]
+                                     [q process?])
+                                    #:transparent)
+(define-struct/contract prefix      ([a action?]
+                                     [p process?])
+                                    #:transparent)
 
 
 ; Routines to get names, free names and bound names in a process
@@ -452,8 +446,8 @@
         [(LP process RP)           $2])
 
       (action
-        [(name LP names RP)        (input/checked $1 $3)]
-        [(name LAB names RAB)      (output/checked $1 $3)])
+        [(name LP names RP)        (input $1 $3)]
+        [(name LAB names RAB)      (output $1 $3)])
 
       (names
         [(name)                    (list $1)]
@@ -473,27 +467,21 @@
 
 
 ; Export public symbols
+(provide
+  (struct-out nil)
+  (struct-out input)
+  (struct-out output)
+  (struct-out prefix)
+  (struct-out restriction)
+  (struct-out replication)
+  (struct-out composition))
 (provide/contract
-  [nil                  (                                          ->   nil?)]
-  [nil?                 (any/c                                   . -> . boolean?)]
-  [replication          (process?                                . -> . replication?)]
-  [replication?         (any/c                                   . -> . boolean?)]
-  [input                (name? (non-empty-listof-distinct name?) . -> . input?)]
-  [input?               (any/c                                   . -> . boolean?)]
-  [output               (name? (non-empty-listof-distinct name?) . -> . output?)]
-  [output?              (any/c                                   . -> . boolean?)]
-  [restriction          (name? process?                          . -> . restriction?)]
-  [restriction?         (any/c                                   . -> . boolean?)]
-  [composition          (process? process?                       . -> . composition?)]
-  [composition?         (any/c                                   . -> . boolean?)]
-  [prefix               (action? process?                        . -> . prefix?)]
-  [prefix?              (any/c                                   . -> . boolean?)]
-  [process?             (any/c                                   . -> . boolean?)]
-  [action?              (any/c                                   . -> . boolean?)]
-  [process-free-names   (process?                                . -> . (setof name?))]
-  [process-bound-names  (process?                                . -> . (setof name?))]
-  [process-names        (process?                                . -> . (setof name?))]
-  [process-environments (process? sorting?                       . -> . (setof environment?))]
-  [process-respects?    (process? sorting?                       . -> . (or/c (non-empty-setof environment?) #f))]
-  [process->string      (process?                                . -> . string?)]
-  [string->process      (string?                                 . -> . process?)])
+  [process?             (any/c             . -> . boolean?)]
+  [action?              (any/c             . -> . boolean?)]
+  [process-free-names   (process?          . -> . (setof name?))]
+  [process-bound-names  (process?          . -> . (setof name?))]
+  [process-names        (process?          . -> . (setof name?))]
+  [process-environments (process? sorting? . -> . (setof environment?))]
+  [process-respects?    (process? sorting? . -> . (or/c (non-empty-setof environment?) #f))]
+  [process->string      (process?          . -> . string?)]
+  [string->process      (string?           . -> . process?)])

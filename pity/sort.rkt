@@ -23,9 +23,11 @@
          "contracts.rkt")
 
 
-(define-struct sort (s) #:transparent)
+(define-struct/contract sort ([s non-empty-string?])
+                             #:transparent)
 
 
+; Convert a sort to a string
 (define (sort->string s)
   (sort-s s))
 
@@ -36,8 +38,8 @@
 
 
 ; Export public symbols
+(provide
+  (struct-out sort))
 (provide/contract
-  [sort              (non-empty-string? . -> . sort?)]
-  [sort?             (any/c             . -> . boolean?)]
-  [sort->string      (sort?             . -> . string?)]
-  [sort-list->string ((listof sort?)    . -> . string?)])
+  [sort->string      (sort?          . -> . string?)]
+  [sort-list->string ((listof sort?) . -> . string?)])

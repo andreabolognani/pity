@@ -27,7 +27,8 @@
          "misc.rkt")
 
 
-(define-struct sorting (mappings) #:transparent)
+(define-struct sorting (mappings)
+                       #:transparent)
 
 
 ; Empty sorting, to be used as a starting point.
