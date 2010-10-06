@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,7 +18,10 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "name.rkt"
+(require racket/contract
+         racket/function
+         racket/string
+         "name.rkt"
          "sort.rkt"
          "contracts.rkt"
          "misc.rkt")
@@ -51,7 +54,7 @@
 
 ; Add multiple mappings to an environment
 (define (environment-set-multiple self n s)
-  (if (or (empty? n) (empty? s))
+  (if (or (null? n) (null? s))
     self
     (environment-set-multiple (environment-set self (car n) (car s))
                               (cdr n)

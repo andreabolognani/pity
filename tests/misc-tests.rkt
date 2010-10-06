@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -17,7 +17,8 @@
 ; with this program; if not, write to the Free Software Foundation, Inc.,
 
 
-(require rackunit
+(require racket/set
+         rackunit
          pity)
 
 

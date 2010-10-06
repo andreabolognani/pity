@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,7 +18,9 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "contracts.rkt")
+(require racket/contract
+         racket/set
+         "contracts.rkt")
 
 
 ; Make a procedure which accepts the same
@@ -45,9 +47,9 @@
 (define (display-list lst
                       [out (current-output-port)]
                       #:separator [separator #\newline])
-  (unless (empty? lst)
+  (unless (null? lst)
     (display (car lst) out)
-    (unless (empty? (cdr lst))
+    (unless (null? (cdr lst))
       (display separator out)
       (display-list (cdr lst) out #:separator separator))))
 

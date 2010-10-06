@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,20 +18,20 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+(require racket/contract
+         racket/function
+         racket/list
+         racket/set)
+
+
 ; Contracts
 ; ---------
 ;
 ;  Pretty generic contracts one would expect to find built-in.
 
-
-; Get the name for a contract.
-; The name is the object-name of the contract if the contract has
-; one, or the same string that would be printed by display
-(define (contract-name c)
-  (let ([name (object-name c)])
-    (cond [(false? name) (format "~a" c)]
-          [(symbol? name) (symbol->string name)]
-          [else name])))
+; Convert the contract name to a string
+(define (contract->string c)
+  (format "~a" (contract-name c)))
 
 
 ; Create a procedure which checks a contract.
@@ -45,7 +45,7 @@
 ; Recognize a set of items all matching the same contract
 (define (setof c)
   (flat-named-contract
-    (string-append "(setof " (contract-name c) ")")
+    (string-append "(setof " (contract->string c) ")")
     (lambda (x)
       (and (set? x)
            (foldl (lambda (x y) (and x y)) ; Binary and wrapper
@@ -56,7 +56,7 @@
 ; Recognize a non empty set of items all matching the same contract
 (define (non-empty-setof c)
   (flat-named-contract
-    (string-append "(non-empty-setof " (contract-name c) ")")
+    (string-append "(non-empty-setof " (contract->string c) ")")
     (and/c (setof c)
            (not/c set-empty?))))
 
@@ -65,7 +65,7 @@
 ; containing no repetitions
 (define (listof-distinct c)
   (flat-named-contract
-    (string-append "(listof-distinct " (contract-name c) ")")
+    (string-append "(listof-distinct " (contract->string c) ")")
     (lambda (x)
       (and ((listof c) x)
            (= (length x) (length (remove-duplicates x)))))))
@@ -74,7 +74,7 @@
 ; Like listof-distinct, but requires the list not to be empty
 (define (non-empty-listof-distinct c)
   (flat-named-contract
-    (string-append "(non-empty-listof-distinct " (contract-name c) ")")
+    (string-append "(non-empty-listof-distinct " (contract->string c) ")")
     (and/c (listof-distinct c)
            (not/c null?))))
 

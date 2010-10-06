@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,7 +18,11 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "name.rkt"
+(require racket/contract
+         racket/function
+         racket/set
+         racket/match
+         "name.rkt"
          "sort.rkt"
          "sorting.rkt"
          "environment.rkt"
@@ -243,8 +247,8 @@
                           (set)
                           sorts))])
   (cond
-    [(empty? names) (set)]
-    [(empty? (cdr names)) (collect (car names) (list (environment)))]
+    [(null? names) (set)]
+    [(null? (cdr names)) (collect (car names) (list (environment)))]
     [else (collect (car names)
                    (set->list (process-environments-real (cdr names) sorts)))])))
 
@@ -262,7 +266,7 @@
   (let* ([envs (process-environments p srt)]
          [collect (lambda (env) (if (check-typing p srt env) env #f))]
          [res (filter (lambda (x) x) (set-map envs collect))])
-    (if (empty? res) #f (list->set res))))
+    (if (null? res) #f (list->set res))))
 
 
 ; Glue procedure

@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,7 +18,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "private/common-lexer.rkt"
+(require racket/contract
+         "private/common-lexer.rkt"
          "private/process-parser.rkt"
          "private/sorting-parser.rkt"
          "private/environment-parser.rkt"
