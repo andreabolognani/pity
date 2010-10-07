@@ -37,16 +37,6 @@ Returns a nil process.
 Returns @racket[#t] if @racket[v] is a @racket[nil] process, @racket[#f] otherwise.
 }
 
-@defproc[(replication [p process?]) replication?]{
-
-Returns the replication of the process @racket[p].
-}
-
-@defproc[(replication? [v any/c]) boolean?]{
-
-Returns @racket[#t] if @racket[v] is a replication, @racket[#f] otherwise.
-}
-
 @defproc[(input [x name?] [y (non-empty-listof-distinct name?)]) input?]{
 
 Returns an input over the channel @racket[x] to the names contained
@@ -69,6 +59,17 @@ in @racket[y].
 Returns @racket[#t] if @racket[v] is an output, @racket[#f] otherwise.
 }
 
+@defproc[(prefix [a action?] [p process?]) prefix?]{
+
+Returns a process which has @racket[a] as prefix and @racket[p]
+as continuation.
+}
+
+@defproc[(prefix? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a prefix, @racket[#f] otherwise.
+}
+
 @defproc[(restriction [x name?] [p process?]) restriction?]{
 
 Returns the restriction of the name @racket[x] over the process
@@ -81,6 +82,16 @@ Returns @racket[#t] if @racket[v] is a restriction, @racket[#f]
 otherwise.
 }
 
+@defproc[(replication [p process?]) replication?]{
+
+Returns the replication of the process @racket[p].
+}
+
+@defproc[(replication? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a replication, @racket[#f] otherwise.
+}
+
 @defproc[(composition [p process?] [q process?]) composition?]{
 
 Returns the parallel composition of processes @racket[p] and
@@ -91,17 +102,6 @@ Returns the parallel composition of processes @racket[p] and
 
 Returns @racket[#t] if @racket[v] is a composition, @racket[#f]
 otherwise.
-}
-
-@defproc[(prefix [a action?] [p process?]) prefix?]{
-
-Returns a process which has @racket[a] as prefix and @racket[p]
-as continuation.
-}
-
-@defproc[(prefix? [v any/c]) boolean?]{
-
-Returns @racket[#t] if @racket[v] is a prefix, @racket[#f] otherwise.
 }
 
 @defproc[(process? [v any/c]) boolean?]{

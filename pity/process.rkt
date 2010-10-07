@@ -36,10 +36,10 @@
 (define (process? v)
   (or
     (nil? v)
-    (replication? v)
+    (prefix? v)
     (restriction? v)
-    (composition? v)
-    (prefix? v)))
+    (replication? v)
+    (composition? v)))
 
 
 ; Recognize an action
@@ -51,22 +51,22 @@
 
 (define-struct/contract             nil ()
                                     #:transparent)
-(define-struct/contract replication ([p process?])
-                                    #:transparent)
 (define-struct/contract input       ([x name?]
                                      [y (non-empty-listof-distinct name?)])
                                     #:transparent)
 (define-struct/contract output      ([x name?]
                                      [y (non-empty-listof-distinct name?)])
                                     #:transparent)
+(define-struct/contract prefix      ([a action?]
+                                     [p process?])
+                                    #:transparent)
 (define-struct/contract restriction ([x name?]
                                      [p process?])
                                     #:transparent)
+(define-struct/contract replication ([p process?])
+                                    #:transparent)
 (define-struct/contract composition ([p process?]
                                      [q process?])
-                                    #:transparent)
-(define-struct/contract prefix      ([a action?]
-                                     [p process?])
                                     #:transparent)
 
 
@@ -82,30 +82,30 @@
 (define (process-free-names process)
   (match process
     [(nil)             (free-names/nil)]
-    [(replication p)   (free-names/replication p)]
+    [(prefix a p)      (free-names/prefix a p)]
     [(restriction x p) (free-names/restriction x p)]
-    [(composition p q) (free-names/composition p q)]
-    [(prefix a p)      (free-names/prefix a p)]))
+    [(replication p)   (free-names/replication p)]
+    [(composition p q) (free-names/composition p q)]))
 
 
 ; Find the names that have bound occurences in a process
 (define (process-bound-names process)
   (match process
     [(nil)             (bound-names/nil)]
-    [(replication p)   (bound-names/replication p)]
+    [(prefix a p)      (bound-names/prefix a p)]
     [(restriction x p) (bound-names/restriction x p)]
-    [(composition p q) (bound-names/composition p q)]
-    [(prefix a p)      (bound-names/prefix a p)]))
+    [(replication p)   (bound-names/replication p)]
+    [(composition p q) (bound-names/composition p q)]))
 
 
 ; Find all the names occurring in a process
 (define (process-names process)
   (match process
     [(nil)             (names/nil)]
-    [(replication p)   (names/replication p)]
+    [(prefix a p)      (names/prefix a p)]
     [(restriction x p) (names/restriction x p)]
-    [(composition p q) (names/composition p q)]
-    [(prefix a p)      (names/prefix a p)]))
+    [(replication p)   (names/replication p)]
+    [(composition p q) (names/composition p q)]))
 
 
 ; Names, free names and bound names in the nil process
@@ -118,18 +118,6 @@
 
 (define (names/nil)
   (set))
-
-
-; Names, free names and bound names in a replication
-
-(define (free-names/replication p)
-  (process-free-names p))
-
-(define (bound-names/replication p)
-  (process-bound-names p))
-
-(define (names/replication p)
-  (process-names p))
 
 
 ; Names, free names and bound names in an input action
@@ -177,35 +165,6 @@
     [(output x y) (names/output x y)]))
 
 
-; Names, free names and bound names under a restriction
-
-(define (free-names/restriction x p)
-  (set-remove (process-free-names p) x))
-
-(define (bound-names/restriction x p)
-  (set-union (set x)
-             (process-bound-names p)))
-
-(define (names/restriction x p)
-  (set-union (set x)
-             (process-names p)))
-
-
-; Names, free names and bound names in a composition
-
-(define (free-names/composition p q)
-  (set-union (process-free-names p)
-             (process-free-names q)))
-
-(define (bound-names/composition p q)
-  (set-union (process-bound-names p)
-             (process-bound-names q)))
-
-(define (names/composition p q)
-  (set-union (process-names p)
-             (process-names q)))
-
-
 ; Names, free names and bound names under a prefix
 
 (define (free-names/prefix a p)
@@ -221,6 +180,47 @@
 (define (names/prefix a p)
   (set-union (names/action a)
              (process-names p)))
+
+
+; Names, free names and bound names under a restriction
+
+(define (free-names/restriction x p)
+  (set-remove (process-free-names p) x))
+
+(define (bound-names/restriction x p)
+  (set-union (set x)
+             (process-bound-names p)))
+
+(define (names/restriction x p)
+  (set-union (set x)
+             (process-names p)))
+
+
+; Names, free names and bound names in a replication
+
+(define (free-names/replication p)
+  (process-free-names p))
+
+(define (bound-names/replication p)
+  (process-bound-names p))
+
+(define (names/replication p)
+  (process-names p))
+
+
+; Names, free names and bound names in a composition
+
+(define (free-names/composition p q)
+  (set-union (process-free-names p)
+             (process-free-names q)))
+
+(define (bound-names/composition p q)
+  (set-union (process-bound-names p)
+             (process-bound-names q)))
+
+(define (names/composition p q)
+  (set-union (process-names p)
+             (process-names q)))
 
 
 ; Environments creation
@@ -287,10 +287,10 @@
 (define (check-typing process srt env)
   (match process
     [(nil)                   #t]
-    [(replication p)         (check-typing p srt env)]
     [(prefix (input x y) p)  (check-typing/input x y p srt env)]
     [(prefix (output x y) p) (check-typing/output x y p srt env)]
     [(restriction x p)       (check-typing/restriction x p srt env)]
+    [(replication p)         (check-typing p srt env)]
     [(composition p q)       (check-typing/composition p q srt env)]))
 
 
@@ -350,18 +350,10 @@
 (define (process->string process)
   (match process
     [(nil)             "0"]
-    [(replication p)   (process->string/replication p)]
+    [(prefix a p)      (process->string/prefix a p)]
     [(restriction x p) (process->string/restriction x p)]
-    [(composition p q) (process->string/composition p q)]
-    [(prefix a p)      (process->string/prefix a p)]))
-
-
-; Convert a replication to a string
-(define (process->string/replication p)
-  (string-append "!"
-                 (if (composition? p)
-                     (enclose (process->string p))
-                     (process->string p))))
+    [(replication p)   (process->string/replication p)]
+    [(composition p q) (process->string/composition p q)]))
 
 
 ; Convert an action to a string
@@ -383,9 +375,26 @@
                  (name-list->string y) ">"))
 
 
+; Convert a prefix to a string
+(define (process->string/prefix a p)
+  (string-append (process->string/action a)
+                 "."
+                 (if (composition? p)
+                     (enclose (process->string p))
+                     (process->string p))))
+
+
 ; Convert a restriction to a string
 (define (process->string/restriction x p)
   (string-append (enclose (name->string x))
+                 (if (composition? p)
+                     (enclose (process->string p))
+                     (process->string p))))
+
+
+; Convert a replication to a string
+(define (process->string/replication p)
+  (string-append "!"
                  (if (composition? p)
                      (enclose (process->string p))
                      (process->string p))))
@@ -396,15 +405,6 @@
   (string-append (process->string p)
                  "|"
                  (process->string q)))
-
-
-; Convert a prefix to a string
-(define (process->string/prefix a p)
-  (string-append (process->string/action a)
-                 "."
-                 (if (composition? p)
-                     (enclose (process->string p))
-                     (process->string p))))
 
 
 ; Convert a string to a process
