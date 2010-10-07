@@ -156,7 +156,7 @@
   [environment-set             (environment? name? sort?                   . -> . environment?)]
   [environment-set-multiple    (environment? (listof name?) (listof sort?) . -> . environment?)]
   [environment-remove          (environment? name?                         . -> . environment?)]
-  [environment-remove-multiple (environment (listof name?)                 . -> . environment?)]
+  [environment-remove-multiple (environment? (listof name?)                . -> . environment?)]
   [environment-domain          (environment?                               . -> . (setof name?))]
   [environment-compatible?     (environment? name? sort?                   . -> . boolean?)]
   [environment->string         (environment?                               . -> . string?)]
