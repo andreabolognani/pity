@@ -23,9 +23,10 @@
 
 @title[#:tag "contracts"]{Contracts}
 
-@declare-exporting[pity]
+@defmodule[pity/contracts]{
 
 Pretty generic contracts one would expect to find built-in.
+}
 
 @defproc[(setof [c contract?]) contract?]{
 

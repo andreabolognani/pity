@@ -23,9 +23,10 @@
 
 @title[#:tag "processes"]{Processes}
 
-@declare-exporting[pity]
+@defmodule[pity/process]{
 
 Procedures to create and manipulate processes.
+}
 
 @defproc[(nil) nil?]{
 

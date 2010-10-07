@@ -23,9 +23,10 @@
 
 @title[#:tag "names"]{Names}
 
-@declare-exporting[pity]
+@defmodule[pity/name]{
 
 Procedures to create and manipulate names.
+}
 
 @defproc[(name [v non-empty-string?]) name?]{
 

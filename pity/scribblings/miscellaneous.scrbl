@@ -23,9 +23,10 @@
 
 @title[#:tag "miscellaneous"]{Miscellaneous}
 
-@declare-exporting[pity]
+@defmodule[pity/misc]{
 
 Miscellaneous procedures.
+}
 
 @defproc[(flip [proc procedure?]) procedure?]{
 
