@@ -62,7 +62,7 @@ build-requisites: run-requisites
 	fi
 
 collection: run-requisites
-	@if $(RACKET) -l $(COLLECTION) 2>&1 | grep 'not found' >/dev/null; then \
+	@if $(RACKET) -e "(collection-path \"$(COLLECTION)\")" 2>&1 | grep 'not found' >/dev/null; then \
 		echo "Collection $(COLLECTION) not found" >&2; \
 		exit 1; \
 	fi
