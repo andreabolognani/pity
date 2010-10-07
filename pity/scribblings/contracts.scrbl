@@ -25,7 +25,7 @@
 
 @defmodule[pity/contracts]{
 
-Pretty generic contracts one would expect to find built-in.
+Pretty generic contracts.
 }
 
 @defproc[(setof [c contract?]) contract?]{
@@ -56,4 +56,13 @@ whose every element matches the contract @racket[c].
 
 Returns @racket[#t] if @racket[v] is a non-empty string, @racket[#f]
 otherwise.
+}
+
+@defproc[(id-string? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a string suitable for use as id,
+@racket[#f] otherwise.
+
+An id string must be non-empty, start with an alphabetic character,
+and be made only of alphabetic characters and digits.
 }

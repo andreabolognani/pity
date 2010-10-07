@@ -27,7 +27,7 @@
 ; Contracts
 ; ---------
 ;
-;  Pretty generic contracts one would expect to find built-in.
+;  Pretty generic contracts
 
 ; Convert the contract name to a string
 (define (contract->string c)
@@ -85,10 +85,24 @@
        (not (= (string-length x) 0))))
 
 
+; Recognize a string suitable to be used as an identifier
+(define (id-string? x)
+  (let* ([char-alphanumeric? (lambda (c)
+                               (or (char-alphabetic? c)
+                                   (char-numeric? c)))]
+         [collect (lambda (c acc)
+                    (and acc
+                         (char-alphanumeric? c)))])
+    (and (non-empty-string? x)
+         (char-alphabetic? (string-ref x 0))
+         (foldl collect #t (string->list x)))))
+
+
 ; Export public symbols
 (provide/contract
   [setof                     (contract? . -> . contract?)]
   [non-empty-setof           (contract? . -> . contract?)]
   [listof-distinct           (contract? . -> . contract?)]
   [non-empty-listof-distinct (contract? . -> . contract?)]
-  [non-empty-string?         (any/c     . -> . boolean?)])
+  [non-empty-string?         (any/c     . -> . boolean?)]
+  [id-string?                (any/c     . -> . boolean?)])

@@ -44,6 +44,26 @@
       (check-false (non-empty-string? (name "x"))))
 
     (test-case
+      "Test id-string? on a number"
+      (check-false (id-string? 42)))
+
+    (test-case
+      "Test id-string? on an empty string"
+      (check-false (id-string? "")))
+
+	(test-case
+      "Test id-string? on a string starting with a digit"
+      (check-false (id-string? "1a")))
+
+    (test-case
+      "Test id-string? on string containing illegal symbols"
+      (check-false (id-string? "a_b")))
+
+    (test-case
+      "Test id-string? on a suitable string"
+      (check-true (id-string? "r2d2")))
+
+    (test-case
       "Test (setof string?) on a set of strings"
       (check-true ((setof string?) (set "a" "b")))
       (check-true ((non-empty-setof string?) (set "a" "b"))))
