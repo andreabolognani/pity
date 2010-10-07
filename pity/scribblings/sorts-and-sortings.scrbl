@@ -32,7 +32,7 @@ Procedures to create and manipulate sorts and sortings.
 Procedures to create and manipulate sorts.
 }
 
-@defproc[(sort [s non-empty-string?]) sort?]{
+@defproc[(sort [s id-string?]) sort?]{
 
 Returns a new sort.}
 

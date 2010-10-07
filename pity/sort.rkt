@@ -23,7 +23,7 @@
          "contracts.rkt")
 
 
-(define-struct/contract sort ([s non-empty-string?])
+(define-struct/contract sort ([s id-string?])
                              #:transparent)
 
 

@@ -29,7 +29,11 @@
   (with-handlers ([exn:fail?
                    (lambda (e)
                      (cmd-set!/sorting vars n v lineno))])
-    (hash-set vars n (string->process v))))
+    (if (id-string? n)
+        (hash-set vars n (string->process v))
+        (begin
+          (printf "~a: SET!: Invalid name~n" lineno)
+          vars))))
 
 
 ; Assign a value to a name, parsing it as a sorting.

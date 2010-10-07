@@ -28,7 +28,7 @@
 Procedures to create and manipulate names.
 }
 
-@defproc[(name [v non-empty-string?]) name?]{
+@defproc[(name [v id-string?]) name?]{
 
 Returns a new name for the non-empty string @racket[v].
 }

@@ -23,7 +23,7 @@
          "contracts.rkt")
 
 
-(define-struct/contract name ([n non-empty-string?])
+(define-struct/contract name ([n id-string?])
                              #:transparent)
 
 
