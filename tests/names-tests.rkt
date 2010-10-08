@@ -29,7 +29,25 @@
 
 (define names-tests
   (test-suite
-    "Tests for free names and bound names"
+    "Tests for names"
+
+    (test-case
+      "Refresh name with no number"
+      (let ([n1 (name "a")]
+            [n2 (name "a1")])
+        (check-equal? (name-refresh n1) n2)))
+
+    (test-case
+      "Refresh a name with a number"
+      (let ([n1 (name "a0")]
+            [n2 (name "a1")])
+        (check-equal? (name-refresh n1) n2)))
+
+    (test-case
+      "Refresh a name with a number"
+      (let ([n1 (name "a41")]
+            [n2 (name "a42")])
+        (check-equal? (name-refresh n1) n2)))
 
     (test-case
       "Free and bound names in the nil process"

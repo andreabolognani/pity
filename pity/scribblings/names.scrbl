@@ -38,6 +38,14 @@ Returns a new name for the non-empty string @racket[v].
 Returns @racket[#t] if @racket[v] is a name, @racket[#f] otherwise.
 }
 
+@defproc[(name-refresh [n name?]) name?]{
+
+Returns a new name which is a refreshed version of @racket[n].
+
+A name is refreshed by increasing its numeric part; if the @racket[n]
+has no numeric part, it is added.
+}
+
 @defproc[(name->string [n name?]) string?]{
 
 Returns a string @racket[equal?] to the one passed in when @racket[n]

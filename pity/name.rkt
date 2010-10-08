@@ -27,6 +27,19 @@
                              #:transparent)
 
 
+; Refresh the name by increasing the number part, adding it if
+; it's not already present
+(define (name-refresh self)
+  (let* ([n (name-n self)]
+         [parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
+         [str (cadr parts)]
+         [num (caddr parts)]
+         [num (if (string=? num "") 0 (string->number num))]
+         [num (+ num 1)]
+         [n (string-append str (number->string num))])
+    (name n)))
+
+
 ; Conversion routines
 ; -------------------
 ;
@@ -53,6 +66,7 @@
 (provide
   (struct-out name))
 (provide/contract
+  [name-refresh      (name?          . -> . name?)]
   [name->string      (name?          . -> . string?)]
   [name-list->string ((listof name?) . -> . string?)]
   [string->name-list (string?        . -> . (listof name?))])
