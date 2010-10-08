@@ -63,6 +63,7 @@ otherwise.
 Returns @racket[#t] if @racket[v] is a string suitable for use as id,
 @racket[#f] otherwise.
 
-An id string must be non-empty, start with an alphabetic character,
-and be made only of alphabetic characters and digits.
+An id string is made by an alphabetic character, possibly followed by
+any number of alphabetic characters, possibly followed by any number
+of digits.
 }

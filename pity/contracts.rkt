@@ -87,15 +87,8 @@
 
 ; Recognize a string suitable to be used as an identifier
 (define (id-string? x)
-  (let* ([char-alphanumeric? (lambda (c)
-                               (or (char-alphabetic? c)
-                                   (char-numeric? c)))]
-         [collect (lambda (c acc)
-                    (and acc
-                         (char-alphanumeric? c)))])
-    (and (non-empty-string? x)
-         (char-alphabetic? (string-ref x 0))
-         (foldl collect #t (string->list x)))))
+  (and (string? x)
+       (regexp-match? #rx"^[a-zA-Z]+[0-9]*$" x)))
 
 
 ; Export public symbols

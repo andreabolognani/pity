@@ -56,12 +56,25 @@
       (check-false (id-string? "1a")))
 
     (test-case
-      "Test id-string? on string containing illegal symbols"
+      "Test id-string? on a string containing illegal symbols"
       (check-false (id-string? "a_b")))
 
     (test-case
+      "Test id-string? on a string containing digits not in tail position"
+      (check-false (id-string? "r2d2")))
+
+    (test-case
+      "Test id-string? on a suitable string (one character)"
+      (check-true (id-string? "a")))
+
+    (test-case
+      "Test id-string? on a suitable string (many characters)"
+      (check-true (id-string? "LaTeX")))
+
+    (test-case
       "Test id-string? on a suitable string"
-      (check-true (id-string? "r2d2")))
+      (check-true (id-string? "plan9"))
+      (check-true (id-string? "Python3000")))
 
     (test-case
       "Test (setof string?) on a set of strings"
