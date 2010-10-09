@@ -29,6 +29,15 @@
   (lambda rest (apply proc (reverse rest))))
 
 
+; Replace all matching elements with a new value
+(define (list-replace lst a b)
+  (if (null? lst)
+    lst
+    (if (equal? (car lst) a)
+        (cons b (list-replace (cdr lst) a b))
+        (cons (car lst) (list-replace (cdr lst) a b)))))
+
+
 ; Convert a list to a set
 (define (list->set lst)
   (foldl (flip set-add) (set) lst))
@@ -57,6 +66,7 @@
 ; Export public symbols
 (provide/contract
   [flip            (procedure?                               . ->  . procedure?)]
+  [list-replace    (list? any/c any/c                        . ->  . list?)]
   [list->set       (list?                                    . ->  . set?)]
   [set->list       (set?                                     . ->  . list?)]
   [set-member-any? (set? list?                               . ->  . boolean?)]

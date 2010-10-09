@@ -40,6 +40,40 @@
         (check-equal? ((flip dneppa-gnirts) "a" "b" "c") "abc")))
 
     (test-case
+      "Replace elements in an empty list"
+      (let* ([lst (list)]
+             [a 1]
+             [b 2]
+             [new-lst lst])
+        (check-equal? (list-replace lst a b) new-lst)))
+
+    (test-case
+      "Replace non existing elements in a list"
+      (let* ([lst (list (name "a") (name "b") (name "c"))]
+             [a (name "d")]
+             [b (name "e")]
+             [new-lst lst])
+        (check-equal? (list-replace lst a b) new-lst)))
+
+    (test-case
+      "Replace existing elements in a list"
+      (let ([lst (list "a" "b" "c" "b" "d" "b")]
+            [a "b"]
+            [b "l"]
+            [new-lst (list "a" "l" "c" "l" "d" "l")])
+        (check-equal? (list-replace lst a b) new-lst)))
+
+    (test-case
+      "Replace elements in a list, then do the opposite"
+      (let* ([lst1 (list 2 3 77 3 3 5)]
+             [a 3]
+             [b 77]
+             [lst2 (list 2 77 77 77 77 5)]
+             [lst3 (list 2 3 3 3 3 5)])
+        (check-equal? (list-replace lst1 a b) lst2)
+        (check-equal? (list-replace (list-replace lst1 a b) b a) lst3)))
+
+    (test-case
       "Make a set out of an empty list"
       (check-equal? (list->set '()) (set)))
 

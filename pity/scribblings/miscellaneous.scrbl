@@ -39,6 +39,11 @@ a function like @racket[set-add] as argument.
 Caveat: it doesn't work when keyword arguments are involved.
 }
 
+@defproc[(list-replace [lst list?] [a any/c] [b any/c]) list?]{
+
+Returns all occurrences of @racket[a] in @racket[lst] with @racket[b].
+}
+
 @defproc[(list->set [lst list?]) set?]{
 
 Returns a set containing all the items in @racket[lst].
