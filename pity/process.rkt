@@ -223,6 +223,84 @@
              (process-names q)))
 
 
+; Name changing routines
+; ----------------------
+;
+;  Bound names must be chosen fresh; the following routines help
+;  coping with cases when this rule is not respected.
+
+
+; Obtain a name that is guaranteed to be fresh in a process
+(define (fresh-name p n)
+  (let ([names (process-names p)]
+        [m (name-refresh n)])
+    (if (not (set-member? names m))
+        m
+        (fresh-name p m))))
+
+
+; Refresh a name in a process
+(define (process-refresh-name self n)
+  (replace-name self n (fresh-name self n)))
+
+
+; Replace a name in a process with another name.
+;
+; No checks are made on the freshness of the new name, so it's a
+; really good idea to obtain a guaranteed fresh name first.
+(define (replace-name self n m)
+  (match self
+    [(nil)             (nil)]
+    [(prefix a p)      (replace-name/prefix a p n m)]
+    [(restriction x p) (replace-name/restriction x p n m)]
+    [(replication p)   (replace-name/replication p n m)]
+    [(composition p q) (replace-name/composition p q n m)]))
+
+
+; Replace a name in an input action
+(define (replace-name/input x y n m)
+  (let ([x1 (if (equal? x n) m x)]
+        [y1 (list-replace y n m)])
+    (input x1 y1)))
+
+
+; Replace a name in an output action
+(define (replace-name/output x y n m)
+  (let ([x1 (if (equal? x n) m x)]
+        [y1 (list-replace y n m)])
+    (output x1 y1)))
+
+
+; Replace a name in an action
+(define (replace-name/action a n m)
+  (match a
+    [(input x y)  (replace-name/input x y n m)]
+    [(output x y) (replace-name/output x y n m)]))
+
+
+; Replace a name in a prefix
+(define (replace-name/prefix a p n m)
+  (prefix (replace-name/action a n m)
+          (replace-name p n m)))
+
+
+; Replace a name in a restriction
+(define (replace-name/restriction x p n m)
+  (let ([x1 (if (equal? x n) m x)])
+    (restriction x1 (replace-name p n m))))
+
+
+; Replace a name in a replication
+(define (replace-name/replication p n m)
+  (replication (replace-name p n m)))
+
+
+; Replace a name in a composition
+(define (replace-name/composition p q n m)
+  (composition (replace-name p n m)
+               (replace-name q n m)))
+
+
 ; Environments creation
 ; ---------------------
 ;
@@ -481,6 +559,7 @@
   [process-free-names   (process?          . -> . (setof name?))]
   [process-bound-names  (process?          . -> . (setof name?))]
   [process-names        (process?          . -> . (setof name?))]
+  [process-refresh-name (process? name?    . -> . process?)]
   [process-environments (process? sorting? . -> . (setof environment?))]
   [process-respects?    (process? sorting? . -> . (or/c (non-empty-setof environment?) #f))]
   [process->string      (process?          . -> . string?)]

@@ -227,7 +227,127 @@
             [all (string->name-set "x,y")])
         (check-equal? (process-free-names process) free)
         (check-equal? (process-bound-names process) bound)
-        (check-equal? (process-names process) all)))))
+        (check-equal? (process-names process) all)))
+
+    (test-case
+      "Refresh a name not present in a process"
+      (let* ([p-str "0"]
+             [p (string->process p-str)]
+             [p-fn (string->name-set "")]
+             [p-bn (string->name-set "")]
+             [p-n (string->name-set "")]
+             [q-str "0"]
+             [q (process-refresh-name p (name "a"))]
+             [q-fn (string->name-set "")]
+             [q-bn (string->name-set "")]
+             [q-n (string->name-set "")])
+        (check-equal? (process-free-names p) p-fn)
+        (check-equal? (process-bound-names p) p-bn)
+        (check-equal? (process-names p) p-n)
+        (check-equal? (string->process q-str) q)
+        (check-equal? (process-free-names q) q-fn)
+        (check-equal? (process-bound-names q) q-bn)
+        (check-equal? (process-names q) q-n)))
+
+    (test-case
+      "Refresh a free name"
+      (let* ([p-str "a<b>.0"]
+             [p (string->process p-str)]
+             [p-fn (string->name-set "a,b")]
+             [p-bn (string->name-set "")]
+             [p-n (string->name-set "a,b")]
+             [q-str "a1<b>.0"]
+             [q (process-refresh-name p (name "a"))]
+             [q-fn (string->name-set "a1,b")]
+             [q-bn (string->name-set "")]
+             [q-n (string->name-set "a1,b")])
+        (check-equal? (process-free-names p) p-fn)
+        (check-equal? (process-bound-names p) p-bn)
+        (check-equal? (process-names p) p-n)
+        (check-equal? (string->process q-str) q)
+        (check-equal? (process-free-names q) q-fn)
+        (check-equal? (process-bound-names q) q-bn)
+        (check-equal? (process-names q) q-n)))
+
+    (test-case
+      "Refresh a bound name"
+      (let* ([p-str "a(b).0"]
+             [p (string->process p-str)]
+             [p-fn (string->name-set "a")]
+             [p-bn (string->name-set "b")]
+             [p-n (string->name-set "a,b")]
+             [q-str "a(b1).0"]
+             [q (process-refresh-name p (name "b"))]
+             [q-fn (string->name-set "a")]
+             [q-bn (string->name-set "b1")]
+             [q-n (string->name-set "a,b1")])
+        (check-equal? (process-free-names p) p-fn)
+        (check-equal? (process-bound-names p) p-bn)
+        (check-equal? (process-names p) p-n)
+        (check-equal? (string->process q-str) q)
+        (check-equal? (process-free-names q) q-fn)
+        (check-equal? (process-bound-names q) q-bn)
+        (check-equal? (process-names q) q-n)))
+
+    (test-case
+      "Refresh a bound name, avoiding free name capture"
+      (let* ([p-str "a2(a1).0"]
+             [p (string->process p-str)]
+             [p-fn (string->name-set "a2")]
+             [p-bn (string->name-set "a1")]
+             [p-n (string->name-set "a1,a2")]
+             [q-str "a2(a3).0"]
+             [q (process-refresh-name p (name "a1"))]
+             [q-fn (string->name-set "a2")]
+             [q-bn (string->name-set "a3")]
+             [q-n (string->name-set "a2,a3")])
+        (check-equal? (process-free-names p) p-fn)
+        (check-equal? (process-bound-names p) p-bn)
+        (check-equal? (process-names p) p-n)
+        (check-equal? (string->process q-str) q)
+        (check-equal? (process-free-names q) q-fn)
+        (check-equal? (process-bound-names q) q-bn)
+        (check-equal? (process-names q) q-n)))
+
+    (test-case
+      "Refresh a bound name, avoiding existing bound names"
+      (let* ([p-str "(b1)a(b2).0"]
+             [p (string->process p-str)]
+             [p-fn (string->name-set "a")]
+             [p-bn (string->name-set "b1,b2")]
+             [p-n (string->name-set "a,b1,b2")]
+             [q-str "(b3)a(b2).0"]
+             [q (process-refresh-name p (name "b1"))]
+             [q-fn (string->name-set "a")]
+             [q-bn (string->name-set "b2,b3")]
+             [q-n (string->name-set "a,b2,b3")])
+        (check-equal? (process-free-names p) p-fn)
+        (check-equal? (process-bound-names p) p-bn)
+        (check-equal? (process-names p) p-n)
+        (check-equal? (string->process q-str) q)
+        (check-equal? (process-free-names q) q-fn)
+        (check-equal? (process-bound-names q) q-bn)
+        (check-equal? (process-names q) q-n)))
+
+    (test-case
+      "Refresh a name in a composition"
+      (let* ([p-str "(a1)(a1<a3>.0|a1(a2).0)"]
+             [p (string->process p-str)]
+             [p-fn (string->name-set "a3")]
+             [p-bn (string->name-set "a1,a2")]
+             [p-n (string->name-set "a1,a2,a3")]
+             [q-str "(a4)(a4<a3>.0|a4(a2).0)"]
+             [q (process-refresh-name p (name "a1"))]
+             [q-fn (string->name-set "a3")]
+             [q-bn (string->name-set "a2,a4")]
+             [q-n (string->name-set "a2,a3,a4")])
+        (check-equal? (process-free-names p) p-fn)
+        (check-equal? (process-bound-names p) p-bn)
+        (check-equal? (process-names p) p-n)
+        (check-equal? (string->process q-str) q)
+        (check-equal? (process-free-names q) q-fn)
+        (check-equal? (process-bound-names q) q-bn)
+        (check-equal? (process-names q) q-n)))))
 
 
 ; Export public symbols

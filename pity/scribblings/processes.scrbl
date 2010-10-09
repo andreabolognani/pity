@@ -134,6 +134,16 @@ Returns a @racket[set] containing all the names that have an
 occurence in @racket[p].
 }
 
+@defproc[(process-refresh-name [p process?] [n name?]) process?]{
+
+Returns a process which behaves like @racket[p], but where all
+occurrences of the name @racket[n] are replaced with a refreshed name.
+
+For a definition of ``refreshed name'', see @racket[name-refresh]. The
+refreshed name is chosen so that no free name or bound name capture
+occurs.
+}
+
 @defproc[(process-environments [p process?]
                                [srt sorting?])
          (setof environment?)]{
