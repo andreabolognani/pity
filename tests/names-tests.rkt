@@ -32,6 +32,24 @@
     "Tests for names"
 
     (test-case
+      "Find max name between name with no number and name with number"
+      (let ([n1 (name "a")]
+            [n2 (name "a1")])
+        (check-equal? (name-max n1 n2) n2)))
+
+    (test-case
+      "Find max name between two names with number"
+      (let ([n1 (name "a12")]
+            [n2 (name "a30")])
+        (check-equal? (name-max n1 n2) n2)))
+
+    (test-case
+      "Find max name between names with different bases"
+      (let ([n1 (name "a5")]
+            [n2 (name "b1")])
+        (check-equal? (name-max n1 n2) n2)))
+
+    (test-case
       "Refresh name with no number"
       (let ([n1 (name "a")]
             [n2 (name "a1")])

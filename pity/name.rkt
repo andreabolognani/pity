@@ -27,6 +27,15 @@
                              #:transparent)
 
 
+; Return the freshest between two names
+(define (name-max a b)
+  (let ([na (name-n a)]
+        [nb (name-n b)])
+    (if (string>=? na nb)
+        a
+        b)))
+
+
 ; Refresh the name by increasing the number part, adding it if
 ; it's not already present
 (define (name-refresh self)
@@ -66,6 +75,7 @@
 (provide
   (struct-out name))
 (provide/contract
+  [name-max          (name? name?    . -> . name?)]
   [name-refresh      (name?          . -> . name?)]
   [name->string      (name?          . -> . string?)]
   [name-list->string ((listof name?) . -> . string?)]
