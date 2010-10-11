@@ -32,6 +32,141 @@
          "misc.rkt")
 
 
+; Constructors guards
+; -------------------
+;
+;  Guards are called whenever an instance of a struct is created, and
+;  can be used to alter the data before it is encapsulated in the
+;  structure, or to prevent its creation altogether.
+;
+;  These routines are attached to their respective structs and, after
+;  checking the structure contract is respected, perform any action
+;  that might be needed to ensure no name capture occurrs.
+
+
+; Guard for input action
+(define (input-guard x y type-name)
+  (when (not (name? x))
+        (error type-name
+               "x is not a name?"))
+  (when (not ((non-empty-listof-distinct name?) y))
+        (error type-name
+               "y is not a (non-empty-listof-distinct name?)"))
+  (values x y))
+
+
+; Guard for output action
+(define (output-guard x y type-name)
+  (when (not (name? x))
+        (error type-name
+               "x is not a name?"))
+  (when (not ((non-empty-listof-distinct name?) y))
+        (error type-name
+               "y is not a (non-empty-listof-distinct name?)"))
+  (values x y))
+
+
+; Guard for prefix.
+;
+; If the action a is about to bind a name which is already bound in
+; p, the name is refreshed in p to avoid name capture.
+(define (prefix-guard a p type-name)
+  (when (not (action? a))
+        (error type-name
+               "a is not an action?"))
+  (when (not (process? p))
+        (error type-name
+               "p is not a process?"))
+  (let* ([bound-a (bound-names/action a)]
+         [bound-p (process-bound-names p)]
+         [bound (set-intersect bound-a bound-p)]
+         [bound (set->list bound)])
+    (values a
+            (foldl (flip process-refresh-name) p bound))))
+
+
+; Guard for restriction.
+;
+; If the name x is bound in p, it is refreshed in p to avoid capture.
+(define (restriction-guard x p type-name)
+  (when (not (name? x))
+        (error type-name
+               "x is not a name?"))
+  (when (not (process? p))
+        (error type-name
+               "p is not a process?"))
+  (let ([bound (process-bound-names p)])
+    (values x
+            (if (set-member? bound x)
+                (process-refresh-name p x)
+                p))))
+
+
+; Guard for replication
+(define (replication-guard p type-name)
+  (when (not (process? p))
+        (error type-name
+               "p is not a process?"))
+  (values p))
+
+
+; Guard for composition.
+;
+; Any name which is bound both in p and in q is an error; to fix it,
+; common bound names are refreshed in q.
+;
+; Additional care is taken not to capture any name in either p or q
+; when refreshing.
+(define (composition-guard p q type-name)
+  (when (not (process? p))
+        (error type-name
+               "p is not a process?"))
+  (when (not (process? q))
+        (error type-name
+               "q is not a process?"))
+  (let* ([bound-p (process-bound-names p)]
+         [bound-q (process-bound-names q)]
+         [bound (set-intersect bound-p bound-q)]
+         [bound (set->list bound)]
+         [update (lambda (n procs)
+                   (let* ([p (car procs)]
+                          [q (cdr procs)]
+                          [np (fresh-name p n)]
+                          [nq (fresh-name q n)]
+                          [nn (name-max np nq)])
+                     (cons p
+                           (replace-name q n nn))))]
+         [procs (foldl update (cons p q) bound)])
+    (values (car procs)
+            (cdr procs))))
+
+
+; Process building blocks
+; -----------------------
+
+
+(define-struct nil         ()
+                           #:transparent)
+(define-struct input       (x y)
+                           #:guard input-guard
+                           #:transparent)
+(define-struct output      (x y)
+                           #:guard output-guard
+                           #:transparent)
+(define-struct prefix      (a p)
+                           #:guard prefix-guard
+                           #:transparent)
+(define-struct restriction (x p)
+                           #:guard restriction-guard
+                           #:transparent)
+(define-struct replication (p)
+                           #:guard replication-guard
+                           #:transparent)
+(define-struct composition (p q)
+                           #:guard composition-guard
+                           #:transparent)
+
+
 ; Recognize any kind of process
 (define (process? v)
   (or
@@ -47,27 +182,6 @@
   (or
     (input? v)
     (output? v)))
-
-
-(define-struct/contract             nil ()
-                                    #:transparent)
-(define-struct/contract input       ([x name?]
-                                     [y (non-empty-listof-distinct name?)])
-                                    #:transparent)
-(define-struct/contract output      ([x name?]
-                                     [y (non-empty-listof-distinct name?)])
-                                    #:transparent)
-(define-struct/contract prefix      ([a action?]
-                                     [p process?])
-                                    #:transparent)
-(define-struct/contract restriction ([x name?]
-                                     [p process?])
-                                    #:transparent)
-(define-struct/contract replication ([p process?])
-                                    #:transparent)
-(define-struct/contract composition ([p process?]
-                                     [q process?])
-                                    #:transparent)
 
 
 ; Routines to get names, free names and bound names in a process

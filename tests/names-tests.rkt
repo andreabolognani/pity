@@ -99,10 +99,10 @@
 
     (test-case
       "Free and bound names under a restriction (input to private name)"
-      (let ([process (string->process "(x)y(x).0")]
+      (let ([process (string->process "(x1)y(x1).0")]
             [free (string->name-set "y")]
-            [bound (string->name-set "x")]
-            [all (string->name-set "x,y")])
+            [bound (string->name-set "x1,x2")]
+            [all (string->name-set "x1,x2,y")])
         (check-equal? (process-free-names process) free)
         (check-equal? (process-bound-names process) bound)
         (check-equal? (process-names process) all)))
@@ -365,7 +365,28 @@
         (check-equal? (string->process q-str) q)
         (check-equal? (process-free-names q) q-fn)
         (check-equal? (process-bound-names q) q-bn)
-        (check-equal? (process-names q) q-n)))))
+        (check-equal? (process-names q) q-n)))
+
+    (test-case
+      "Prevent bound name capture under a prefix"
+      (let* ([str "a(b,c).a(c,d).0"]
+             [canonical-str "a(b,c).a(c1,d).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Prevent bound name capture under a restriction"
+      (let* ([str "(b)a(b).0"]
+             [canonical-str "(b)a(b1).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Prevent name capture in a composition"
+      (let* ([str "a2(a1,b1).0|b2(a1,b3).0"]
+             [canonical-str "a2(a1,b1).0|b2(a3,b3).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))))
 
 
 ; Export public symbols
