@@ -23,6 +23,7 @@
          "contracts.rkt")
 
 
+
 ; Constructor guards
 ; ------------------
 ;
@@ -37,6 +38,7 @@
   (values n))
 
 
+
 ; Structures definition
 ; ---------------------
 
@@ -44,6 +46,13 @@
 (struct name (n)
              #:guard name-guard
              #:transparent)
+
+
+
+; Operations on names
+; -------------------
+;
+;  Refresh names and compare names freshness.
 
 
 ; Return the freshest between two names
@@ -68,10 +77,12 @@
     (name n)))
 
 
+
 ; Conversion routines
 ; -------------------
 ;
-;  Convert names and lists of names to strings, and the other way around.
+;  Convert names and lists of names to strings, and the other way
+;  around.
 
 
 ; Make a string out of a name
@@ -90,7 +101,10 @@
         [else (map name (regexp-split #rx", *" str))]))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide
   (struct-out name))
 (provide/contract

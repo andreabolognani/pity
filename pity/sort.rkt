@@ -23,8 +23,11 @@
          "contracts.rkt")
 
 
+
 ; Constructor guards
 ; ------------------
+;
+;  Make sure the structure contract is respected.
 
 
 ; Guard for sorts
@@ -35,16 +38,21 @@
   (values s))
 
 
+
 ; Structures definition
 ; ---------------------
+
 
 (struct sort (s)
              #:guard sort-guard
              #:transparent)
 
 
+
 ; Conversion routines
 ; -------------------
+;
+;  Convert a sort or a list of sorts to a string.
 
 
 ; Convert a sort to a string
@@ -57,7 +65,10 @@
   (string-join (map sort->string lst) ","))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide
   (struct-out sort))
 (provide/contract

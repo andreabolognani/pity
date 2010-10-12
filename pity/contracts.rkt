@@ -24,22 +24,12 @@
          racket/set)
 
 
-; Contracts
-; ---------
+
+; Generic contracts
+; -----------------
 ;
-;  Pretty generic contracts
-
-; Convert the contract name to a string
-(define (contract->string c)
-  (format "~a" (contract-name c)))
-
-
-; Create a procedure which checks a contract.
-; Works with procedures, regexps and simple values.
-(define (contract-procedure c)
-  (cond [(procedure? c) c]
-        [(regexp? c) (lambda (x) (and (string? x) (regexp-match c x)))]
-        [else (curry equal? c)]))
+;  These contracts are generic enough that including them in the
+;  Racket standard library would probably make sense.
 
 
 ; Recognize a set of items all matching the same contract
@@ -85,13 +75,42 @@
        (not (= (string-length x) 0))))
 
 
+
+; Specific contracts
+; ------------------
+;
+;  Unlike the ones defined above, these contracts are tied to the
+;  application, and would make little sense outside of it.
+
+
 ; Recognize a string suitable to be used as an identifier
 (define (id-string? x)
   (and (string? x)
        (regexp-match? #rx"^[a-zA-Z]+[0-9]*$" x)))
 
 
+; Utility functions
+; -----------------
+
+
+; Convert the contract name to a string
+(define (contract->string c)
+  (format "~a" (contract-name c)))
+
+
+; Create a procedure which checks a contract.
+;
+; Works with procedures, regexps and simple values.
+(define (contract-procedure c)
+  (cond [(procedure? c) c]
+        [(regexp? c) (lambda (x) (and (string? x) (regexp-match c x)))]
+        [else (curry equal? c)]))
+
+
+
 ; Export public symbols
+; ---------------------
+
 (provide/contract
   [setof                     (contract? . -> . contract?)]
   [non-empty-setof           (contract? . -> . contract?)]

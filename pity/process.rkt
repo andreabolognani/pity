@@ -32,6 +32,7 @@
          "misc.rkt")
 
 
+
 ; Constructors guards
 ; -------------------
 ;
@@ -141,6 +142,7 @@
             (cdr procs))))
 
 
+
 ; Structures definition
 ; ---------------------
 
@@ -182,6 +184,7 @@
   (or
     (input? v)
     (output? v)))
+
 
 
 ; Routines to get names, free names and bound names in a process
@@ -337,6 +340,7 @@
              (process-names q)))
 
 
+
 ; Name changing routines
 ; ----------------------
 ;
@@ -415,6 +419,7 @@
                (replace-name q n m)))
 
 
+
 ; Environments creation
 ; ---------------------
 ;
@@ -422,6 +427,7 @@
 ;  environments, given a process and a sorting.
 
 
+; Wrapper to avoid extracting names and sorts over and over again
 (define (process-environments p srt)
   (let ([names (set->list (process-free-names p))]
         [sorts (set->list (sorting-domain srt))])
@@ -457,6 +463,7 @@
     [(null? (cdr names)) (collect (car names) (list (environment)))]
     [else (collect (car names)
                    (set->list (process-environments-real (cdr names) sorts)))])))
+
 
 
 ; Process typing
@@ -526,6 +533,7 @@
 (define (check-typing/composition p q srt env)
   (and (check-typing p srt env)
        (check-typing q srt env)))
+
 
 
 ; Process pretty-printing
@@ -649,6 +657,7 @@
         [(ID)                      (name $1)]))))
 
 
+
 ; Utility functions
 ; -----------------
 
@@ -658,7 +667,10 @@
   (string-append "(" stuff ")"))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide
   (struct-out nil)
   (struct-out input)

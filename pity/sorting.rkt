@@ -27,6 +27,7 @@
          "misc.rkt")
 
 
+
 ; Structure definition
 ; --------------------
 
@@ -36,10 +37,20 @@
 
 
 ; Empty sorting, to be used as a starting point.
-; This is renamed to sorting when exporting; inside this module,
-; sorting is the actual constructor
+;
+; This procedure is renamed to sorting when exporting; inside this
+; module, sorting is the actual constructor.
 (define (empty-sorting)
   (sorting (hash)))
+
+
+
+; Manipulation routines
+; ---------------------
+;
+;  These procedures are used to manipulate sortings by adding
+;  mappings, removing mappings, and getting the object sort for a
+;  subject sort.
 
 
 ; Get object sort for a subject sort
@@ -66,8 +77,11 @@
     (list->set (hash-map mappings (lambda (s o) s)))))
 
 
+
 ; Conversion routines
 ; -------------------
+;
+;  Convert strings to environments, and the other way around.
 
 
 ; Convert a sorting to a string
@@ -114,13 +128,21 @@
         [(ID)                     (sort $1)]))))
 
 
+
+; Utility functions
+; -----------------
+
+
 ; Convert a single mapping to its string representation
 (define (mapping->string key value)
   (string-append (sort->string key) "=("
                  (sort-list->string value) ")"))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide/contract
   [rename empty-sorting
    sorting         (                                          ->   sorting?)]

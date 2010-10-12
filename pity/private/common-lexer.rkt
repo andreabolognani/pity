@@ -21,10 +21,20 @@
 (require parser-tools/lex)
 
 
+
+; Tokens
+;-------
+
+
 (define-empty-tokens common-symbols (EOF NIL DOT COMMA PIPE BANG
                                      COLON SEMICOLON EQ
                                      LP RP LAB RAB LCB RCB))
 (define-tokens       common-values  (ID))
+
+
+
+; Lexer abbreviations
+; -------------------
 
 
 (define-lex-abbrevs
@@ -32,6 +42,11 @@
   (digit (char-range "0" "9"))
   (space (union #\tab #\space))
   (id (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
+
+
+
+; Lexer
+; -----
 
 
 (define common-lexer
@@ -55,7 +70,10 @@
     [(eof)  (token-EOF)]))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide
   common-symbols
   common-values

@@ -29,6 +29,7 @@
          "misc.rkt")
 
 
+
 ; Structures definition
 ; ---------------------
 
@@ -38,8 +39,19 @@
 
 
 ; Empty environment, to be used as a starting point
+;
+; This procedure is renamed to environment when exporting; inside this
+; module, environment is the actual constructor.
 (define (empty-environment)
   (environment (hash)))
+
+
+
+; Manipulation routines
+; ---------------------
+;
+;  These procedures are used to manipulate environments by adding
+;  mappings, removing mappings, or getting the sort for a name.
 
 
 ; Get sort for a single name
@@ -92,8 +104,11 @@
         (equal? r s))))
 
 
+
 ; Conversion routines
 ; --------------------
+;
+;  Convert strings to environments, and the other way around.
 
 
 ; Convert an environment to a string
@@ -141,8 +156,9 @@
         [(ID)                     $1]))))
 
 
-; Internal functions
-; ------------------
+
+; Utility functions
+; -----------------
 
 
 ; Convert an environment mapping to a string.
@@ -150,7 +166,10 @@
   (string-append (name->string n) ":" (sort->string s)))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide/contract
   [rename empty-environment
    environment                 (                                             ->   environment?)]

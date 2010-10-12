@@ -23,6 +23,14 @@
          "contracts.rkt")
 
 
+
+; Miscellaneous procedures
+; ------------------------
+;
+;  These routines work on built-in types and are used in many
+;  different modules.
+
+
 ; Make a procedure which accepts the same
 ; arguments as proc, only in reverse order
 (define (flip proc)
@@ -53,7 +61,10 @@
   (not (set-empty? (set-intersect s (list->set lst)))))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide/contract
   [flip            (procedure?        . -> . procedure?)]
   [list-replace    (list? any/c any/c . -> . list?)]
