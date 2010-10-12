@@ -1,5 +1,5 @@
 THESIS_OUT=thesis.pdf
-THESIS_IN=main.tex setup.tex \
+THESIS_IN=main.tex common.tex \
           pi-calcolo.tex \
           racket.tex \
           type-system.tex
