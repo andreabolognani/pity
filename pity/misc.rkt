@@ -53,21 +53,10 @@
   (not (set-empty? (set-intersect s (list->set lst)))))
 
 
-(define (display-list lst
-                      [out (current-output-port)]
-                      #:separator [separator #\newline])
-  (unless (null? lst)
-    (display (car lst) out)
-    (unless (null? (cdr lst))
-      (display separator out)
-      (display-list (cdr lst) out #:separator separator))))
-
-
 ; Export public symbols
 (provide/contract
-  [flip            (procedure?                               . ->  . procedure?)]
-  [list-replace    (list? any/c any/c                        . ->  . list?)]
-  [list->set       (list?                                    . ->  . set?)]
-  [set->list       (set?                                     . ->  . list?)]
-  [set-member-any? (set? list?                               . ->  . boolean?)]
-  [display-list    ((list?) (output-port? #:separator any/c) . ->* . void?)])
+  [flip            (procedure?        . -> . procedure?)]
+  [list-replace    (list? any/c any/c . -> . list?)]
+  [list->set       (list?             . -> . set?)]
+  [set->list       (set?              . -> . list?)]
+  [set-member-any? (set? list?        . -> . boolean?)])

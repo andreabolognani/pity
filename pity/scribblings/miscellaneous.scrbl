@@ -64,12 +64,3 @@ such that calling @racket[list->set] on it will return a set that is
 Returns @racket[#t] if any of the items in @racket[lst] is a
 member of @racket[s], @racket[#f] otherwise.
 }
-
-@defproc[(display-list [lst list?]
-                       [out output-port? (current-output-port)]
-                       [#:separator separator any/c #\newline])
-          void?]{
-
-Like @racket[display-lines], except @racket[separator] is not printed
-after the last element of @racket[lst].
-}
