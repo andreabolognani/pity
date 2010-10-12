@@ -29,8 +29,12 @@
          "misc.rkt")
 
 
-(define-struct environment (mappings)
-                           #:transparent)
+; Structures definition
+; ---------------------
+
+
+(struct environment (mappings)
+                    #:transparent)
 
 
 ; Empty environment, to be used as a starting point

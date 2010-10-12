@@ -23,8 +23,28 @@
          "contracts.rkt")
 
 
-(define-struct/contract sort ([s id-string?])
-                             #:transparent)
+; Constructor guards
+; ------------------
+
+
+; Guard for sorts
+(define (sort-guard s type-name)
+  (when (not (id-string? s))
+        (error type-name
+               "s is not an id-string?"))
+  (values s))
+
+
+; Structures definition
+; ---------------------
+
+(struct sort (s)
+             #:guard sort-guard
+             #:transparent)
+
+
+; Conversion routines
+; -------------------
 
 
 ; Convert a sort to a string

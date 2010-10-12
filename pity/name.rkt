@@ -23,8 +23,27 @@
          "contracts.rkt")
 
 
-(define-struct/contract name ([n id-string?])
-                             #:transparent)
+; Constructor guards
+; ------------------
+;
+;  Make sure the structure contract is respected.
+
+
+; Guard for names
+(define (name-guard n type-name)
+  (when (not (id-string? n))
+        (error type-name
+               "n is not an id-string?"))
+  (values n))
+
+
+; Structures definition
+; ---------------------
+
+
+(struct name (n)
+             #:guard name-guard
+             #:transparent)
 
 
 ; Return the freshest between two names

@@ -141,30 +141,30 @@
             (cdr procs))))
 
 
-; Process building blocks
-; -----------------------
+; Structures definition
+; ---------------------
 
 
-(define-struct nil         ()
-                           #:transparent)
-(define-struct input       (x y)
-                           #:guard input-guard
-                           #:transparent)
-(define-struct output      (x y)
-                           #:guard output-guard
-                           #:transparent)
-(define-struct prefix      (a p)
-                           #:guard prefix-guard
-                           #:transparent)
-(define-struct restriction (x p)
-                           #:guard restriction-guard
-                           #:transparent)
-(define-struct replication (p)
-                           #:guard replication-guard
-                           #:transparent)
-(define-struct composition (p q)
-                           #:guard composition-guard
-                           #:transparent)
+(struct nil         ()
+                    #:transparent)
+(struct input       (x y)
+                    #:guard input-guard
+                    #:transparent)
+(struct output      (x y)
+                    #:guard output-guard
+                    #:transparent)
+(struct prefix      (a p)
+                    #:guard prefix-guard
+                    #:transparent)
+(struct restriction (x p)
+                    #:guard restriction-guard
+                    #:transparent)
+(struct replication (p)
+                    #:guard replication-guard
+                    #:transparent)
+(struct composition (p q)
+                    #:guard composition-guard
+                    #:transparent)
 
 
 ; Recognize any kind of process
