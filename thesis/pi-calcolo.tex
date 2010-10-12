@@ -12,74 +12,96 @@ nome da un processo all'altro.
 
 Le \emph{azioni} possibili sono
 
-\begin{verbatim}
-      A ::= x<y> | x(y)
-\end{verbatim}
+\begin{pilisting}
+$
+    \pi \;\; ::= \;\; \overline{x}\langle\tilde{y}\rangle
+        \;\; |   \;\; x(\tilde{y})
+$
+\end{pilisting}
 
-rispettivamente di output ed input, dove \verb!y = y1, y2, ..., yn! \`e
-in entrambi i casi una lista non vuota di nomi distinti tra loro.
+rispettivamente di output ed input, dove $\tilde{y}$ \`e in entrambi i casi
+una lista non vuota $ y_1 \ldots y_n$ di nomi distinti tra loro.
 
 I \emph{processi} vengono ottenuti combinando tra loro pi\`u azioni in uno
 dei seguenti modi
 
-\begin{verbatim}
-      P ::= 0 | A.P | P|P' | (x)P | !P
-\end{verbatim}
+\begin{pilisting}
+$
+    P \;\; ::= \;\; 0
+      \;\; |   \;\; \pi.P
+      \;\; |   \;\; P|P^{'}
+      \;\; |   \;\; \nu z \; P
+      \;\; |   \;\; !P
+$
+\end{pilisting}
 
-Il processo nullo \verb.0. \`e utilizzato come punto di partenza per la
+Il processo nullo $0$ \`e utilizzato come punto di partenza per la
 costruzione di qualsiasi processo di $\pi$-calcolo; ad ogni processo pu\`o
 essere aggiunto come \emph{prefisso} un'azione, ottenendo come risultato un
 processo che compie l'azione per poi comportarsi come il processo originale.
 
 Un esempio \`e il processo
 
-\begin{verbatim}
-      a<b>.0
-\end{verbatim}
+\begin{pilisting}
+$
+    \overline{a}\langle b\rangle.0
+$
+\end{pilisting}
 
-che trasmette il nome \verb.b. sul canale \verb.a. prima di comportarsi come
-\verb!0!, ovvero fermarsi.
+che trasmette il nome $b$ sul canale $a$ prima di comportarsi come $0$,
+ovvero fermarsi.
 
-Tramite l'operatore \verb.|. \`e possibile creare una composizione di
-processi: nel processo
+Tramite l'operatore $|$ \`e possibile creare una composizione di processi:
+nel processo
 
-\begin{verbatim}
-      a<b,c>.0|a(u,v).0
-\end{verbatim}
+\begin{pilisting}
+$
+    \overline{a}\langle b,c\rangle.0 \; | \;
+    a(u,v).0
+$
+\end{pilisting}
 
 il lato sinistro e quello destro dell'espressione sono entit\`a che agiscono
 autonomamente.
 
-In questo caso, il lato sinistro vuole inviare i nomi \verb.b. e \verb.c.
-tramite il canale \verb.a., lo stesso che il lato destro usa per ricevere
-due nomi da sostituire ad \verb.u. e \verb.v.; una volta avvenuta la
-comunicazione, entrambi i processi si riducono a \verb.0..
+In questo caso, il lato sinistro vuole inviare i nomi $b$ e $c$ tramite il
+canale $a$, lo stesso che il lato destro usa per ricevere due nomi da
+sostituire ad $u$ e $v$; una volta avvenuta la comunicazione, entrambi i
+processi si riducono a $0$.
 
 \`E evidente gi\`a da questo semplice esempio come, se si vuole che una
 comunicazione abbia successo, sia necessario che entrambe le parti
 concordino quantomeno sul numero di nomi da inviare: nel processo
 
-\begin{verbatim}
-      a<b>.0|a(u,v).0
-\end{verbatim}
+\begin{pilisting}
+$
+    \overline{a}\langle x\rangle.0 \; | \;
+    a(u,v).0
+$
+\end{pilisting}
 
 il processo mittente invia un solo nome, mentre il processo destinatario
 si aspetta di riceverne due. Il type system implementato ha proprio lo
 scopo di garantire che una simile situazione non si venga mai a verificare.
 
-L'operatore di \emph{restrizione} \verb.(x). consente di creare un nuovo
-nome \verb.x., che pu\`o successivamente essere utilizzato per comunicare
-tra un gruppo ristretto di processi.
-Nel sistema
+L'operatore di \emph{restrizione} $\nu x$ consente di creare un nuovo nome
+$x$, che pu\`o successivamente essere utilizzato per comunicare tra un
+gruppo ristretto di processi. Nel sistema
 
-\begin{verbatim}
-      (x)(x<y>.0|x(z).0)|a(b).0
-\end{verbatim}
+\begin{pilisting}
+$
+    \nu x \; (
+      \overline{x}\langle y\rangle.0 \; | \;
+      x(z).0
+    ) \; | \;
+    a(b).0
+$
+\end{pilisting}
 
 il primo ed il secondo processo sono in grado di comunicare tra di loro
-utilizzando il nome \verb.x., cosa che non \`e possibile al terzo processo,
-che si trova all'esterno dello scope di \verb.x. (rappresentato dalle
-parentesi che racchiudono i primi due processi).
+utilizzando il nome $x$, cosa che non \`e possibile al terzo processo, che
+si trova all'esterno dello scope di $x$ (rappresentato dalle parentesi che
+racchiudono i primi due processi).
 
 Nella modellazione di sistemi reali, raramente ci si trova ad analizzare
 processi che, come quelli visti fino ad ora, sono in grado di eseguire una
@@ -89,16 +111,17 @@ parte dei casi, il processo lavora in maniera ciclica.
 Immaginando di voler descrivere, tramite il $\pi$-calcolo, il funzionamento
 di un semplice Web server, si arriverebbe a qualcosa di simile a
 
-\begin{verbatim}
-      !s(c,q).((r)c<r>.0)
-\end{verbatim}
+\begin{pilisting}
+$
+    !s(c,q).(\nu r \; \overline{c}\langle r\rangle.0)
+$
+\end{pilisting}
 
-dove \verb.!. \`e l'operatore di \emph{replicazione}, definito in maniera
-tale che \verb.!P. si comporti come \verb.P|!P..
+dove $!$ \`e l'operatore di \emph{replicazione}, definito in maniera tale
+che $!P$ si comporti come $P \; | \; !P$.
 
-Il funzionamento \`e semplice: il server riceve sul canale \verb.s. i nomi
-\verb.c. e \verb.q., che rappresentano rispettivamente il canale da usare
-per comunicare la risposta al client e la sua richiesta. Una volta ricevuti
-questi dati, il server procede a generare una risposta \verb.r., che invia
-al client sul nome \verb.c. precedentemente ricevuto, e a mettersi in attesa
-di una nuova richiesta.
+Il funzionamento \`e semplice: il server riceve sul canale $s$ i nomi $c$ e
+$q$, che rappresentano rispettivamente il canale da usare per comunicare la
+risposta al client e la sua richiesta. Una volta ricevuti questi dati, il
+server procede a generare una risposta $r$, che invia al client sul nome $c$
+precedentemente ricevuto, e a mettersi in attesa di una nuova richiesta.

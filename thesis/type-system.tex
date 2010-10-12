@@ -2,8 +2,7 @@
 
 Regole di inferenza per il $\pi$-calcolo:
 
-\vspace{3 mm}
-\indent\indent
+\begin{pilisting}
 \inference[nil]
   {}
   {\Psi |- 0}
@@ -37,6 +36,6 @@ Regole di inferenza per il $\pi$-calcolo:
 \inference[inp]
   {\Psi,z_1:t_1,\ldots,z_n:t_n |- P}
   {\Psi,x:s |- x(z_1\ldots z_n).P}
+\end{pilisting}
 
-\vspace{3 mm}
 Alcune di queste regole hanno delle condizioni.
