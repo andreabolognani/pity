@@ -25,24 +25,28 @@
 
 ; Assign a value to a name, parsing it as a process.
 ; If parsing as a process fails, try to parse it as a sorting.
-(define (cmd-set! vars n v lineno)
+(define (cmd-set! vars n v lineno port)
   (with-handlers ([exn:fail?
                    (lambda (e)
-                     (cmd-set!/sorting vars n v lineno))])
+                     (cmd-set!/sorting vars n v lineno port))])
     (if (id-string? n)
         (hash-set vars n (string->process v))
         (begin
           (printf "~a: SET!: Invalid name~n" lineno)
-          vars))))
+          (if (terminal-port? port)
+              vars
+              #f)))))
 
 
 ; Assign a value to a name, parsing it as a sorting.
 ; If parsing fails, print an error message.
-(define (cmd-set!/sorting vars n v lineno)
+(define (cmd-set!/sorting vars n v lineno port)
   (with-handlers ([exn:fail?
                    (lambda (e)
                      (printf "~a: SET!: Invalid value~n" lineno)
-                     vars)])
+                     (if (terminal-port? port)
+                         vars
+                         #f))])
     (hash-set vars n (string->sorting v))))
 
 
@@ -57,7 +61,7 @@
 
 ; Check whether the process pointed to by n1 respects the sorting
 ; pointed to by n2. If it does, print all the valid environments.
-(define (cmd-respects? vars n1 n2 lineno)
+(define (cmd-respects? vars n1 n2 lineno port)
   (let ([p (hash-ref vars n1 #f)]
         [srt (hash-ref vars n2 #f)])
     (if (and (process? p) (sorting? srt))
@@ -66,8 +70,11 @@
                 (set-for-each
                   res
                   (lambda (env)
-                    (printf "~a~n" (environment->string env))))))
-        (printf "~a: RESPECTS?: Need a process and a sorting~n" lineno))))
+                    (printf "~a~n" (environment->string env)))))
+          vars)
+        (begin
+          (printf "~a: RESPECTS?: Need a process and a sorting~n" lineno)
+          #f))))
 
 
 ; Display an help message
@@ -88,12 +95,12 @@
          [lop (if (< (length parts) 2) "" (cadr parts))]
          [rop (if (< (length parts) 3) "" (apply string-append (cddr parts)))])
     (cond
-      [(string-ci=? cmd "SET!") (set! vars (cmd-set! vars lop rop lineno))]
-      [(string-ci=? cmd "DISPLAY") (cmd-display vars lop)]
-      [(string-ci=? cmd "RESPECTS?") (cmd-respects? vars lop rop lineno)]
-      [(string-ci=? cmd "HELP") (cmd-help)]
-      [(string-ci=? cmd "QUIT") (set! vars #f)]
-      [else (printf "Unknown command ~a~n" cmd)])
+      [(string-ci=? cmd "SET!")      (set! vars (cmd-set! vars lop rop lineno port))]
+      [(string-ci=? cmd "DISPLAY")   (cmd-display vars lop)]
+      [(string-ci=? cmd "RESPECTS?") (set! vars (cmd-respects? vars lop rop lineno port))]
+      [(string-ci=? cmd "HELP")      (cmd-help)]
+      [(string-ci=? cmd "QUIT")      (set! vars #f)]
+      [else                          (printf "Unknown command ~a~n" cmd)])
     vars))
 
 
