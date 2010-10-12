@@ -116,5 +116,10 @@
 
 
 ; Start the evaluation loop
-(let ([ignored (repl action (hash) "pity> " (current-input-port))])
-  (display ""))
+(let* ([args (current-command-line-arguments)]
+       [infile (if (< (vector-length args) 1) #f (vector-ref args 0))]
+       [port (if (not infile) (current-input-port) (open-input-file infile))])
+  (repl action (hash) "pity> " port)
+  (display "")
+  (unless (equal? (current-input-port) port)
+          (close-input-port port)))

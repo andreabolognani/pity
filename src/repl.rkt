@@ -31,7 +31,7 @@
   (letrec ([recur (lambda (state lineno)
                     (when (terminal-port? port)
                           (printf "~a" prompt))
-                    (let ([line (read-line)])
+                    (let ([line (read-line port)])
                       (if (eq? line eof)
                           state
                           (let ([new-state (action line lineno port state)])
