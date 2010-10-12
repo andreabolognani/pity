@@ -32,7 +32,7 @@
     (if (id-string? n)
         (hash-set vars n (string->process v))
         (begin
-          (eprintf "~a: SET!: Invalid name~n" lineno)
+          (eprintf "~a: SET!: Invalid name ~a~n" lineno n)
           (if (terminal-port? port)
               vars
               #f)))))
@@ -43,7 +43,7 @@
 (define (cmd-set!/sorting vars n v lineno port)
   (with-handlers ([exn:fail?
                    (lambda (e)
-                     (eprintf "~a: SET!: Invalid value~n" lineno)
+                     (eprintf "~a: SET!: Invalid value ~a~n" lineno v)
                      (if (terminal-port? port)
                          vars
                          #f))])
@@ -60,7 +60,7 @@
             [(sorting? v) (printf "~a~n" (sorting->string v))])
           vars)
         (begin
-          (eprintf "~a: DISPLAY: Unknown name~n" lineno)
+          (eprintf "~a: DISPLAY: Unknown name ~a~n" lineno n)
           (if (terminal-port? port)
               vars
               #f)))))
