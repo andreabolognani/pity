@@ -82,7 +82,7 @@
 
 
 ; Parse the input and act accordingly
-(define (action line lineno vars)
+(define (action line lineno port vars)
   (let* ([parts (regexp-split #rx" +" line)]
          [cmd (car parts)]
          [lop (if (< (length parts) 2) "" (cadr parts))]
@@ -98,5 +98,5 @@
 
 
 ; Start the evaluation loop
-(let ([ignored (repl action (hash) "pity> ")])
+(let ([ignored (repl action (hash) "pity> " (current-input-port))])
   (display ""))

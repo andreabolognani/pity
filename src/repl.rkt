@@ -22,15 +22,19 @@
 ;
 ; The action procedure is called until an EOF is read, or it returns #f.
 ; Every time it is called, it is passed the contents of the last line
-; read, the progressive number of said line, and the current REPL state;
-; its return value is the new REPL state.
-(define (repl action initial-state prompt)
+; read, the progressive number of said line, the input port, and the
+; current REPL state; its return value is the new REPL state.
+;
+; If the input port is a terminal, a prompt is displayed at every
+; interaction.
+(define (repl action initial-state prompt port)
   (letrec ([recur (lambda (state lineno)
-                    (printf "~a" prompt)
+                    (when (terminal-port? port)
+                          (printf "~a" prompt))
                     (let ([line (read-line)])
                       (if (eq? line eof)
                           state
-                          (let ([new-state (action line lineno state)])
+                          (let ([new-state (action line lineno port state)])
                             (if (not new-state)
                                 state
                                 (recur new-state (+ lineno 1)))))))])
