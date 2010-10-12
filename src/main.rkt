@@ -51,12 +51,19 @@
 
 
 ; Display a value according to its type.
-(define (cmd-display vars n)
+(define (cmd-display vars n lineno port)
   (let ([v (hash-ref vars n #f)])
-    (cond
-      [(process? v) (printf "~a~n" (process->string v))]
-      [(sorting? v) (printf "~a~n" (sorting->string v))]
-      [else (printf "")])))
+    (if v
+        (begin
+          (cond
+            [(process? v) (printf "~a~n" (process->string v))]
+            [(sorting? v) (printf "~a~n" (sorting->string v))])
+          vars)
+        (begin
+          (printf "~a: DISPLAY: Unknown name~n" lineno)
+          (if (terminal-port? port)
+              vars
+              #f)))))
 
 
 ; Check whether the process pointed to by n1 respects the sorting
@@ -96,7 +103,7 @@
          [rop (if (< (length parts) 3) "" (apply string-append (cddr parts)))])
     (cond
       [(string-ci=? cmd "SET!")      (set! vars (cmd-set! vars lop rop lineno port))]
-      [(string-ci=? cmd "DISPLAY")   (cmd-display vars lop)]
+      [(string-ci=? cmd "DISPLAY")   (set! vars (cmd-display vars lop lineno port))]
       [(string-ci=? cmd "RESPECTS?") (set! vars (cmd-respects? vars lop rop lineno port))]
       [(string-ci=? cmd "HELP")      (cmd-help)]
       [(string-ci=? cmd "QUIT")      (set! vars #f)]
