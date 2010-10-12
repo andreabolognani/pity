@@ -1,0 +1,42 @@
+\section{Type system per il \texorpdfstring{$\pi$}{pi}-calcolo}
+
+Regole di inferenza per il $\pi$-calcolo:
+
+\vspace{3 mm}
+\indent\indent
+\inference[nil]
+  {}
+  {\Psi |- 0}
+
+\vspace{3 mm}
+\indent\indent
+\inference[rep]
+  {\Psi |- P}
+  {\Psi |- !P}
+
+\vspace{3 mm}
+\indent\indent
+\inference[par]
+  {\Psi |- P_1 & \Psi |- P_2}
+  {\Psi |- P_1|P_2}
+
+\vspace{3 mm}
+\indent\indent
+\inference[res]
+  {\Psi,z:s |- P}
+  {\Psi |- (z)P}
+
+\vspace{3 mm}
+\indent\indent
+\inference[out]
+  {\Psi |- P}
+  {\Psi,x:s,y_1:t_1,\ldots,y_n:t_n |- \overline{x}\langle y_1\ldots y_n\rangle.P}
+
+\vspace{3 mm}
+\indent\indent
+\inference[inp]
+  {\Psi,z_1:t_1,\ldots,z_n:t_n |- P}
+  {\Psi,x:s |- x(z_1\ldots z_n).P}
+
+\vspace{3 mm}
+Alcune di queste regole hanno delle condizioni.

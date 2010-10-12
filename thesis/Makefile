@@ -1,7 +1,8 @@
 THESIS_OUT=thesis.pdf
 THESIS_IN=main.tex setup.tex \
           pi-calcolo.tex \
-          racket.tex
+          racket.tex \
+          type-system.tex
 BUILD_DIR=.build
 
 PDFLATEX_OPTIONS=-halt-on-error \
