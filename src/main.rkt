@@ -32,7 +32,8 @@
     (if (id-string? n)
         (hash-set vars n (string->process v))
         (begin
-          (eprintf "~a: SET!: Invalid name ~a~n" lineno n)
+          (eprintf "~a:~a: SET!: Invalid name ~a~n"
+                   (object-name port) lineno n)
           (if (terminal-port? port)
               vars
               #f)))))
@@ -43,7 +44,8 @@
 (define (cmd-set!/sorting vars n v lineno port)
   (with-handlers ([exn:fail?
                    (lambda (e)
-                     (eprintf "~a: SET!: Invalid value ~a~n" lineno v)
+                     (eprintf "~a:~a: SET!: Invalid value ~a~n"
+                              (object-name port) lineno v)
                      (if (terminal-port? port)
                          vars
                          #f))])
@@ -60,7 +62,8 @@
             [(sorting? v) (printf "~a~n" (sorting->string v))])
           vars)
         (begin
-          (eprintf "~a: DISPLAY: Unknown name ~a~n" lineno n)
+          (eprintf "~a:~a: DISPLAY: Unknown name ~a~n"
+                   (object-name port) lineno n)
           (if (terminal-port? port)
               vars
               #f)))))
@@ -80,7 +83,8 @@
                     (printf "~a~n" (environment->string env)))))
           vars)
         (begin
-          (eprintf "~a: RESPECTS?: Need a process and a sorting~n" lineno)
+          (eprintf "~a:~a: RESPECTS?: Need a process and a sorting~n"
+                   (object-name port) lineno)
           #f))))
 
 
@@ -107,7 +111,7 @@
       [(string-ci=? cmd "RESPECTS?") (set! vars (cmd-respects? vars lop rop lineno port))]
       [(string-ci=? cmd "HELP")      (cmd-help)]
       [(string-ci=? cmd "QUIT")      (set! vars #f)]
-      [else                          (eprintf "~a: Unknown command ~a~n" lineno cmd)])
+      [else                          (eprintf "~a:~a: Unknown command ~a~n" (object-name port) lineno cmd)])
     vars))
 
 
