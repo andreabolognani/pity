@@ -1,41 +1,114 @@
 \section{Type system per il \texorpdfstring{$\pi$}{pi}-calcolo}
 
-Regole di inferenza per il $\pi$-calcolo:
+Per garantire che le comunicazioni tra i processi avvengano in maniera
+corretta, utilizziamo un type system.
+
+Prima di introdurre le regole di inferenza che costituiscono il type system
+vero e proprio, \`e necessario spiegare i concetti di \emph{sort} e
+\emph{sorting}, indispensabili alla sua realizzazione.
+
+Il concetto di sort nel $\pi$-calcolo \`e in qualche modo equivalente al
+concetto di tipo in un linguaggio di programmazione: il sort assegnato ad un
+nome determina sia quali altri nomi possano essere trasmessi o ricevuti usando
+quel nome come canale di comunicazione, sia quali altri nomi possano
+trasmettere o ricevere il nome in questione.
+
+L'insieme dei sort \`e $\mathcal{S}$, e un sorting \`e una funzione
+$\lambda : \mathcal{S} \rightarrow \mathcal{S}^{+}$ che assegna ad ogni sort
+una lista non vuota di sort: un esempio di sorting pu\`o essere
 
 \begin{pilisting}
-\inference[nil]
+$
+    \lambda(s) = (t,r) \;\;\;
+    \lambda(t) = (s)   \;\;\;
+    \lambda(r) = (r)   \;\;\;\;\;\;
+$
+con $\mathcal{S} = \{s,t,r\}$
+\end{pilisting}
+
+Questo sorting stabilisce che un nome di sort $s$ possa trasmettere due
+nomi, rispettivamente di sort $t$ e $r$; allo stesso modo, si pu\`o vedere
+come un nome di sort $r$ possa essere trasmesso o come secondo nome su un
+canale di sort $s$, sia come unico nome su un canale di sorting $r$.
+
+Dato un processo $P$, la corrispondenza tra i vari nomi $x_i \in n(P)$ e
+i rispettivi sort $s_i \in \mathcal{S}$ viene rappresentata da un
+\emph{ambiente} $\Psi$.
+
+Possiamo finalmente elencare le regole di inferenza che costituiscono il
+type system:
+
+\begin{pilisting}
+\inference[nil ]
   {}
   {\Psi |- 0}
 
-\vspace{3 mm}
+\vspace{3mm}
 \indent\indent
-\inference[rep]
+\inference[rep ]
   {\Psi |- P}
   {\Psi |- !P}
 
-\vspace{3 mm}
+\vspace{3mm}
 \indent\indent
-\inference[par]
+\inference[par ]
   {\Psi |- P_1 & \Psi |- P_2}
   {\Psi |- P_1|P_2}
 
-\vspace{3 mm}
+\vspace{3mm}
 \indent\indent
-\inference[res]
+\inference[res ]
   {\Psi,z:s |- P}
   {\Psi |- (z)P}
+$\; (1)$
 
-\vspace{3 mm}
+\vspace{3mm}
 \indent\indent
-\inference[out]
+\inference[out ]
   {\Psi |- P}
   {\Psi,x:s,y_1:t_1,\ldots,y_n:t_n |- \overline{x}\langle y_1\ldots y_n\rangle.P}
+$\; (2)$
 
-\vspace{3 mm}
+\vspace{3mm}
 \indent\indent
-\inference[inp]
+\inference[inp ]
   {\Psi,z_1:t_1,\ldots,z_n:t_n |- P}
   {\Psi,x:s |- x(z_1\ldots z_n).P}
+$\; (3)$
 \end{pilisting}
 
-Alcune di queste regole hanno delle condizioni.
+dove le condizioni per le regole {\small res}, {\small out} e {\small inp}
+sono rispettivamente
+
+\vspace{3mm}
+\indent\indent
+$
+    (1) \; z \notin n(\Psi);
+$
+\vspace{3mm}
+\\
+\indent\indent
+ $
+    (2) \; \lambda(s) = (t_1\ldots t_n),
+           \Psi \simeq x : s,
+           \Psi \simeq y_1 : t_1$ (per ogni $i$), $
+           x = y_i$ implica $ \\
+$
+\indent\indent
+$
+          \;\;\;\;\;
+          s = t_i$ (per qualche $i$) e $
+          y_i = y_j$ implica $t_i = t_j$ (per qualche $i$, $j$); $
+$
+\vspace{3mm}
+\\
+\indent\indent
+$
+    (3) \; \lambda(s) = (t_1\ldots t_n),
+           \Psi \simeq x : s$ e $z_1,\ldots,z_n \notin n(\Psi).
+$
+\vspace{3mm}
+
+Si dice che un processo $P$ \emph{rispetta} un sorting $\lambda$ se esiste
+un qualche ambiente $\Psi$ tale che \`e possibile usare le regole di
+inferenza appena descritte per derivare la conclusione $\Psi |- P$.
