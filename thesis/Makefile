@@ -1,8 +1,11 @@
 THESIS_OUT=thesis.pdf
-THESIS_IN=main.tex common.tex \
-          pi-calcolo.tex \
-          racket.tex \
-          type-system.tex
+
+THESIS_IN_MAIN=main.tex
+THESIS_IN_OTHER=common.tex \
+                pi-calcolo.tex \
+                racket.tex \
+                type-system.tex
+THESIS_IN_BIB=references.bib
 BUILD_DIR=.build
 
 PDFLATEX_OPTIONS=-halt-on-error \
@@ -10,9 +13,11 @@ PDFLATEX_OPTIONS=-halt-on-error \
                  -output-directory $(BUILD_DIR) \
                  -jobname $(THESIS_OUT:.pdf=)
 
-$(THESIS_OUT): $(BUILD_DIR) $(THESIS_IN)
-	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN)
-	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN)
+$(THESIS_OUT): $(BUILD_DIR) $(THESIS_IN_MAIN) $(THESIS_IN_OTHER) $(THESIS_IN_BIB)
+	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN_MAIN)
+	@bibtex $(BUILD_DIR)/$(THESIS_OUT:.pdf=)
+	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN_MAIN)
+	@pdflatex $(PDFLATEX_OPTIONS) $(THESIS_IN_MAIN)
 	@cp $(BUILD_DIR)/$(THESIS_OUT) $(THESIS_OUT)
 
 $(BUILD_DIR):
