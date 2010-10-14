@@ -30,7 +30,7 @@ $
     P \;\; ::= \;\; 0
       \;\; |   \;\; \pi.P
       \;\; |   \;\; P|P^{'}
-      \;\; |   \;\; \nu z \; P
+      \;\; |   \;\; \nu z \, P
       \;\; |   \;\; !P
 $
 \end{pilisting}
@@ -90,7 +90,7 @@ gruppo ristretto di processi. Nel sistema
 
 \begin{pilisting}
 $
-    \nu x \; (
+    \nu x \, (
       \overline{x}\langle y\rangle.0 \; | \;
       x(z).0
     ) \; | \;
@@ -113,7 +113,7 @@ di un semplice Web server, si arriverebbe a qualcosa di simile a
 
 \begin{pilisting}
 $
-    !s(c,q).(\nu r \; \overline{c}\langle r\rangle.0)
+    !s(c,q).(\nu r \, \overline{c}\langle r\rangle.0)
 $
 \end{pilisting}
 
@@ -125,3 +125,16 @@ $q$, che rappresentano rispettivamente il canale da usare per comunicare la
 risposta al client e la sua richiesta. Una volta ricevuti questi dati, il
 server procede a generare una risposta $r$, che invia al client sul nome $c$
 precedentemente ricevuto, e a mettersi in attesa di una nuova richiesta.
+
+Le occorrenze di $x$ in $\nu x \, P$ e in $ a(x).P$ sono \emph{leganti}:
+questo significa che tutte le occorrenze successive di $x$ in $P$ fanno
+riferimento allo stesso nome $x$. L'insieme dei nomi legati in un processo
+$P$ si indica con $bn(P)$.
+
+Le occorrenze di un nome che non sono nello scope di un'occorrenza legante
+sono \emph{libere}: ad esempio, l'occorrenza di $a$ in
+$\overline{a}\langle b\rangle.P$ \`e libera, mentre in
+$\nu a \; \overline{a}\langle b\rangle.P$ il nome $a$ non ha occorrenze
+libere. L'insieme dei nomi liberi in $P$ si indica con $fn(P)$.
+
+L'insieme dei nomi di $P$ si definisce come $n(P) = fn(P) \cup bn(P)$.
