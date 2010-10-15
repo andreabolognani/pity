@@ -4,7 +4,8 @@ THESIS_IN_MAIN=main.tex
 THESIS_IN_OTHER=common.tex \
                 pi-calcolo.tex \
                 racket.tex \
-                type-system.tex
+                type-system.tex \
+                implementazione/*
 THESIS_IN_BIB=references.bib
 BUILD_DIR=.build
 

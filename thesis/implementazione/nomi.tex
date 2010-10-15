@@ -1,0 +1,33 @@
+\subsection{Nomi}
+
+Come abbiamo visto, il concetto di nome \`e alla base del $\pi$-calcolo,
+quindi viene naturale partire con l'implementazione proprio creando creando
+un modo di rappresentare un nome.
+
+Il modulo \lstinline{pity/name} contiene l'implementazione di un nome: il
+punto di partenza \`e ovviamente la dichiarazione di un nuovo tipo, chiamato
+proprio \lstinline{name}, che verr\`a usato per rappresentare un nome. La
+dichiarazione \`e la seguente:
+
+\begin{lstlisting}
+      (struct name (n)
+                   #:guard name-guard
+                   #:transparent)
+\end{lstlisting}
+
+La struttura dichiarata contiene un singolo campo, \lstinline{n}, ed \`e
+dichiarata come \emph{trasparente} tramite l'uso della keyword
+\lstinline{#:transparent}: le strutture trasparenti in Racket possono essere
+confrontate in maniera naturale tramite il predicato standard
+\lstinline{equal?}, il che ci solleva dall'onere di dover dichiarare una
+nostra procedura di confronto tra nomi, che si ridurrebbe al semplice
+confronto tra le stringhe contenute nei campi \lstinline{n}.
+
+Inoltre, usando la keyword \lstinline{#:guard}, la procedura
+\lstinline{name-guard} viene designata come \emph{guardia} per il nuovo
+tipo: questo tipo di procedura ha un significato particolare, che \`e bene
+spiegare brevemente, visto ne verr\`a fatto ampio uso.
+
+Racket \`e un linguaggio a tipizzazione dinamica; in quanto tale, non
+richiede al programmatore di dichiarare il tipo n\'e delle variabili, n\'e
+degli argomenti di una procedura.

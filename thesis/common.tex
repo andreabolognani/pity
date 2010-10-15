@@ -10,7 +10,8 @@
 % Simple (and incomplete) Racket language definition
 \lstdefinelanguage{Racket}
 	{morekeywords={lambda,
-                   define, define-struct, let, let*,
+                   define, struct, let, let*,
+                   equal?,
                    list, car, cdr, map, foldl,
                    +, -, *, /,
                    display, newline},
@@ -29,4 +30,4 @@
         numbersep=-30pt}
 
 % List of bindings we are defining
-\lstset{emph={}}
+\lstset{emph={name, name-guard}}
