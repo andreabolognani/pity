@@ -23,9 +23,10 @@
 
 @title[#:tag "processes"]{Processes}
 
-@declare-exporting[pity]
+@defmodule[pity/process]{
 
 Procedures to create and manipulate processes.
+}
 
 @defproc[(nil) nil?]{
 
@@ -37,17 +38,7 @@ Returns a nil process.
 Returns @racket[#t] if @racket[v] is a @racket[nil] process, @racket[#f] otherwise.
 }
 
-@defproc[(replication [p process?]) replication?]{
-
-Returns the replication of the process @racket[p].
-}
-
-@defproc[(replication? [v any/c]) boolean?]{
-
-Returns @racket[#t] if @racket[v] is a replication, @racket[#f] otherwise.
-}
-
-@defproc[(input [x name?] [y (non-empty-listof name?)]) input?]{
+@defproc[(input [x name?] [y (non-empty-listof-distinct name?)]) input?]{
 
 Returns an input over the channel @racket[x] to the names contained
 in @racket[y].
@@ -58,7 +49,7 @@ in @racket[y].
 Returns @racket[#t] if @racket[v] is an input, @racket[#f] otherwise.
 }
 
-@defproc[(output [x name?] [y (non-empty-listof name?)]) output?]{
+@defproc[(output [x name?] [y (non-empty-listof-distinct name?)]) output?]{
 
 Returns an output over the channel @racket[x] of the names contained
 in @racket[y].
@@ -67,6 +58,17 @@ in @racket[y].
 @defproc[(output? [v any/c]) boolean?]{
 
 Returns @racket[#t] if @racket[v] is an output, @racket[#f] otherwise.
+}
+
+@defproc[(prefix [a action?] [p process?]) prefix?]{
+
+Returns a process which has @racket[a] as prefix and @racket[p]
+as continuation.
+}
+
+@defproc[(prefix? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a prefix, @racket[#f] otherwise.
 }
 
 @defproc[(restriction [x name?] [p process?]) restriction?]{
@@ -81,6 +83,16 @@ Returns @racket[#t] if @racket[v] is a restriction, @racket[#f]
 otherwise.
 }
 
+@defproc[(replication [p process?]) replication?]{
+
+Returns the replication of the process @racket[p].
+}
+
+@defproc[(replication? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a replication, @racket[#f] otherwise.
+}
+
 @defproc[(composition [p process?] [q process?]) composition?]{
 
 Returns the parallel composition of processes @racket[p] and
@@ -93,38 +105,43 @@ Returns @racket[#t] if @racket[v] is a composition, @racket[#f]
 otherwise.
 }
 
-@defproc[(prefix [p process?] [q process?]) prefix?]{
-
-Returns a process which has @racket[p] as prefix and @racket[q]
-as continuation.
-}
-
-@defproc[(prefix? [v any/c]) boolean?]{
-
-Returns @racket[#t] if @racket[v] is a prefix, @racket[#f] otherwise.
-}
-
 @defproc[(process? [v any/c]) boolean?]{
 
 Returns @racket[#t] if @racket[v] is a process, @racket[#f] otherwise.
 }
 
-@defproc[(free-names [p process?]) (setof name?)]{
+@defproc[(action? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a input or output action,
+@racket[#f] otherwise.
+}
+
+@defproc[(process-free-names [p process?]) (setof name?)]{
 
 Returns a @racket[set] containing all the names that have a free
 occurence in @racket[p].
 }
 
-@defproc[(bound-names [p process?]) (setof name?)]{
+@defproc[(process-bound-names [p process?]) (setof name?)]{
 
 Returns a @racket[set] containing all the names that have a bound
 occurence in @racket[p].
 }
 
-@defproc[(names [p process?]) (setof name?)]{
+@defproc[(process-names [p process?]) (setof name?)]{
 
 Returns a @racket[set] containing all the names that have an
 occurence in @racket[p].
+}
+
+@defproc[(process-refresh-name [p process?] [n name?]) process?]{
+
+Returns a process which behaves like @racket[p], but where all
+occurrences of the name @racket[n] are replaced with a refreshed name.
+
+For a definition of ``refreshed name'', see @racket[name-refresh]. The
+refreshed name is chosen so that no free name or bound name capture
+occurs.
 }
 
 @defproc[(process-environments [p process?]
@@ -147,8 +164,7 @@ of valid environments if it does.
 
 Returns the process obtained by parsing @racket[str].
 
-Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
-correctly.
+Raises @racket[exn:fail] if @racket[str] cannot be parsed correctly.
 }
 
 @defproc[(process->string [p process?]) string?]{

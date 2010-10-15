@@ -23,11 +23,12 @@
 
 @title[#:tag "names"]{Names}
 
-@declare-exporting[pity]
+@defmodule[pity/name]{
 
 Procedures to create and manipulate names.
+}
 
-@defproc[(name [v non-empty-string?]) name?]{
+@defproc[(name [v id-string?]) name?]{
 
 Returns a new name for the non-empty string @racket[v].
 }
@@ -35,6 +36,19 @@ Returns a new name for the non-empty string @racket[v].
 @defproc[(name? [v any/c]) boolean?]{
 
 Returns @racket[#t] if @racket[v] is a name, @racket[#f] otherwise.
+}
+
+@defproc[(name-max [n1 name?] [n2 name?]) name?]{
+
+Returns the freshest name between @racket[n1] and @racket[n2].
+}
+
+@defproc[(name-refresh [n name?]) name?]{
+
+Returns a new name which is a refreshed version of @racket[n].
+
+A name is refreshed by increasing its numeric part; if the @racket[n]
+has no numeric part, it is added.
 }
 
 @defproc[(name->string [n name?]) string?]{

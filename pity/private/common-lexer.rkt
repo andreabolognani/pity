@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -21,9 +21,20 @@
 (require parser-tools/lex)
 
 
+
+; Tokens
+;-------
+
+
 (define-empty-tokens common-symbols (EOF NIL DOT COMMA PIPE BANG
-                                     COLON SEMICOLON EQ LP RP LAB RAB))
+                                     COLON SEMICOLON EQ
+                                     LP RP LAB RAB LCB RCB))
 (define-tokens       common-values  (ID))
+
+
+
+; Lexer abbreviations
+; -------------------
 
 
 (define-lex-abbrevs
@@ -31,6 +42,11 @@
   (digit (char-range "0" "9"))
   (space (union #\tab #\space))
   (id (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
+
+
+
+; Lexer
+; -----
 
 
 (define common-lexer
@@ -48,11 +64,16 @@
     [")"    (token-RP)]
     ["<"    (token-LAB)]
     [">"    (token-RAB)]
+    ["{"    (token-LCB)]
+    ["}"    (token-RCB)]
     [space  (common-lexer input-port)] ; Skip whitespace
     [(eof)  (token-EOF)]))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide
   common-symbols
   common-values

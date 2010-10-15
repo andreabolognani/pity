@@ -23,9 +23,10 @@
 
 @title[#:tag "environments"]{Environments}
 
-@declare-exporting[pity]
+@defmodule[pity/environment]{
 
 Procedures to create and modify environments.
+}
 
 An environment is used to hold mappings from names to sorts when
 typing a process.
@@ -111,14 +112,14 @@ Returns the set of names which have a mapping in @racket[env].
          boolean?]{
 
 Returns @racket[#t] if the mapping from @racket[n] to @racket[s] is
-compatible with the mappings in @racket[env].}
+compatible with the mappings in @racket[env].
+}
 
 @defproc[(string->environment [str string?]) environment?]{
 
 Returns the environment obtained by parsing @racket[str].
 
-Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
-correctly.
+Raises @racket[exn:fail] if @racket[str] cannot be parsed correctly.
 }
 
 @defproc[(environment->string [env environment?]) string?]{

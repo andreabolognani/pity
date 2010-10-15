@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,12 +18,44 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "contracts.rkt")
+(require racket/contract
+         racket/string
+         "contracts.rkt")
 
 
-(define-struct sort (s) #:transparent)
+
+; Constructor guards
+; ------------------
+;
+;  Make sure the structure contract is respected.
 
 
+; Guard for sorts
+(define (sort-guard s type-name)
+  (when (not (id-string? s))
+        (error type-name
+               "s is not an id-string?"))
+  (values s))
+
+
+
+; Structures definition
+; ---------------------
+
+
+(struct sort (s)
+             #:guard sort-guard
+             #:transparent)
+
+
+
+; Conversion routines
+; -------------------
+;
+;  Convert a sort or a list of sorts to a string.
+
+
+; Convert a sort to a string
 (define (sort->string s)
   (sort-s s))
 
@@ -33,9 +65,12 @@
   (string-join (map sort->string lst) ","))
 
 
+
 ; Export public symbols
+; ---------------------
+
+(provide
+  (struct-out sort))
 (provide/contract
-  [sort              (non-empty-string? . -> . sort?)]
-  [sort?             (any/c             . -> . boolean?)]
-  [sort->string      (sort?             . -> . string?)]
-  [sort-list->string ((listof sort?)    . -> . string?)])
+  [sort->string      (sort?          . -> . string?)]
+  [sort-list->string ((listof sort?) . -> . string?)])

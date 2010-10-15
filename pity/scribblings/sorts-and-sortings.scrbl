@@ -23,13 +23,16 @@
 
 @title[#:tag "sorts-and-sortings"]{Sorts and sortings}
 
-@declare-exporting[pity]
-
-Procedures to create and modify sorts and sortings.
+Procedures to create and manipulate sorts and sortings.
 
 @section{Sorts}
 
-@defproc[(sort [s non-empty-string?]) sort?]{
+@defmodule[pity/sort]{
+
+Procedures to create and manipulate sorts.
+}
+
+@defproc[(sort [s id-string?]) sort?]{
 
 Returns a new sort.}
 
@@ -52,6 +55,17 @@ comma-separated.
 
 @section{Sortings}
 
+@defmodule[pity/sorting]{
+
+Procedures to create and manipulate sortings.
+
+A sorting contains mappings from subject sorts to object sorts.
+
+The subject sort is the one assigned to a name used for transmission,
+the object sort is a list of sorts assigned to each of the names
+transmitted or received.
+}
+
 @defproc[(sorting) sorting?]{
 
 Returns an empty sorting.
@@ -69,7 +83,7 @@ Returns @racket[#t] if @racket[v] is a sorting, @racket[#f] otherwise.
          (or/c (non-empty-listof sort?) #f)]{
 
 Returns the object sorting for @racket[subj], or @racket[#f] if
-@racket[subj] has no object sorting in @racket[s].
+@racket[subj] has no object sort in @racket[s].
 }
 
 @defproc[(sorting-set [s sorting?]
@@ -101,8 +115,7 @@ Returns the set of sorts which have mappings in @racket[s].
 
 Returns the sorting obtained by parsing @racket[str].
 
-Raises @racket[exn:fail:read] if @racket[str] cannot be parsed
-correctly.
+Raises @racket[exn:fail] if @racket[str] cannot be parsed correctly.
 }
 
 @defproc[(sorting->string [s sorting?]) string?]{

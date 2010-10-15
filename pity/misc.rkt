@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,13 +18,32 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "contracts.rkt")
+(require racket/contract
+         racket/set
+         "contracts.rkt")
+
+
+
+; Miscellaneous procedures
+; ------------------------
+;
+;  These routines work on built-in types and are used in many
+;  different modules.
 
 
 ; Make a procedure which accepts the same
 ; arguments as proc, only in reverse order
 (define (flip proc)
   (lambda rest (apply proc (reverse rest))))
+
+
+; Replace all matching elements with a new value
+(define (list-replace lst a b)
+  (if (null? lst)
+    lst
+    (if (equal? (car lst) a)
+        (cons b (list-replace (cdr lst) a b))
+        (cons (car lst) (list-replace (cdr lst) a b)))))
 
 
 ; Convert a list to a set
@@ -42,20 +61,13 @@
   (not (set-empty? (set-intersect s (list->set lst)))))
 
 
-(define (display-list lst
-                      [out (current-output-port)]
-                      #:separator [separator #\newline])
-  (unless (empty? lst)
-    (display (car lst) out)
-    (unless (empty? (cdr lst))
-      (display separator out)
-      (display-list (cdr lst) out #:separator separator))))
-
 
 ; Export public symbols
+; ---------------------
+
 (provide/contract
-  [flip            (procedure?                               . ->  . procedure?)]
-  [list->set       (list?                                    . ->  . set?)]
-  [set->list       (set?                                     . ->  . list?)]
-  [set-member-any? (set? list?                               . ->  . boolean?)]
-  [display-list    ((list?) (output-port? #:separator any/c) . ->* . void?)])
+  [flip            (procedure?        . -> . procedure?)]
+  [list-replace    (list? any/c any/c . -> . list?)]
+  [list->set       (list?             . -> . set?)]
+  [set->list       (set?              . -> . list?)]
+  [set-member-any? (set? list?        . -> . boolean?)])

@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -24,7 +24,6 @@
          "sorting.rkt"
          "environment.rkt"
          "contracts.rkt"
-         "private.rkt"
          "misc.rkt")
 
 
@@ -35,5 +34,4 @@
                        "sorting.rkt"
                        "environment.rkt"
                        "contracts.rkt"
-                       "private.rkt"
                        "misc.rkt"))

@@ -23,9 +23,15 @@
 
 @title[#:tag "contracts"]{Contracts}
 
-@declare-exporting[pity]
+@defmodule[pity/contracts]{
 
-Pretty generic contracts one would expect to find built-in.
+Additional contracts used to guarantee type safety.
+}
+
+@section{Generic contracts}
+
+These contracts are generic enough that including them in the
+Racket standard library would probably make sense.
 
 @defproc[(setof [c contract?]) contract?]{
 
@@ -39,8 +45,35 @@ Returns a contract that recognizes a non-empty set whose every element
 matches the contract @racket[c].
 }
 
+@defproc[(listof-distinct [c contract?]) contract?]{
+
+Returns a contract that recognizes a list with no duplicates whose
+every element matches the contract @racket[c].
+}
+
+@defproc[(non-empty-listof-distinct [c contract?]) contract?]{
+
+Returns a contract that recognizes a non-empty list with no duplicates
+whose every element matches the contract @racket[c].
+}
+
 @defproc[(non-empty-string? [v any/c]) boolean?]{
 
 Returns @racket[#t] if @racket[v] is a non-empty string, @racket[#f]
 otherwise.
+}
+
+@section{Specific contracts}
+
+These contracts are tied to the application, and would make little
+sense outside of it.
+
+@defproc[(id-string? [v any/c]) boolean?]{
+
+Returns @racket[#t] if @racket[v] is a string suitable for use as id,
+@racket[#f] otherwise.
+
+An id string is made by an alphabetic character, possibly followed by
+any number of alphabetic characters, possibly followed by any number
+of digits.
 }

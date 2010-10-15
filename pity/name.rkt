@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,16 +18,71 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "contracts.rkt")
+(require racket/contract
+         racket/string
+         "contracts.rkt")
 
 
-(define-struct name (n) #:transparent)
+
+; Constructor guards
+; ------------------
+;
+;  Make sure the structure contract is respected.
+
+
+; Guard for names
+(define (name-guard n type-name)
+  (when (not (id-string? n))
+        (error type-name
+               "n is not an id-string?"))
+  (values n))
+
+
+
+; Structures definition
+; ---------------------
+
+
+(struct name (n)
+             #:guard name-guard
+             #:transparent)
+
+
+
+; Operations on names
+; -------------------
+;
+;  Refresh names and compare names freshness.
+
+
+; Return the freshest between two names
+(define (name-max a b)
+  (let ([na (name-n a)]
+        [nb (name-n b)])
+    (if (string>=? na nb)
+        a
+        b)))
+
+
+; Refresh the name by increasing the number part, adding it if
+; it's not already present
+(define (name-refresh self)
+  (let* ([n (name-n self)]
+         [parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
+         [str (cadr parts)]
+         [num (caddr parts)]
+         [num (if (string=? num "") 0 (string->number num))]
+         [num (+ num 1)]
+         [n (string-append str (number->string num))])
+    (name n)))
+
 
 
 ; Conversion routines
 ; -------------------
 ;
-;  Convert names and lists of names to strings, and the other way around.
+;  Convert names and lists of names to strings, and the other way
+;  around.
 
 
 ; Make a string out of a name
@@ -46,10 +101,15 @@
         [else (map name (regexp-split #rx", *" str))]))
 
 
-;; Export public symbols
+
+; Export public symbols
+; ---------------------
+
+(provide
+  (struct-out name))
 (provide/contract
-  [name              (non-empty-string? . -> . name?)]
-  [name?             (any/c             . -> . boolean?)]
-  [name->string      (name?             . -> . string?)]
-  [name-list->string ((listof name?)    . -> . string?)]
-  [string->name-list (string?           . -> . (listof name?))])
+  [name-max          (name? name?    . -> . name?)]
+  [name-refresh      (name?          . -> . name?)]
+  [name->string      (name?          . -> . string?)]
+  [name-list->string ((listof name?) . -> . string?)]
+  [string->name-list (string?        . -> . (listof name?))])

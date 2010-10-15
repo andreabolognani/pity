@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,41 +18,60 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require pity
+(require racket/set
+         pity
          "repl.rkt")
 
 
 ; Assign a value to a name, parsing it as a process.
 ; If parsing as a process fails, try to parse it as a sorting.
-(define (cmd-set! vars n v lineno)
-  (with-handlers ([exn:fail:read?
+(define (cmd-set! vars n v lineno port)
+  (with-handlers ([exn:fail?
                    (lambda (e)
-                     (cmd-set!/sorting vars n v lineno))])
-    (hash-set vars n (string->process v))))
+                     (cmd-set!/sorting vars n v lineno port))])
+    (if (id-string? n)
+        (hash-set vars n (string->process v))
+        (begin
+          (eprintf "~a:~a: SET!: Invalid name ~a~n"
+                   (object-name port) lineno n)
+          (if (terminal-port? port)
+              vars
+              #f)))))
 
 
 ; Assign a value to a name, parsing it as a sorting.
 ; If parsing fails, print an error message.
-(define (cmd-set!/sorting vars n v lineno)
-  (with-handlers ([exn:fail:read?
+(define (cmd-set!/sorting vars n v lineno port)
+  (with-handlers ([exn:fail?
                    (lambda (e)
-                     (printf "~a: SET!: Invalid value~n" lineno)
-                     vars)])
+                     (eprintf "~a:~a: SET!: Invalid value ~a~n"
+                              (object-name port) lineno v)
+                     (if (terminal-port? port)
+                         vars
+                         #f))])
     (hash-set vars n (string->sorting v))))
 
 
 ; Display a value according to its type.
-(define (cmd-display vars n)
+(define (cmd-display vars n lineno port)
   (let ([v (hash-ref vars n #f)])
-    (cond
-      [(process? v) (printf "~a~n" (process->string v))]
-      [(sorting? v) (printf "~a~n" (sorting->string v))]
-      [else (printf "")])))
+    (if v
+        (begin
+          (cond
+            [(process? v) (printf "~a~n" (process->string v))]
+            [(sorting? v) (printf "~a~n" (sorting->string v))])
+          vars)
+        (begin
+          (eprintf "~a:~a: DISPLAY: Unknown name ~a~n"
+                   (object-name port) lineno n)
+          (if (terminal-port? port)
+              vars
+              #f)))))
 
 
 ; Check whether the process pointed to by n1 respects the sorting
 ; pointed to by n2. If it does, print all the valid environments.
-(define (cmd-respects? vars n1 n2 lineno)
+(define (cmd-respects? vars n1 n2 lineno port)
   (let ([p (hash-ref vars n1 #f)]
         [srt (hash-ref vars n2 #f)])
     (if (and (process? p) (sorting? srt))
@@ -61,8 +80,12 @@
                 (set-for-each
                   res
                   (lambda (env)
-                    (printf "~a~n" (environment->string env))))))
-        (printf "~a: RESPECTS?: Need a process and a sorting~n" lineno))))
+                    (printf "~a~n" (environment->string env)))))
+          vars)
+        (begin
+          (eprintf "~a:~a: RESPECTS?: Need a process and a sorting~n"
+                   (object-name port) lineno)
+          #f))))
 
 
 ; Display an help message
@@ -77,21 +100,26 @@
 
 
 ; Parse the input and act accordingly
-(define (action line lineno vars)
+(define (action line lineno port vars)
   (let* ([parts (regexp-split #rx" +" line)]
          [cmd (car parts)]
          [lop (if (< (length parts) 2) "" (cadr parts))]
          [rop (if (< (length parts) 3) "" (apply string-append (cddr parts)))])
     (cond
-      [(string-ci=? cmd "SET!") (set! vars (cmd-set! vars lop rop lineno))]
-      [(string-ci=? cmd "DISPLAY") (cmd-display vars lop)]
-      [(string-ci=? cmd "RESPECTS?") (cmd-respects? vars lop rop lineno)]
-      [(string-ci=? cmd "HELP") (cmd-help)]
-      [(string-ci=? cmd "QUIT") (set! vars #f)]
-      [else (printf "Unknown command ~a~n" cmd)])
+      [(string-ci=? cmd "SET!")      (set! vars (cmd-set! vars lop rop lineno port))]
+      [(string-ci=? cmd "DISPLAY")   (set! vars (cmd-display vars lop lineno port))]
+      [(string-ci=? cmd "RESPECTS?") (set! vars (cmd-respects? vars lop rop lineno port))]
+      [(string-ci=? cmd "HELP")      (cmd-help)]
+      [(string-ci=? cmd "QUIT")      (set! vars #f)]
+      [else                          (eprintf "~a:~a: Unknown command ~a~n" (object-name port) lineno cmd)])
     vars))
 
 
 ; Start the evaluation loop
-(let ([ignored (repl action (hash) "pity> ")])
-  (display ""))
+(let* ([args (current-command-line-arguments)]
+       [infile (if (< (vector-length args) 1) #f (vector-ref args 0))]
+       [port (if (not infile) (current-input-port) (open-input-file infile))])
+  (repl action (hash) "pity> " port)
+  (display "")
+  (unless (equal? (current-input-port) port)
+          (close-input-port port)))

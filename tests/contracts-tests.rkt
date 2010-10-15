@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,7 +18,8 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require rackunit
+(require racket/set
+         rackunit
          pity)
 
 
@@ -41,6 +42,39 @@
     (test-case
       "Test non-empty-string? on a name"
       (check-false (non-empty-string? (name "x"))))
+
+    (test-case
+      "Test id-string? on a number"
+      (check-false (id-string? 42)))
+
+    (test-case
+      "Test id-string? on an empty string"
+      (check-false (id-string? "")))
+
+	(test-case
+      "Test id-string? on a string starting with a digit"
+      (check-false (id-string? "1a")))
+
+    (test-case
+      "Test id-string? on a string containing illegal symbols"
+      (check-false (id-string? "a_b")))
+
+    (test-case
+      "Test id-string? on a string containing digits not in tail position"
+      (check-false (id-string? "r2d2")))
+
+    (test-case
+      "Test id-string? on a suitable string (one character)"
+      (check-true (id-string? "a")))
+
+    (test-case
+      "Test id-string? on a suitable string (many characters)"
+      (check-true (id-string? "LaTeX")))
+
+    (test-case
+      "Test id-string? on a suitable string"
+      (check-true (id-string? "plan9"))
+      (check-true (id-string? "Python3000")))
 
     (test-case
       "Test (setof string?) on a set of strings"
@@ -125,7 +159,22 @@
     (test-case
       "Test (setof #rx\"a|b\") on a single matching string"
       (check-false ((setof #rx"a|b") "a"))
-      (check-false ((non-empty-setof #rx"a|b") "a")))))
+      (check-false ((non-empty-setof #rx"a|b") "a")))
+
+    (test-case
+      "Test (listof-distinct string?) on the empty list"
+      (check-true ((listof-distinct string?) (list)))
+      (check-false ((non-empty-listof-distinct string?) (list))))
+
+    (test-case
+      "Test (listof-distinct string?) on a list of string with duplicates"
+      (check-false ((listof-distinct string?) (list "a" "a")))
+      (check-false ((non-empty-listof-distinct string?) (list "a" "a"))))
+
+    (test-case
+      "Test (listof-distinct string?) on a list of strings"
+      (check-true ((listof-distinct string?) (list "g" "a")))
+      (check-true ((non-empty-listof-distinct string?) (list "g" "a"))))))
 
 
 ; Export public symbols

@@ -23,9 +23,10 @@
 
 @title[#:tag "miscellaneous"]{Miscellaneous}
 
-@declare-exporting[pity]
+@defmodule[pity/misc]{
 
 Miscellaneous procedures.
+}
 
 @defproc[(flip [proc procedure?]) procedure?]{
 
@@ -36,6 +37,11 @@ This is mainly useful when calling @racket[foldl] on a list with
 a function like @racket[set-add] as argument.
 
 Caveat: it doesn't work when keyword arguments are involved.
+}
+
+@defproc[(list-replace [lst list?] [a any/c] [b any/c]) list?]{
+
+Returns all occurrences of @racket[a] in @racket[lst] with @racket[b].
 }
 
 @defproc[(list->set [lst list?]) set?]{
@@ -57,13 +63,4 @@ such that calling @racket[list->set] on it will return a set that is
 
 Returns @racket[#t] if any of the items in @racket[lst] is a
 member of @racket[s], @racket[#f] otherwise.
-}
-
-@defproc[(display-list [lst list?]
-                       [out output-port? (current-output-port)]
-                       [#:separator separator any/c #\newline])
-          void?]{
-
-Like @racket[display-lines], except @racket[separator] is not printed
-after the last element of @racket[lst].
 }

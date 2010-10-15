@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Pity: Pi-Calculus Type Checking
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
@@ -18,18 +18,40 @@
 ; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
-(require "name.rkt"
+(require racket/contract
+         racket/function
+         racket/string
+         parser-tools/yacc
+         "private/common-lexer.rkt"
+         "name.rkt"
          "sort.rkt"
          "contracts.rkt"
          "misc.rkt")
 
 
-(define-struct environment (mappings) #:transparent)
+
+; Structures definition
+; ---------------------
+
+
+(struct environment (mappings)
+                    #:transparent)
 
 
 ; Empty environment, to be used as a starting point
+;
+; This procedure is renamed to environment when exporting; inside this
+; module, environment is the actual constructor.
 (define (empty-environment)
   (environment (hash)))
+
+
+
+; Manipulation routines
+; ---------------------
+;
+;  These procedures are used to manipulate environments by adding
+;  mappings, removing mappings, or getting the sort for a name.
 
 
 ; Get sort for a single name
@@ -51,7 +73,7 @@
 
 ; Add multiple mappings to an environment
 (define (environment-set-multiple self n s)
-  (if (or (empty? n) (empty? s))
+  (if (or (null? n) (null? s))
     self
     (environment-set-multiple (environment-set self (car n) (car s))
                               (cdr n)
@@ -82,18 +104,61 @@
         (equal? r s))))
 
 
-; Conversion functions
+
+; Conversion routines
 ; --------------------
+;
+;  Convert strings to environments, and the other way around.
 
 
 ; Convert an environment to a string
 (define (environment->string self)
   (let ([mappings (environment-mappings self)])
-    (string-join (hash-map mappings mapping->string) ",")))
+    (string-append "{"
+                   (string-join (hash-map mappings mapping->string) ",")
+                   "}")))
 
 
-; Internal functions
-; ------------------
+; Convert a string to an environment
+(define (string->environment str)
+  (if (not (equal? str "{}"))
+    (with-handlers ([exn:fail?
+                     (lambda (e)
+                       (raise (exn:fail "Error while parsing environment"
+                                        (exn-continuation-marks e))))])
+      (let ([ip (open-input-string str)])
+        (environment-parser (lambda () (common-lexer ip)))))
+    (empty-environment)))
+
+
+; Parser for environments
+(define environment-parser
+  (parser
+
+    (start  environment)
+    (end    EOF)
+    (tokens common-symbols common-values)
+    (error  (lambda (a b c) (void)))
+
+    (grammar
+
+      (environment
+        [(LCB contents RCB)       $2])
+
+      (contents
+        [(binding)                (environment-set (empty-environment) (car $1) (cdr $1))]
+        [(contents COMMA binding) (environment-set $1 (car $3) (cdr $3))])
+
+      (binding
+        [(id COLON id)            (cons (name $1) (sort $3))])
+
+      (id
+        [(ID)                     $1]))))
+
+
+
+; Utility functions
+; -----------------
 
 
 ; Convert an environment mapping to a string.
@@ -101,7 +166,10 @@
   (string-append (name->string n) ":" (sort->string s)))
 
 
+
 ; Export public symbols
+; ---------------------
+
 (provide/contract
   [rename empty-environment
    environment                 (                                             ->   environment?)]
@@ -111,7 +179,8 @@
   [environment-set             (environment? name? sort?                   . -> . environment?)]
   [environment-set-multiple    (environment? (listof name?) (listof sort?) . -> . environment?)]
   [environment-remove          (environment? name?                         . -> . environment?)]
-  [environment-remove-multiple (environment (listof name?)                 . -> . environment?)]
+  [environment-remove-multiple (environment? (listof name?)                . -> . environment?)]
   [environment-domain          (environment?                               . -> . (setof name?))]
   [environment-compatible?     (environment? name? sort?                   . -> . boolean?)]
-  [environment->string         (environment?                               . -> . string?)])
+  [environment->string         (environment?                               . -> . string?)]
+  [string->environment         (string?                                    . -> . environment?)])
