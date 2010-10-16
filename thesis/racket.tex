@@ -11,9 +11,11 @@ ragionevolmente essere considerato una sua implementazione.
 
 Le ragioni che hanno portato ad utilizzare Racket anzich\'e una delle
 numerose implementazioni del linguaggio Scheme cos\`i come definito nello
-standard R5RS sono molteplici: innanzitutto, Scheme \`e un linguaggio
-progettato secondo criteri di minimalismo, e se questo ha da una parte
-portato ad un'encomiabile purezza del risultato, dall'altra rende necessario
+standard R$^{5}$RS (Revised$^{5}$ Report on the Algorithmic Language
+Scheme\cite{r5rs}, la versione pi\`u diffusamente supportata) sono
+molteplici: innanzitutto, Scheme \`e un linguaggio progettato secondo
+criteri di minimalismo, e se questo ha da una parte portato ad
+un'encomiabile purezza del risultato, dall'altra rende necessario
 l'utilizzo di librerie esterne per svolgere compiti quali la generazione di
 parser, il pattern matching o lo sviluppo di una test suite; Racket, dal
 canto suo, fornisce implementazioni complete e solide di tutte queste
@@ -128,10 +130,10 @@ lista contenente gli elementi trasformati:
 La chiamata a \lstinline{map} applica la funzione \lstinline{(curry max 4)}
 ad ogni elemento di \lstinline{lst}, accumulando i risultati in una lista.
 
-La funzione \lstinline{curry}, non definita nello standard R5RS ma fornita
-da Racket, permette di generare funzioni curryficate: lo stesso effetto si
-sarebbe potuto ottenere, in maniera meno tersa, utilizzando la sintassi
-\lstinline{lambda} nel seguente modo:
+La funzione \lstinline{curry}, non definita nello standard R$^{5}$RS ma
+fornita da Racket, permette di generare funzioni curryficate: lo stesso
+effetto si sarebbe potuto ottenere, in maniera meno tersa, utilizzando la
+sintassi \lstinline{lambda} nel seguente modo:
 
 \begin{lstlisting}
       (define lst (list 6 2 4))
