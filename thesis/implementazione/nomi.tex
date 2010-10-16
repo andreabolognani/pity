@@ -5,8 +5,8 @@ quindi viene naturale partire con l'implementazione proprio creando creando
 un modo di rappresentare un nome.
 
 Il modulo \lstinline{pity/name} contiene l'implementazione di un nome: il
-punto di partenza \`e ovviamente la dichiarazione di un nuovo tipo, chiamato
-proprio \lstinline{name}, che verr\`a usato per rappresentare un nome. La
+punto di partenza \`e la dichiarazione di un nuovo tipo, chiamato proprio
+\lstinline{name}, che verr\`a usato per rappresentare un nome. La
 dichiarazione \`e la seguente:
 
 \begin{lstlisting}
@@ -24,10 +24,52 @@ nostra procedura di confronto tra nomi, che si ridurrebbe al semplice
 confronto tra le stringhe contenute nei campi \lstinline{n}.
 
 Inoltre, usando la keyword \lstinline{#:guard}, la procedura
-\lstinline{name-guard} viene designata come \emph{guardia} per il nuovo
-tipo: questo tipo di procedura ha un significato particolare, che \`e bene
-spiegare brevemente, visto ne verr\`a fatto ampio uso.
+\lstinline{name-guard} viene designata come \emph{guardia} per la struttura:
+questo tipo di procedura viene utilizzata in una maniera particolare che \`e
+bene spiegare, visto che ne verr\`a fatto ampio uso.
 
 Racket \`e un linguaggio a tipizzazione dinamica; in quanto tale, non
 richiede al programmatore di dichiarare il tipo n\'e delle variabili, n\'e
-degli argomenti di una procedura.
+degli argomenti di una procedura: tuttavia, se una delle procedure standard
+viene chiamata con argomenti non compatibili -- ad esempio, la procedura
+\lstinline{car}, che lavora su coppie, viene chiamata con argomento
+\lstinline{2} --  viene segnalato un errore.
+
+Ci sono vari modi per ottenere lo stesso comportamento per le strutture e
+le procedure definite dall'utente: uno di questi modi \`e appunto usare una
+guardia, che consente di analizzare gli argomenti passati al costruttore e
+di interrompere la costruzione se non sono di tipo compatibile.
+
+La guardia per la struttura \lstinline{name} \`e
+
+\begin{lstlisting}
+      (define (name-guard n type-name)
+        (when (not (id-string? n))
+              (error type-name
+                     (format "expected <id-string?>, given: ~a" n)))
+        (values n))
+\end{lstlisting}
+
+Come prima cosa ci si assicura che \lstinline{n}, la stringa passata al
+costruttore, rispetti il contratto \lstinline{id-string?}, emettendo un
+errore in caso contrario; se il controllo \`e andato a buon fine, la
+procedura prosegue restituendo il valore \lstinline{n} invariato, e la
+costruzione del nome prosegue.
+
+Il predicato \lstinline{id-string?} verifica che una stringa sia adatta
+ad essere utilizzata come identificatore: nel nostro caso, un
+identificatore deve essere costituito da un numero positivo di lettere,
+eventualmente seguite da un numero positivo di cifre. Le motivazioni che
+hanno dettato questa scelta verranno spiegate tra poco.
+
+L'implementazione del predicato \`e resa estremamente semplice dal supporto
+alle espressioni regolari di Racket:
+
+\begin{lstlisting}
+      (define (id-string? x)
+        (and (string? x)
+             (regexp-match #rx"^[a-zA-Z]+[0-9]*$" x)))
+\end{lstlisting}
+
+Il risultato della chiamata \`e \lstinline{#t} se \lstinline{x} rispetta
+pu\`o essere usata come identificatore, \lstinline{#f} altrimenti.
