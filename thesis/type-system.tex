@@ -45,33 +45,33 @@ type system:
   {\Psi |- 0}
 
 \vspace{3mm}
-\indent\indent
+\indent
 \inference[rep ]
   {\Psi |- P}
   {\Psi |- !P}
 
 \vspace{3mm}
-\indent\indent
+\indent
 \inference[par ]
   {\Psi |- P_1 & \Psi |- P_2}
   {\Psi |- P_1|P_2}
 
 \vspace{3mm}
-\indent\indent
+\indent
 \inference[res ]
   {\Psi,z:s |- P}
   {\Psi |- (z)P}
 $\; (1)$
 
 \vspace{3mm}
-\indent\indent
+\indent
 \inference[out ]
   {\Psi |- P}
   {\Psi,x:s,y_1:t_1,\ldots,y_n:t_n |- \overline{x}\langle y_1\ldots y_n\rangle.P}
 $\; (2)$
 
 \vspace{3mm}
-\indent\indent
+\indent
 \inference[inp ]
   {\Psi,z_1:t_1,\ldots,z_n:t_n |- P}
   {\Psi,x:s |- x(z_1\ldots z_n).P}
@@ -82,20 +82,20 @@ dove le condizioni per le regole {\small res}, {\small out} e {\small inp}
 sono rispettivamente
 
 \vspace{3mm}
-\indent\indent
+\indent
 $
     (1) \; z \notin n(\Psi);
 $
 \vspace{3mm}
 \\
-\indent\indent
+\indent
  $
     (2) \; \lambda(s) = (t_1\ldots t_n),
            \Psi \simeq x : s,
            \Psi \simeq y_1 : t_1$ (per ogni $i$), $
            x = y_i$ implica $ \\
 $
-\indent\indent
+\indent
 $
           \;\;\;\;\;
           s = t_i$ (per qualche $i$) e $
@@ -103,7 +103,7 @@ $
 $
 \vspace{3mm}
 \\
-\indent\indent
+\indent
 $
     (3) \; \lambda(s) = (t_1\ldots t_n),
            \Psi \simeq x : s$ e $z_1,\ldots,z_n \notin n(\Psi).

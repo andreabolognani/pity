@@ -4,30 +4,35 @@
 
 % Pi-Calculus listing environment
 \newenvironment{pilisting}
-	{\vspace{3mm}\indent\indent}
+	{\vspace{3mm}\indent}
 	{\vspace{3mm}}
 
 % Simple (and incomplete) Racket language definition
 \lstdefinelanguage{Racket}
 	{morekeywords={lambda,
                    define, struct, let, let*,
-                   equal?,
+                   values,
+                   equal?, when, not,
                    list, car, cdr, map, foldl,
                    +, -, *, /,
-                   display, newline},
+                   display, newline, format, error},
      sensitive=true,
      morecomment=[l]{;},
      morestring=[b]{"},}
 
 % Source code listings appearance
 \lstset{language=Racket,
-        basicstyle=\ttfamily\small,
+        basicstyle=\ttfamily\footnotesize,
         keywordstyle=\bf,
         emphstyle=\underbar,
         showstringspaces=false,
-        numbers=left,
+        numbers=none,
         numberstyle=\tiny,
-        numbersep=-30pt}
+        numbersep=-12pt,
+        aboveskip=3mm,
+        belowskip=3mm,
+        lineskip=2pt,
+        gobble=3}
 
 % List of bindings we are defining
-\lstset{emph={name, name-guard}}
+\lstset{emph={}}
