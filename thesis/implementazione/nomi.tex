@@ -112,3 +112,61 @@ caso restituisce la lista vuota \lstinline{'()}; altrimenti, ottiene i vari
 componenti separati da virgole della stringa iniziale con
 \lstinline{regexp-split}, e chiama il costruttore \lstinline{name} su
 ognuno di essi tramite \lstinline{map}.
+
+Esempi di utilizzo di queste procedure:
+
+\begin{lstlisting}
+      (name-list->string '()) ; ==> ""
+      (name-list->string (list (name "a") (name "b"))) ; ==> "a,b"
+      (string->name-list "c") ; ==> (list (name "c"))
+      (string->name-list 2) ; ==> ERRORE!
+\end{lstlisting}
+
+L'errore nell'ultimo utilizzo di \lstinline{string->name-list} \`e dovuto
+al fatto che \`e stato passato come parametro \lstinline{2}: quanto viene
+chiamata \lstinline{regexp-split}, quest'ultima procedura segnala un'errore.
+
+Per prevenire questo genere di errori, si potrebbe ricorrere alla stessa
+tecnica utilizzata in \lstinline{name-guard}, cio\`e controllare manualmente
+che i parametri siano del tipo corretto, e in caso contrario segnalare un
+errore; esiste per\`o un metodo pi\`u conciso, che prevede l'utilizzo di
+un \emph{contratto}.
+
+Nel caso pi\`u semplice, un contratto \`e un predicato: se l'applicazione
+del predicato ad un valore restituisce \lstinline{#t}, il contratto \`e
+rispettato. \`E possibile combinare tra loro pi\`u contratti usando gli
+operatori logici tra contratti \lstinline{and/c}, \lstinline{or/c} e simili.
+
+Il contratto per una procedura si ottiene combinando i contratti dei
+parametri tramite la sintassi \lstinline{->}, solitamente usata in maniera
+infissa sfruttando il fatto che Racket considera un elemento preceduto e
+seguito da punto il primo della lista in cui compare: ad esempio
+
+\begin{lstlisting}
+      (string? . -> . (listof name?))
+\end{lstlisting}
+
+\`e un contratto rispettato da ogni procedura che accetta come argomento una
+stringa e restituisce una lista di nomi, come \lstinline{string->name-list}.
+
+Per fare s\`i che la conformit\`a degli argomenti di una procedura sia
+verificata ogni volta che la procedura in questione \`e chiamata, la si
+esporta (rende disponibile agli altri moduli) usando la forma
+\lstinline{provide/contract}, come in
+
+\begin{lstlisting}
+      (provide/contract
+        [string->name-list (string? . -> . (listof name?))])
+\end{lstlisting}
+
+\`E opportuno notare che Racket non differenzia tra parentesi tonde e quadre;
+utilizzare parentesi quadre in alcuni contesti pu\`o aumentare notevolmente
+la leggibilit\`a del codice.
+
+Da questo momento in poi, il contratto di una procedura verr\`a dichiarato
+assieme alla procedura stessa, dando per scontato che la sinassi
+\lstinline{provide/contract} sar\`a usata per esportare la procedura in
+questione.
+
+Questo conclude la trattazione dei nomi in \lstinline{pity}; rimangono da
+coprire un paio di funzioni, che per\`o \`e prematuro spiegare.
