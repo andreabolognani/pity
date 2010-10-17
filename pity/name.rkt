@@ -34,7 +34,7 @@
 (define (name-guard n type-name)
   (when (not (id-string? n))
         (error type-name
-               "n is not an id-string?"))
+               (format "expected <id-string?>, given: ~a" n)))
   (values n))
 
 

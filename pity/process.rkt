@@ -49,10 +49,10 @@
 (define (input-guard x y type-name)
   (when (not (name? x))
         (error type-name
-               "x is not a name?"))
+               (format "expected <name?>, given: ~a" x)))
   (when (not ((non-empty-listof-distinct name?) y))
         (error type-name
-               "y is not a (non-empty-listof-distinct name?)"))
+               (format "expected <(non-empty-listof-distinct name?)>, given: ~a" y)))
   (values x y))
 
 
@@ -60,10 +60,10 @@
 (define (output-guard x y type-name)
   (when (not (name? x))
         (error type-name
-               "x is not a name?"))
+               (format "expected <name?>, given: ~a" x)))
   (when (not ((non-empty-listof-distinct name?) y))
         (error type-name
-               "y is not a (non-empty-listof-distinct name?)"))
+               (format "expected <(non-empty-listof-distinct name?)>, given: ~a" y)))
   (values x y))
 
 
@@ -74,10 +74,10 @@
 (define (prefix-guard a p type-name)
   (when (not (action? a))
         (error type-name
-               "a is not an action?"))
+               (format "expected <action?>, given: ~a" a)))
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (let* ([bound-a (bound-names/action a)]
          [bound-p (process-bound-names p)]
          [bound (set-intersect bound-a bound-p)]
@@ -92,10 +92,10 @@
 (define (restriction-guard x p type-name)
   (when (not (name? x))
         (error type-name
-               "x is not a name?"))
+               (format "expected <name?>, given: ~a" x)))
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (let ([bound (process-bound-names p)])
     (values x
             (if (set-member? bound x)
@@ -107,7 +107,7 @@
 (define (replication-guard p type-name)
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (values p))
 
 
@@ -121,10 +121,10 @@
 (define (composition-guard p q type-name)
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (when (not (process? q))
         (error type-name
-               "q is not a process?"))
+               (format "expected <process?>, given: ~a" q)))
   (let* ([bound-p (process-bound-names p)]
          [bound-q (process-bound-names q)]
          [bound (set-intersect bound-p bound-q)]
