@@ -19,9 +19,9 @@ La struttura dichiarata contiene un singolo campo, \lstinline{n}, ed \`e
 dichiarata come \emph{trasparente} tramite l'uso della keyword
 \lstinline{#:transparent}: le strutture trasparenti in Racket possono essere
 confrontate in maniera naturale tramite il predicato standard
-\lstinline{equal?}, il che ci solleva dall'onere di dover dichiarare una
-nostra procedura di confronto tra nomi, che si ridurrebbe al semplice
-confronto tra le stringhe contenute nei campi \lstinline{n}.
+\lstinline{equal?}, il che solleva dall'onere di dover dichiarare una
+procedura di confronto tra nomi, che si ridurrebbe al semplice confronto
+tra le stringhe contenute nei rispettivi campi \lstinline{n}.
 
 Inoltre, usando la keyword \lstinline{#:guard}, la procedura
 \lstinline{name-guard} viene designata come \emph{guardia} per la struttura:
@@ -71,5 +71,44 @@ alle espressioni regolari di Racket:
              (regexp-match #rx"^[a-zA-Z]+[0-9]*$" x)))
 \end{lstlisting}
 
-Il risultato della chiamata \`e \lstinline{#t} se \lstinline{x} rispetta
-pu\`o essere usata come identificatore, \lstinline{#f} altrimenti.
+Il risultato della chiamata \`e \lstinline{#t} se \lstinline{x} \`e una
+stringa che pu\`o essere usata come identificatore, \lstinline{#f}
+altrimenti.
+
+A questo punto vengono definite alcune routine di conversione tra nomi e
+stringhe, che saranno utili pi\`u avanti:
+
+\begin{lstlisting}
+      (define (name->string n)
+        (name-n n))
+
+      (define (name-list->string lst)
+        (string-join (map name->string lst) ","))
+
+      (define (string->name-list str)
+        (if (equal? str "")
+            '()
+            (map name (regexp-split #rx", *" str))))
+\end{lstlisting}
+
+La prima procedura, \lstinline{name->string}, estrae semplicemente la
+stringa che rappresenta un nome, chiamando la procedura di supporto
+\lstinline{name-n}; tale procedura viene generata in maniera automatica
+dalla forma \lstinline{struct} per ognuno dei campi di una struttura.
+
+La seconda procedura, \lstinline{name-list->string}, converte una lista
+di nomi nella loro rappresentazione sotto forma di stringa, separandoli
+con virgole. Per fare ci\`o, chiama \lstinline{name->string} su ognuno dei
+nomi contenuti in \lstinline{lst} tramite \lstinline{map}, e usa
+\lstinline{string-join} sulla lista di stringhe risultante.
+
+L'ultima procedura, \lstinline{string->name-list}, svolge il compito opposto
+a \lstinline{name-list->string}, ovvero accetta una stringa contenente una
+serie di nomi separati da virgola e restituisce una lista contenente le
+rispettive istanze della struttura \lstinline{name}.
+
+Per fare questo, innanzitutto controlla se la stringa \`e vuota, e in quel
+caso restituisce la lista vuota \lstinline{'()}; altrimenti, ottiene i vari
+componenti separati da virgole della stringa iniziale con
+\lstinline{regexp-split}, e chiama il costruttore \lstinline{name} su
+ognuno di essi tramite \lstinline{map}.
