@@ -102,10 +102,10 @@ con virgole. Per fare ci\`o, chiama \lstinline{name->string} su ognuno dei
 nomi contenuti in \lstinline{lst} tramite \lstinline{map}, e usa
 \lstinline{string-join} sulla lista di stringhe risultante.
 
-L'ultima procedura, \lstinline{string->name-list}, svolge il compito opposto
-a \lstinline{name-list->string}, ovvero accetta una stringa contenente una
-serie di nomi separati da virgola e restituisce una lista contenente le
-rispettive istanze della struttura \lstinline{name}.
+La procedura \lstinline{string->name-list}, infine, svolge il compito
+opposto a quello di \lstinline{name-list->string}, ovvero accetta una
+stringa contenente una serie di nomi separati da virgola e restituisce una
+lista contenente le rispettive istanze della struttura \lstinline{name}.
 
 Per fare questo, innanzitutto controlla se la stringa \`e vuota, e in quel
 caso restituisce la lista vuota \lstinline{'()}; altrimenti, ottiene i vari
