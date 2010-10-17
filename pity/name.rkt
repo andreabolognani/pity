@@ -97,8 +97,9 @@
 
 ; Make a list of names out of a string
 (define (string->name-list str)
-  (cond [(equal? str "") '()]
-        [else (map name (regexp-split #rx", *" str))]))
+  (if (equal? str "")
+      '()
+      (map name (regexp-split #rx", *" str))))
 
 
 
