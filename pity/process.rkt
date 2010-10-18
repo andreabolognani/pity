@@ -131,6 +131,9 @@
                          [bound (process-bound-names p)]
                          [all (process-names q)]
                          [err (set-intersect bound all)]
+                         [bound (process-bound-names q)]
+                         [all (process-names p)]
+                         [err (set-union err (set-intersect bound all))]
                          [err (set->list err)])
                     (if (null? err)
                         (cons p q)
@@ -140,7 +143,7 @@
                                [nn (name-max np nq)])
                           (fix (cons p
                                     (replace-name q n nn)))))))]
-         [procs (fix (cons p q))])
+           [procs (fix (cons p q))])
     (values (car procs)
             (cdr procs))))
 

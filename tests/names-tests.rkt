@@ -172,7 +172,7 @@
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a composition (input and output)"
+      "Free and bound names in a composition (input and output, different names)"
       (let ([process (string->process "x(y).0|x<z>.0")]
             [free (string->name-set "x,z")]
             [bound (string->name-set "y")]
@@ -182,7 +182,17 @@
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a composition (output and input)"
+      "Free and bound names in a composition (input and output, same name)"
+      (let ([process (string->process "x(y).0|x<y>.0")]
+            [free (string->name-set "x,y1")]
+            [bound (string->name-set "y")]
+            [all (string->name-set "x,y,y1")])
+        (check-equal? (process-free-names process) free)
+        (check-equal? (process-bound-names process) bound)
+        (check-equal? (process-names process) all)))
+
+    (test-case
+      "Free and bound names in a composition (output and input, different names)"
       (let ([process (string->process "x<y>.0|x(z).0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "z")]
@@ -192,17 +202,17 @@
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a composition (output and input)"
+      "Free and bound names in a composition (output and input, same name)"
       (let ([process (string->process "y<x>.0|z(x).0")]
             [free (string->name-set "x,y,z")]
-            [bound (string->name-set "x")]
-            [all (string->name-set "x,y,z")])
+            [bound (string->name-set "x1")]
+            [all (string->name-set "x,x1,y,z")])
         (check-equal? (process-free-names process) free)
         (check-equal? (process-bound-names process) bound)
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a prefix (output, then input)"
+      "Free and bound names in a prefix (output then input, same name)"
       (let ([process (string->process "x<y>.x(y).0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "y")]
@@ -212,7 +222,7 @@
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a prefix (output, then input)"
+      "Free and bound names in a prefix (output then input, different names)"
       (let ([process (string->process "x<y>.y(z).0")]
             [free (string->name-set "x,y")]
             [bound (string->name-set "z")]
@@ -222,7 +232,7 @@
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a prefix (input, then output)"
+      "Free and bound names in a prefix (input then output, same name)"
       (let ([process (string->process "x(y).x<y>.0")]
             [free (string->name-set "x")]
             [bound (string->name-set "y")]
@@ -232,7 +242,7 @@
         (check-equal? (process-names process) all)))
 
     (test-case
-      "Free and bound names in a prefix (input, then output)"
+      "Free and bound names in a prefix (input then output, different names)"
       (let ([process (string->process "x(y).y<z>.0")]
             [free (string->name-set "x,z")]
             [bound (string->name-set "y")]
@@ -420,7 +430,14 @@
         (check-equal? (string->process str) canonical)))
 
     (test-case
-      "Prevent ambiguity in a composition"
+      "Prevent ambiguity in a composition (reverse)"
+      (let* ([str "b<c>.0|a(b).0"]
+             [canonical-str "b<c>.0|a(b1).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Prevent ambiguity in a composition (complex)"
       (let* ([str "(a1)(a2<a5>.0|a2(a1).0)|a1<a4>.0"]
              [canonical-str "(a1)(a2<a5>.0|a2(a6).0)|a7<a4>.0"]
              [canonical (string->process canonical-str)])
