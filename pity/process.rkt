@@ -45,19 +45,8 @@
 ;  that might be needed to ensure no name capture occurrs.
 
 
-; Guard for input action
-(define (input-guard x y type-name)
-  (when (not (name? x))
-        (error type-name
-               (format "expected <name?>, given: ~a" x)))
-  (when (not ((non-empty-listof-distinct name?) y))
-        (error type-name
-               (format "expected <(non-empty-listof-distinct name?)>, given: ~a" y)))
-  (values x y))
-
-
-; Guard for output action
-(define (output-guard x y type-name)
+; Guard for actions
+(define (action-guard x y type-name)
   (when (not (name? x))
         (error type-name
                (format "expected <name?>, given: ~a" x)))
@@ -156,10 +145,10 @@
 (struct nil         ()
                     #:transparent)
 (struct input       (x y)
-                    #:guard input-guard
+                    #:guard action-guard
                     #:transparent)
 (struct output      (x y)
-                    #:guard output-guard
+                    #:guard action-guard
                     #:transparent)
 (struct prefix      (a p)
                     #:guard prefix-guard
