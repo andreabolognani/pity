@@ -32,6 +32,30 @@
     "Tests for names"
 
     (test-case
+      "Check compatibility between incompatible names (no numeric part)"
+      (let ([n1 (name "a")]
+            [n2 (name "b")])
+        (check-false (name-compatible? n1 n2))))
+
+    (test-case
+      "Check compatibility between incompatible names (numeric part)"
+      (let ([n1 (name "a5")]
+            [n2 (name "b87")])
+        (check-false (name-compatible? n1 n2))))
+
+    (test-case
+      "Check compatibility between compatible names (no numeric part)"
+      (let ([n1 (name "a")]
+            [n2 (name "a")])
+        (check-true (name-compatible? n1 n2))))
+
+    (test-case
+      "Check compatibility between compatible names (numeric part)"
+      (let ([n1 (name "a5")]
+            [n2 (name "a73")])
+        (check-true (name-compatible? n1 n2))))
+
+    (test-case
       "Find max name between name with no number and name with number"
       (let ([n1 (name "a")]
             [n2 (name "a1")])
@@ -385,6 +409,20 @@
       "Prevent name capture in a composition"
       (let* ([str "a2(a1,b1).0|b2(a1,b3).0"]
              [canonical-str "a2(a1,b1).0|b2(a3,b3).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Prevent ambiguity in a composition"
+      (let* ([str "a(b).0|b<c>.0"]
+             [canonical-str "a(b).0|b1<c>.0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Prevent ambiguity in a composition"
+      (let* ([str "(a1)(a2<a5>.0|a2(a1).0)|a1<a4>.0"]
+             [canonical-str "(a1)(a2<a5>.0|a2(a6).0)|a7<a4>.0"]
              [canonical (string->process canonical-str)])
         (check-equal? (string->process str) canonical)))))
 

@@ -38,6 +38,15 @@ Returns a new name for the non-empty string @racket[v].
 Returns @racket[#t] if @racket[v] is a name, @racket[#f] otherwise.
 }
 
+@defproc[(name-compatible? [n1 name?] [n2 name?]) boolean?]{
+
+Returns @racket[#t] if @racket[n1] and @racket[n2] are compatible,
+@racket[#f] otherwise.
+
+Two names are compatible if one of them can be obtained by
+repeatedly refreshing the other one.
+}
+
 @defproc[(name-max [n1 name?] [n2 name?]) name?]{
 
 Returns the freshest name between @racket[n1] and @racket[n2].

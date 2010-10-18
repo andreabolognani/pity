@@ -55,6 +55,18 @@
 ;  Refresh names and compare names freshness.
 
 
+; Two names are compatible if one can obtained by repeatedly
+; refresh the other one
+(define (name-compatible? a b)
+  (let* ([n (name-n a)]
+         [p (parts n)]
+         [na (car p)]
+         [n (name-n b)]
+         [p (parts n)]
+         [nb (car p)])
+    (equal? na nb)))
+
+
 ; Return the freshest between two names
 (define (name-max a b)
   (let ([na (name-n a)]
@@ -68,10 +80,10 @@
 ; it's not already present
 (define (name-refresh self)
   (let* ([n (name-n self)]
-         [parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
-         [str (cadr parts)]
-         [num (caddr parts)]
-         [num (if (string=? num "") 0 (string->number num))]
+         [parts (parts n)]
+         [str (car parts)]
+         [num (cdr parts)]
+         [num (if (equal? num "") 0 (string->number num))]
          [num (+ num 1)]
          [n (string-append str (number->string num))])
     (name n)))
@@ -103,12 +115,26 @@
 
 
 
+; Utility functions
+; -----------------
+
+
+; Split a name into string part and numeric part
+(define (parts n)
+  (let* ([parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
+         [str (cadr parts)]
+         [num (caddr parts)])
+    (cons str num)))
+
+
+
 ; Export public symbols
 ; ---------------------
 
 (provide
   (struct-out name))
 (provide/contract
+  [name-compatible?  (name? name?    . -> . boolean?)]
   [name-max          (name? name?    . -> . name?)]
   [name-refresh      (name?          . -> . name?)]
   [name->string      (name?          . -> . string?)]
