@@ -1,4 +1,4 @@
-personal_ws-1.1 it 84 
+personal_ws-1.1 it 95 
 greet
 string
 entit
@@ -10,6 +10,7 @@ three
 rx
 Language
 verr
+distinct
 parser
 two
 bn
@@ -21,16 +22,19 @@ map
 not
 values
 expected
+action
 zA
 the
 Lisp
 sorting
+empty
 guard
+composition
 LISt
 list
 foldl
-gi
 fn
+gi
 name
 contract
 cos
@@ -40,6 +44,7 @@ if
 totalit
 Report
 format
+replication
 type
 double
 when
@@ -49,6 +54,7 @@ transparent
 curryficate
 leggibilit
 regexp
+is
 pity
 PLT
 define
@@ -56,6 +62,7 @@ newline
 Algorithmic
 bytecode
 equal
+boolean
 struct
 car
 and
@@ -72,10 +79,14 @@ listof
 Hello
 sar
 cdr
+process
 conformit
 nil
 sort
+prefix
 inp
+restriction
+any
 funzionalit
 l'ambiguit
 lst

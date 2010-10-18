@@ -1,0 +1,58 @@
+\subsection{Processi}
+
+Il modulo \lstinline{pity/process} contiene l'implementazione dei processi,
+che costituisce la parte pi\`u importante, oltre che pi\`u complessa, della
+libreria sviluppata.
+
+Si possono individuare vari tipi di dati da definire, direttamente derivati
+dalle definizioni matematiche: processo nullo (\lstinline{nil}), azione di
+input (\lstinline{input}), azione di output (\lstinline{output}), prefisso
+(\lstinline{prefix}), restrizione (\lstinline{restriction}), replicazione
+(\lstinline{replication}) e composizione parallela (\lstinline{composition}).
+Le definizioni sono identiche a quelle di \lstinline{name}, e vengono quindi
+tralasciate.
+
+Oltre ai predicati definiti automaticamente dalla sintassi
+\lstinline{struct}, sono stati definiti due predicati di supporto:
+
+\begin{lstlisting}
+      ; process? : any/c -> boolean?
+      (define (process? v)
+        (or
+          (nil? v)
+          (prefix? v)
+          (restriction? v)
+          (replication? v)
+          (composition? v)))
+
+      ; action? : any/c -> boolean?
+      (define (action? v)
+        (or
+          (input? v)
+          (output? v)))
+
+\end{lstlisting}
+
+Questi predicati riconoscono rispettivamente ogni tipo di processo e ogni
+tipo di azione; verranno usati anche nella definizione di contratti.
+
+Come si \`e visto nella sezione dedicata al $\pi$-calcolo, \`e necessario
+che siano rispettate alcune regole durante la costruzione di processi: ad
+esempio, i nomi oggetto di un'azione devono essere distinti tra loro.
+
+Con delle guardie adeguate, \`e possibile assicurarsi che azioni non
+rispettose di questo requisito non vengano mai create:
+
+\begin{lstlisting}
+      (define (action-guard x y type-name)
+        (when (not (name? x))
+              (error type-name
+                     "x is not a name?"))
+        (when (not ((non-empty-listof-distinct name?) y))
+              (error type-name
+                     "y is not a (non-empty-listof-distinct name?)"))
+        (values x y))
+\end{lstlisting}
+
+dove \lstinline{(non-empty-listof-distinct name?)} restituisce un contratto
+soddisfatto da liste di \lstinline{name} non vuote e prive di duplicati.
