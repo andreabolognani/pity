@@ -45,25 +45,14 @@
 ;  that might be needed to ensure no name capture occurrs.
 
 
-; Guard for input action
-(define (input-guard x y type-name)
+; Guard for actions
+(define (action-guard x y type-name)
   (when (not (name? x))
         (error type-name
-               "x is not a name?"))
+               (format "expected <name?>, given: ~a" x)))
   (when (not ((non-empty-listof-distinct name?) y))
         (error type-name
-               "y is not a (non-empty-listof-distinct name?)"))
-  (values x y))
-
-
-; Guard for output action
-(define (output-guard x y type-name)
-  (when (not (name? x))
-        (error type-name
-               "x is not a name?"))
-  (when (not ((non-empty-listof-distinct name?) y))
-        (error type-name
-               "y is not a (non-empty-listof-distinct name?)"))
+               (format "expected <(non-empty-listof-distinct name?)>, given: ~a" y)))
   (values x y))
 
 
@@ -74,10 +63,10 @@
 (define (prefix-guard a p type-name)
   (when (not (action? a))
         (error type-name
-               "a is not an action?"))
+               (format "expected <action?>, given: ~a" a)))
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (let* ([bound-a (bound-names/action a)]
          [bound-p (process-bound-names p)]
          [bound (set-intersect bound-a bound-p)]
@@ -92,10 +81,10 @@
 (define (restriction-guard x p type-name)
   (when (not (name? x))
         (error type-name
-               "x is not a name?"))
+               (format "expected <name?>, given: ~a" x)))
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (let ([bound (process-bound-names p)])
     (values x
             (if (set-member? bound x)
@@ -107,37 +96,43 @@
 (define (replication-guard p type-name)
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (values p))
 
 
 ; Guard for composition.
 ;
-; Any name which is bound both in p and in q is an error; to fix it,
-; common bound names are refreshed in q.
+; Any name which is bound in p and either free or bound in q is an error;
+; to fix it, offending names are refreshed in q.
 ;
 ; Additional care is taken not to capture any name in either p or q
 ; when refreshing.
 (define (composition-guard p q type-name)
   (when (not (process? p))
         (error type-name
-               "p is not a process?"))
+               (format "expected <process?>, given: ~a" p)))
   (when (not (process? q))
         (error type-name
-               "q is not a process?"))
-  (let* ([bound-p (process-bound-names p)]
-         [bound-q (process-bound-names q)]
-         [bound (set-intersect bound-p bound-q)]
-         [bound (set->list bound)]
-         [update (lambda (n procs)
-                   (let* ([p (car procs)]
-                          [q (cdr procs)]
-                          [np (fresh-name p n)]
-                          [nq (fresh-name q n)]
-                          [nn (name-max np nq)])
-                     (cons p
-                           (replace-name q n nn))))]
-         [procs (foldl update (cons p q) bound)])
+               (format "expected <process?>, given: ~a" q)))
+  (letrec ([fix (lambda (procs)
+                  (let* ([p (car procs)]
+                         [q (cdr procs)]
+                         [bound (process-bound-names p)]
+                         [all (process-names q)]
+                         [err (set-intersect bound all)]
+                         [bound (process-bound-names q)]
+                         [all (process-names p)]
+                         [err (set-union err (set-intersect bound all))]
+                         [err (set->list err)])
+                    (if (null? err)
+                        (cons p q)
+                        (let* ([n (car err)]
+                               [np (fresh-name p n)]
+                               [nq (fresh-name q n)]
+                               [nn (name-max np nq)])
+                          (fix (cons p
+                                    (replace-name q n nn)))))))]
+           [procs (fix (cons p q))])
     (values (car procs)
             (cdr procs))))
 
@@ -150,10 +145,10 @@
 (struct nil         ()
                     #:transparent)
 (struct input       (x y)
-                    #:guard input-guard
+                    #:guard action-guard
                     #:transparent)
 (struct output      (x y)
-                    #:guard output-guard
+                    #:guard action-guard
                     #:transparent)
 (struct prefix      (a p)
                     #:guard prefix-guard
@@ -350,9 +345,15 @@
 
 ; Obtain a name that is guaranteed to be fresh in a process
 (define (fresh-name p n)
-  (let ([names (process-names p)]
-        [m (name-refresh n)])
-    (if (not (set-member? names m))
+  (let* ([names (process-names p)]
+         [m (name-refresh n)]
+         [cmp (lambda (x)
+                (or (not (name-compatible? x m))
+                    (equal? (name-max x m) m)))]
+         [res (set-map names cmp)]
+         [band (lambda (x y) (and x y))] ; Binary and wrapper
+         [fresh? (foldl band #t res)])
+    (if (and fresh? (not (set-member? names m)))
         m
         (fresh-name p m))))
 

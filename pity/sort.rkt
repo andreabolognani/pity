@@ -34,7 +34,7 @@
 (define (sort-guard s type-name)
   (when (not (id-string? s))
         (error type-name
-               "s is not an id-string?"))
+               (format "expected <id-string?>, given: ~a" s)))
   (values s))
 
 
