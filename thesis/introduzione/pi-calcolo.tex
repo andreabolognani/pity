@@ -135,6 +135,40 @@ Le occorrenze di un nome che non sono nello scope di un'occorrenza legante
 sono \emph{libere}: ad esempio, l'occorrenza di $a$ in
 $\overline{a}\langle b\rangle.P$ \`e libera, mentre in
 $\nu a \; \overline{a}\langle b\rangle.P$ il nome $a$ non ha occorrenze
-libere. L'insieme dei nomi liberi in $P$ si indica con $fn(P)$.
+libere. L'insieme dei nomi liberi in $P$ si indica con $fn(P)$; l'insieme
+dei nomi di $P$ si definisce come $n(P) = fn(P) \cup bn(P)$.
 
-L'insieme dei nomi di $P$ si definisce come $n(P) = fn(P) \cup bn(P)$.
+\`E importante notare che nel sistema
+
+\begin{pilisting}
+$
+    \nu a \, (
+      \overline{b}\langle c\rangle.0 \; | \;
+      b(a).0
+    ) \; | \;
+    a(d).0
+$
+\end{pilisting}
+
+tutte le occorrenze di $a$ si riferiscono di fatto a nomi diversi: nel
+processo che sta all'estrema destra, il nome $a$ \`e al di fuori dello
+scope di $\nu a$, ed \`e quindi libero, mentre nel processo centrale
+l'input sul canale $b$ lega il nome $a$ al valore ricevuto.
+
+Per evitare l'ambiguit\`a causata dall'avere pi\`u nomi all'apparenza
+identici, ma di fatto distinti, viene assunto che ogni nome legato sia
+scelto in modo da essere distinto da tutti i nomi legati presenti nel
+sistema, e da tutti i nomi liberi presenti in altri processi facenti parte
+del sistema. Il processo appena visto andrebbe quindi scritto come
+
+\begin{pilisting}
+$
+    \nu a \, (
+      \overline{b}\langle c\rangle.0 \; | \;
+      b(e).0
+    ) \; | \;
+    f(d).0
+$
+\end{pilisting}
+
+per mostrare chiaramente che i nomi coinvolti sono distinti.
