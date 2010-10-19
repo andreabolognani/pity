@@ -41,18 +41,271 @@ che siano rispettate alcune regole durante la costruzione di processi: ad
 esempio, i nomi oggetto di un'azione devono essere distinti tra loro.
 
 Con delle guardie adeguate, \`e possibile assicurarsi che azioni non
-rispettose di questo requisito non vengano mai create:
+rispettose di questo requisito non vengano mai create: per le azioni viene
+utilizzata una semplice guardia, che si limita a verificare che i parametri
+passati al costruttore siano rispettivamente un nome e una lista non vuota
+di nomi distinti.
+
+La guardia per la replicazione \`e altrettanto semplice: \`e sufficiente
+infatti assicurarsi che il parametro passato al costruttore sia un processo
+tramite l'uso del predicato \lstinline{process?}.
+
+Leggermente pi\`u complessa \`e la guardia della restrizione. Quando ci si
+trova a restringere un nome $x$ in un processo $P$ si deve garantire che
+$x$ non sia presente tra i nomi legati di $P$, se si vuole che il processo
+risultante rispetti la propriet\`a di avere tutti i nomi legati distinti.
+
+La guardia della restrizione garantisce che la propriet\`a sia sempre
+verificata:
 
 \begin{lstlisting}
-      (define (action-guard x y type-name)
-        (when (not (name? x))
-              (error type-name
-                     "x is not a name?"))
-        (when (not ((non-empty-listof-distinct name?) y))
-              (error type-name
-                     "y is not a (non-empty-listof-distinct name?)"))
-        (values x y))
+      (define (restriction-guard x p type-name)
+        (let ([bound (process-bound-names p)])
+          (values x
+                  (if (not (set-member? bound x))
+                      p
+                      (process-refresh-name p x)))))
 \end{lstlisting}
 
-dove \lstinline{(non-empty-listof-distinct name?)} restituisce un contratto
-soddisfatto da liste di \lstinline{name} non vuote e prive di duplicati.
+dove non \`e stato riportato il controllo iniziale sui tipi dei parametri,
+il quale assicura che \lstinline{x} soddisfi \lstinline{name?} e
+\lstinline{p} soddisfi \lstinline{process?}.
+
+Tramite la sintassi \lstinline{let}, alla variabile \lstinline{bound} viene
+assegnato l'insieme dei nomi legati del processo \lstinline{p}, ottenuto
+con la chiamata \lstinline{(process-bound-names p)}; poi, se il nome
+\lstinline{x} \`e tra questi, al posto di \lstinline{p} viene usato per la
+costruzione della restrizione il processo restituito da
+\lstinline{(process-refresh-name p x)}.
+
+La definizione di \lstinline{process-bound-names}, cos\`i come quella delle
+procedure ad essa strettamente collegate, \lstinline{process-free-names} e
+\lstinline{process-names}, \`e direttamente derivata dalla teoria del
+$\pi$-calcolo: nel caso dei nomi legati, ad esempio, si ha
+
+\begin{lstlisting}
+      ; process-bound-names : process? -> (setof name?)
+      (define (process-bound-names process)
+        (match process
+          [(nil)             (bound-names/nil)]
+          [(prefix a p)      (bound-names/prefix a p)]
+          [(restriction x p) (bound-names/restriction x p)]
+          [(replication p)   (bound-names/replication p)]
+          [(composition p q) (bound-names/composition p q)]))
+\end{lstlisting}
+
+La procedura pubblica fa uso della sintassi \lstinline{match} per distinguere
+il tipo di processo, e delega il calcolo dei nomi legati alle rispettive
+procedure private specializzate:
+
+\begin{lstlisting}
+      ; Il processo nullo non ha nomi legati
+      (define (bound-names/nil)
+        (set))
+
+      ; I nomi legati di sono quelli in oggetto
+      (define (bound-names/input x y)
+        (list->set y))
+
+      ; Un'azione di output non ha nomi legati
+      (define (bound-names/output x y)
+        (set))
+
+      ; I nomi legati in un'azione dipendono dal tipo di azione
+      (define (bound-names/action a)
+        (match a
+          [(input x y)  (bound-names/input x y)]
+          [(output x y) (bound-names/output x y)]))
+
+      ; I nomi legati in un prefisso sono quelli legati
+      ; dall'azione, uniti a quelli legati nella continuazione
+      (define (bound-names/prefix a p)
+        (set-union (bound-names/action a)
+                   (process-bound-names p)))
+
+      ; I nomi legati in una restrizione sono quelli legati nel
+      ; processo sotto restrizione e il nome oggetto della restrizione
+      (define (bound-names/restriction x p)
+        (set-union (set x)
+                   (process-bound-names p)))
+
+      ; I nomi legati non vengono modificati dalla replicazione
+      (define (bound-names/replication p)
+        (process-bound-names p))
+
+      ; I nomi legati in una composizione sono i nomi legati nel primo
+      ; processo uniti a quelli legati nel secondo processo
+      (define (bound-names/composition p q)
+        (set-union (process-bound-names p)
+                   (process-bound-names q)))
+\end{lstlisting}
+
+La procedura \lstinline{process-refresh-name} permette di eliminare tutti
+i riferimenti al nome \lstinline{x} da un processo \lstinline{p}
+mantenendone invariato il significato, evitando cio\`e la cattura di nomi:
+effettuare questo tipo di sostituzione \`e fondamentale per garantire che
+i nomi legati in un processo siano distinti da tutti gli altri nomi.
+
+Prima di illustrare il funzionamento di \lstinline{process-refresh-name},
+bisogna spiegare il criterio utilizzato per la generazione di nuovi nomi.
+
+Si ricordi che tutti i nomi rispettano il contratto \lstinline{id-string?},
+sono cio\`e costituiti da una serie di caratteri, eventualmente seguita
+da una parte numerica. La procedura privata \lstinline{parts}, definita
+all'interno del modulo \lstinline{pity/name}, estrae le due parti
+utilizzando un'espressione regolare:
+
+\begin{lstlisting}
+      (define (parts n)
+         (let* ([parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
+                [str (cadr parts)]
+                [num (caddr parts)])
+           (cons str num)))
+\end{lstlisting}
+
+Per generare un nuovo nome, \`e sufficiente incrementare la parte numerica
+del nome di partenza: \`e esattamente quello che fa la procedura pubblica
+\lstinline{name-refresh}
+
+\begin{lstlisting}
+      ; name-refresh : name? -> name?
+      (define (name-refresh self)
+        (let* ([n (name-n self)]
+               [parts (parts n)]
+               [str (car parts)]
+               [num (cdr parts)]
+               [num (if (equal? num "") 0 (string->number num))]
+               [num (+ num 1)]
+               [n (string-append str (number->string num))])
+          (name n)))
+\end{lstlisting}
+
+La prima volta, alla variabile \lstinline{num} viene assegnato il secondo
+valore restituito da \lstinline{(parts n)}: questo valore \`e una stringa
+contenente la parte numerica, che pu\`o essere vuota.
+
+Nel secondo assegnamento viene usata la sintassi \lstinline{if} per
+assegnare il valore numerico \lstinline{0} alla stringa vuota: come
+conseguenza, un nome privo di parte numerica come quello ottenuto usando
+\lstinline{(name "a")} viene considerato avere parte numerica pari a
+\lstinline{0}. Subito dopo, la parte numerica \`e incrementata e un nuovo
+nome viene restituito.
+
+Questo algoritmo di generazione nomi ha il vantaggio di essere veloce e
+semplice da implementare; inoltre, il nome generato \`e sempre prevedibile
+conoscendo il nome di partenza, e questo rende possibile la verifica
+dell'implementazione tramite casi di test, cosa che non sarebbe possibile
+se ad esempio il nuovo nome venisse generato casualmente.
+
+Due nomi possono essere confrontati tra di loro semplicemente confrontando
+le stringhe che li rappresentano:
+
+\begin{lstlisting}
+      ; name-max : name? name? -> name?
+      (define (name-max a b)
+        (let ([na (name-n a)]
+              [nb (name-n b)])
+          (if (string>=? na nb)
+              a
+              b)))
+\end{lstlisting}
+
+Si noti che, con questa definizione di \lstinline{name-max}, si verifica
+
+\begin{lstlisting}
+      (name-max (name "x5") (name "y2")) ; ==> (name "y2")
+\end{lstlisting}
+
+il che potrebbe causare problemi in alcune applicazioni. Per capire quando
+due nomi possano essere confrontati usando \lstinline{name-max} senza
+ottenere risultati inaspettati, si pu\`o usare il predicato
+\lstinline{name-compatible?}, definito come
+
+\begin{lstlisting}
+      ; name-compatible? : name? name? -> boolean?
+      (define (name-compatible? a b)
+        (let* ([n (name-n a)]
+               [p (parts n)]
+               [na (car p)]
+               [n (name-n b)]
+               [p (parts n)]
+               [nb (car p)])
+          (equal? na nb)))
+\end{lstlisting}
+
+che restituisce \lstinline{#t} se i due nomi differiscono solamente nella
+parte numerica, \lstinline{#f} altrimenti.
+
+Per implementare correttamente \lstinline{process-refresh-name}, tuttavia,
+non \`e sufficiente che il nome designato sia sostituito con quello
+restituito da \lstinline{name-refresh}: per capire come questo approccio
+ingenuo potrebbe causare problemi, basti pensare che sostituire in questa
+maniera il nome $x_1$ nel processo
+
+\begin{pilisting}
+$
+    y(x_2) . \, \overline{x_1}\langle z\rangle . 0
+$
+\end{pilisting}
+
+porta al processo
+
+\begin{pilisting}
+$
+    y(x_2) . \, \overline{x_2}\langle z\rangle . 0
+$
+\end{pilisting}
+
+che ha significato ben diverso da quello originale.
+
+\`E necessario avere la capacit\`a di generare nomi che sono garantiti
+essere nuovi, cio\`e non presenti nel processo corrente: per fare ci\`o, si
+pu\`o usare la procedura privata \lstinline{fresh-name}
+
+\begin{lstlisting}
+      (define (fresh-name p n)
+        (let* ([names (process-names p)]
+               [m (name-refresh n)]
+               [ok? (lambda (x)
+                      (or (not (name-compatible? x m))
+                          (equal? (name-max x m) m)))]
+               [res (set-map names ok?)])
+           (if (and (not (member? res #f))
+                    (not (set-member? names m)))
+               m
+               (fresh-name p m))))
+\end{lstlisting}
+
+Questa procedura trova un nome compatibile con \lstinline{n} che \`e
+garantito non essere gi\`a presente in \lstinline{p}.
+
+Il modo in cui lavora \`e concettualmente molto semplice: si limita a
+chiamare \lstinline{name-refresh} finch\'e il nome ottenuto non \`e
+un nome non presente in \lstinline{p}.
+
+Per prima cosa, i nomi che hanno occorrenze in \lstinline{p} vengono
+calcolati usando \lstinline{process-names}, poi il nome ottenuto chiamando
+\lstinline{(name-refresh n)} viene assegnato alla variabile \lstinline{m}.
+
+Si vuole trovare il nome compatibile con \lstinline{n}, non presente in
+\lstinline{p}, con parte numerica maggiore: per verificare se
+\lstinline{m} soddisfa queste condizioni, si dichiara un predicato di
+supporto, \lstinline{ok?}, che accetta come parametro un nome e restituisce
+\lstinline{#t} se tale nome \`e o non compatibile con \lstinline{m}, o ha
+parte numerica minore.
+
+Il predicato \lstinline{ok?} viene chiamato su tutti i nomi di \lstinline{p}
+usando \lstinline{set-map}; la lista ottenuta, \lstinline{res}, contiene
+una serie di valori di verit\`a.
+
+Se questi non sono tutti uguali a \lstinline{#t}, vuol dire che tra i nomi
+di \lstinline{p} almeno uno \`e compatibile con \lstinline{m} e ha parte
+numerica maggiore: in tal caso, la funzione \lstinline{fresh-name} viene
+chiamata nuovamente, questa volta con argomento \lstinline{m}, per tentare
+il nome successivo.
+
+Se invece tutti i confronti hanno avuto successo, viene eseguito un
+controllo aggiuntivo per verificare che \lstinline{m} non sia gi\`a tra
+i nomi di \lstinline{p} (condizione che si verifica ad esempio quando viene
+chiesto di sostituire $x_1$ in $\overline{x_1}\langle x_2\rangle$), e il
+nome \lstinline{m} viene restituito.
