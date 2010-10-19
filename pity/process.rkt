@@ -347,13 +347,12 @@
 (define (fresh-name p n)
   (let* ([names (process-names p)]
          [m (name-refresh n)]
-         [cmp (lambda (x)
+         [ok? (lambda (x)
                 (or (not (name-compatible? x m))
                     (equal? (name-max x m) m)))]
-         [res (set-map names cmp)]
-         [band (lambda (x y) (and x y))] ; Binary and wrapper
-         [fresh? (foldl band #t res)])
-    (if (and fresh? (not (set-member? names m)))
+         [res (set-map names ok?)])
+    (if (and (not (member #f res))
+             (not (set-member? names m)))
         m
         (fresh-name p m))))
 

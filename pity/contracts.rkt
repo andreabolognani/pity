@@ -38,9 +38,7 @@
     (string-append "(setof " (contract->string c) ")")
     (lambda (x)
       (and (set? x)
-           (foldl (lambda (x y) (and x y)) ; Binary and wrapper
-                  #t
-                  (set-map x (contract-procedure c)))))))
+           (not (member #f (set-map x (contract-procedure c))))))))
 
 
 ; Recognize a non empty set of items all matching the same contract
