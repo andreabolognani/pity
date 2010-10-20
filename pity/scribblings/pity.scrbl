@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@; Pity: Pi-Calculus Type Checking
+@; Pity: Pi-Calculus Type Inference
 @; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
 @;
 @; This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 @; with this program; if not, write to the Free Software Foundation, Inc.,
 @; 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-@title{@bold{Pity}: Pi-Calculus Type Checking}
+@title{@bold{Pity}: Pi-Calculus Type Inference}
 
 @author["Andrea Bolognani"]
 
