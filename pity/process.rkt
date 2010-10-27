@@ -67,23 +67,23 @@
   (when (not (process? p))
         (error type-name
                (format "expected <process?>, given: ~a" p)))
-  (letrec ([fresh-name/2 (lambda (a p x)
-                           (let ([nx (fresh-name p x)]
-                                 [names (names/action a)])
-                             (if (not (set-member? names nx))
-                                 nx
-                                 (fresh-name/2 a p nx))))])
+  (letrec ([fresh (lambda (a p x)
+                     (let ([nx (fresh-name p x)]
+                           [names (names/action a)])
+                       (if (not (set-member? names nx))
+                           nx
+                           (fresh a p nx))))]
+           [refresh (lambda (q n)
+                      (replace-name q n (fresh a q n)))])
     (let* ([bound (process-bound-names p)]
            [bound (set-intersect bound (names/action a))]
            [bound (set->list bound)]
-           [refresh (lambda (q n)
-                      (replace-name q n (fresh-name/2 a q n)))]
            [p (foldl (flip refresh) p bound)])
       (if (not (input? a))
           (values a p)
           (let* ([bound (bound-names/action a)]
                  [x (input-x a)]
-                 [nn (fresh-name/2 a p x)]
+                 [nn (fresh a p x)]
                  [y (input-y a)]
                  [y (if (set-member? bound x) (list-replace y x nn) y)]
                  [a (input x y)]
