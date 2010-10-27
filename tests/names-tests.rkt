@@ -402,6 +402,13 @@
         (check-equal? (process-names q) q-n)))
 
     (test-case
+      "Prevent free name capture under a prefix"
+      (let* ([str "a3<a1>.a2(a1).0"]
+             [canonical-str "a3<a1>.a2(a4).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
       "Prevent bound name capture under a prefix"
       (let* ([str "a(b,c).a(c,d).0"]
              [canonical-str "a(b,c).a(c1,d).0"]
