@@ -1,6 +1,6 @@
 #lang racket/base
 
-; Pity: Pi-Calculus Type Checking
+; Pity: Pi-Calculus Type Inference
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -58,8 +58,8 @@
 
 ; Guard for prefix.
 ;
-; If the action a is about to bind a name which is already bound in
-; p, the name is refreshed in p to avoid name capture.
+; If the action contains names which are already used bound in the
+; continuation, rename them in the continuation.
 (define (prefix-guard a p type-name)
   (when (not (action? a))
         (error type-name
@@ -67,12 +67,28 @@
   (when (not (process? p))
         (error type-name
                (format "expected <process?>, given: ~a" p)))
-  (let* ([bound-a (bound-names/action a)]
-         [bound-p (process-bound-names p)]
-         [bound (set-intersect bound-a bound-p)]
-         [bound (set->list bound)])
-    (values a
-            (foldl (flip process-refresh-name) p bound))))
+  (letrec ([fresh-name/2 (lambda (a p x)
+                           (let ([nx (fresh-name p x)]
+                                 [names (names/action a)])
+                             (if (not (set-member? names nx))
+                                 nx
+                                 (fresh-name/2 a p nx))))])
+    (let* ([bound (process-bound-names p)]
+           [bound (set-intersect bound (names/action a))]
+           [bound (set->list bound)]
+           [refresh (lambda (q n)
+                      (replace-name q n (fresh-name/2 a q n)))]
+           [p (foldl (flip refresh) p bound)])
+      (if (not (input? a))
+          (values a p)
+          (let* ([bound (bound-names/action a)]
+                 [x (input-x a)]
+                 [nn (fresh-name/2 a p x)]
+                 [y (input-y a)]
+                 [y (if (set-member? bound x) (list-replace y x nn) y)]
+                 [a (input x y)]
+                 [p (if (set-member? bound x) (replace-name p x nn) p)])
+            (values a p))))))
 
 
 ; Guard for restriction.
@@ -85,11 +101,9 @@
   (when (not (process? p))
         (error type-name
                (format "expected <process?>, given: ~a" p)))
-  (let ([bound (process-bound-names p)])
-    (values x
-            (if (set-member? bound x)
-                (process-refresh-name p x)
-                p))))
+  (let* ([bound (process-bound-names p)]
+         [nx (if (not (set-member? bound x)) x (fresh-name p x))])
+    (values nx p)))
 
 
 ; Guard for replication
@@ -114,27 +128,31 @@
   (when (not (process? q))
         (error type-name
                (format "expected <process?>, given: ~a" q)))
-  (letrec ([fix (lambda (procs)
-                  (let* ([p (car procs)]
-                         [q (cdr procs)]
-                         [bound (process-bound-names p)]
-                         [all (process-names q)]
-                         [err (set-intersect bound all)]
-                         [bound (process-bound-names q)]
-                         [all (process-names p)]
-                         [err (set-union err (set-intersect bound all))]
-                         [err (set->list err)])
-                    (if (null? err)
-                        (cons p q)
-                        (let* ([n (car err)]
-                               [np (fresh-name p n)]
-                               [nq (fresh-name q n)]
-                               [nn (name-max np nq)])
-                          (fix (cons p
-                                    (replace-name q n nn)))))))]
-           [procs (fix (cons p q))])
-    (values (car procs)
-            (cdr procs))))
+  (letrec ([fix (lambda (procs names)
+                  (if (null? names)
+                      procs
+                      (let* ([p (car procs)]
+                             [q (cdr procs)]
+                             [n (car names)]
+                             [names (cdr names)]
+                             [np (fresh-name p n)]
+                             [nq (fresh-name q n)]
+                             [nn (name-max np nq)])
+                        (cond
+                          [(set-member? (process-bound-names p) n)
+                           (fix (cons (replace-name p n nn) q) names)]
+                          [(set-member? (process-bound-names q) n)
+                           (fix (cons p (replace-name q n nn)) names)]))))])
+    (let* ([bound (process-bound-names p)]
+           [names (process-names q)]
+           [err (set-intersect bound names)]
+           [bound (process-bound-names q)]
+           [names (process-names p)]
+           [err (set-union err (set-intersect bound names))]
+           [err (set->list err)]
+           [procs (fix (cons p q) err)])
+      (values (car procs)
+              (cdr procs)))))
 
 
 
@@ -347,13 +365,12 @@
 (define (fresh-name p n)
   (let* ([names (process-names p)]
          [m (name-refresh n)]
-         [cmp (lambda (x)
+         [ok? (lambda (x)
                 (or (not (name-compatible? x m))
                     (equal? (name-max x m) m)))]
-         [res (set-map names cmp)]
-         [band (lambda (x y) (and x y))] ; Binary and wrapper
-         [fresh? (foldl band #t res)])
-    (if (and fresh? (not (set-member? names m)))
+         [res (set-map names ok?)])
+    (if (and (not (member #f res))
+             (not (set-member? names m)))
         m
         (fresh-name p m))))
 

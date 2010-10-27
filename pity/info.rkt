@@ -1,6 +1,6 @@
 #lang setup/infotab
 
-; Pity: Pi-Calculus Type Checking
+; Pity: Pi-Calculus Type Inference
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -19,5 +19,5 @@
 
 
 (define name "Pity")
-(define blurb "Pi-Calculus Type Checking")
+(define blurb "Pi-Calculus Type Inference")
 (define scribblings '(("scribblings/pity.scrbl" (multi-page))))

@@ -1,6 +1,6 @@
 #lang racket/base
 
-; Pity: Pi-Calculus Type Checking
+; Pity: Pi-Calculus Type Inference
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -184,8 +184,8 @@
     (test-case
       "Free and bound names in a composition (input and output, same name)"
       (let ([process (string->process "x(y).0|x<y>.0")]
-            [free (string->name-set "x,y1")]
-            [bound (string->name-set "y")]
+            [free (string->name-set "x,y")]
+            [bound (string->name-set "y1")]
             [all (string->name-set "x,y,y1")])
         (check-equal? (process-free-names process) free)
         (check-equal? (process-bound-names process) bound)
@@ -215,8 +215,8 @@
       "Free and bound names in a prefix (output then input, same name)"
       (let ([process (string->process "x<y>.x(y).0")]
             [free (string->name-set "x,y")]
-            [bound (string->name-set "y")]
-            [all (string->name-set "x,y")])
+            [bound (string->name-set "y1")]
+            [all (string->name-set "x,y,y1")])
         (check-equal? (process-free-names process) free)
         (check-equal? (process-bound-names process) bound)
         (check-equal? (process-names process) all)))
@@ -402,6 +402,13 @@
         (check-equal? (process-names q) q-n)))
 
     (test-case
+      "Prevent free name capture under a prefix"
+      (let* ([str "a3<a1>.a2(a1).0"]
+             [canonical-str "a3<a1>.a2(a4).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
       "Prevent bound name capture under a prefix"
       (let* ([str "a(b,c).a(c,d).0"]
              [canonical-str "a(b,c).a(c1,d).0"]
@@ -411,21 +418,35 @@
     (test-case
       "Prevent bound name capture under a restriction"
       (let* ([str "(b)a(b).0"]
-             [canonical-str "(b)a(b1).0"]
+             [canonical-str "(b1)a(b).0"]
              [canonical (string->process canonical-str)])
         (check-equal? (string->process str) canonical)))
 
     (test-case
       "Prevent name capture in a composition"
       (let* ([str "a2(a1,b1).0|b2(a1,b3).0"]
-             [canonical-str "a2(a1,b1).0|b2(a3,b3).0"]
+             [canonical-str "a2(a3,b1).0|b2(a1,b3).0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Prevent ambiguity in a prefix"
+      (let* ([str "a(b).b<c>.a(b).b<c>.0"]
+             [canonical-str "a(b).b<c>.a(b1).b1<c>.0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Prevent ambiguity in a prefix (complex)"
+      (let* ([str "a(b).b<c>.a(b).b<c>.0|b<d>.0|b1<e>.0"]
+             [canonical-str "a(b2).b2<c>.a(b3).b3<c>.0|b<d>.0|b1<e>.0"]
              [canonical (string->process canonical-str)])
         (check-equal? (string->process str) canonical)))
 
     (test-case
       "Prevent ambiguity in a composition"
       (let* ([str "a(b).0|b<c>.0"]
-             [canonical-str "a(b).0|b1<c>.0"]
+             [canonical-str "a(b1).0|b<c>.0"]
              [canonical (string->process canonical-str)])
         (check-equal? (string->process str) canonical)))
 
@@ -439,7 +460,14 @@
     (test-case
       "Prevent ambiguity in a composition (complex)"
       (let* ([str "(a1)(a2<a5>.0|a2(a1).0)|a1<a4>.0"]
-             [canonical-str "(a1)(a2<a5>.0|a2(a6).0)|a7<a4>.0"]
+             [canonical-str "(a6)(a2<a5>.0|a2(a7).0)|a1<a4>.0"]
+             [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Correctly detect bound name scope"
+      (let* ([str "a(a).a<a>.a(a).a<a>.0"]
+             [canonical-str "a(a2).a2<a2>.a2(a1).a1<a1>.0"]
              [canonical (string->process canonical-str)])
         (check-equal? (string->process str) canonical)))))
 

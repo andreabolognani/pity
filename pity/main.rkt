@@ -1,6 +1,6 @@
 #lang racket/base
 
-; Pity: Pi-Calculus Type Checking
+; Pity: Pi-Calculus Type Inference
 ; Copyright (C) 2010  Andrea Bolognani <andrea.bolognani@roundhousecode.com>
 ;
 ; This program is free software; you can redistribute it and/or modify
