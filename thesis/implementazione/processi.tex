@@ -309,3 +309,92 @@ controllo aggiuntivo per verificare che \lstinline{m} non sia gi\`a tra
 i nomi di \lstinline{p} (condizione che si verifica ad esempio quando viene
 chiesto di sostituire $x_1$ in $\overline{x_1}\langle x_2\rangle$), e il
 nome \lstinline{m} viene restituito.
+
+La guardia per il prefisso \`e ancora pi\`u complessa:
+
+\begin{lstlisting}
+      (define (prefix-guard a p type-name)
+        (letrec ([fresh (lambda (a p x)
+                           (let ([nx (fresh-name p x)]
+                                 [names (names/action a)])
+                             (if (not (set-member? names nx))
+                                 nx
+                                 (fresh a p nx))))]
+                 [refresh (lambda (q n)
+                            (replace-name q n (fresh a q n)))])
+          (let* ([bound (process-bound-names p)]
+                 [bound (set-intersect bound (names/action a))]
+                 [bound (set->list bound)]
+                 [p (foldl (flip refresh) p bound)])
+            (if (not (input? a))
+                (values a p)
+                (let* ([bound (bound-names/action a)]
+                       [x (input-x a)]
+                       [nn (fresh a p x)]
+                       [y (input-y a)]
+                       [y (if (not (set-member? bound x))
+                              y
+                              (list-replace y x nn))]
+                       [a (input x y)]
+                       [p (if (not (set-member? bound x))
+                              p
+                              (replace-name p x nn))])
+                  (values a p))))))
+\end{lstlisting}
+
+dove ancora una volta sono stati tralasciati i controlli iniziali, che
+assicurano \lstinline{a} rispetti il contratto \lstinline{action?} e
+\lstinline{p} rispetti il contratto \lstinline{process?}.
+
+Questa procedura si deve assicurare che due situazioni di errore vengano
+gestite correttamente: la prima \`e quella che si verifica quando uno dei
+nomi di \lstinline{a} \`e gi\`a presente tra i nomi legati di
+\lstinline{p}, come ad esempio nel processo
+$\overline{b}\langle c\rangle.a(b).0$, dove l'occorrenza di $b$
+in $\overline{b}\langle c\rangle$ fa riferimento ad un nome che \`e diverso
+da quello a cui fa riferimento l'occorrenza di $b$ in $a(b)$; una volta
+effettuato il cambio di nomi si deve ottenere il processo
+$\overline{b}\langle c\rangle.a(b_1).0$, privo di ambiguit\`a.
+
+In questo primo caso \`e sufficiente rinominare l'occorrenza legata di $b$:
+nella procedura \lstinline{prefix-guard}, si comincia il dichiarare due
+procedure di supporto, \lstinline{fresh} e \lstinline{refresh}; la prima
+funziona in maniera identica a \lstinline{fresh-name}, ma accetta come
+ulteriore argomento l'azione \lstinline{a}, e si assicura che il nome
+restituito non sia stato usato n\'e in \lstinline{p} n\'e in \lstinline{a},
+mentre la seconda lavora come \lstinline{process-refresh-name} ma fa uso
+di \lstinline{fresh} per evitare la cattura di nomi in \lstinline{a}.
+
+Definite queste procedure, si prosegue con l'assegnare alla variabile
+\lstinline{bound} l'insieme dei nomi legati in \lstinline{p}, al quale
+vengono sottratti tutti i nomi che non compaiono in \lstinline{a};
+l'insieme viene poi convertito in una lista, e tramite la chiamata
+
+\begin{lstlisting}
+      (foldl (flip refresh) p bound)
+\end{lstlisting}
+
+ci sia assicura che i nomi trovati (che sono quelli problematici) siano
+stati sostituiti da nomi non presenti n\'e in \lstinline{p} n\'e in
+\lstinline{a}.
+
+Se l'azione \`e di output, non serve controllare altro, e si pu\`o procedere
+con la normale costruzione della struttura.
+
+Se invece l'azione \`e di input, bisogna gestire la seconda situazione
+d'errore, ovvero quella che si verifica in un processo quale
+$a(a).\overline{a}\langle b\rangle.0$, dove la prima istanza di $a$ si
+riferisce ad un nome diverso da quello a cui fanno riferimento le altre due
+occorrenze, quindi \`e necessario operare un cambio di nome per
+differenziarla, ottenendo il processo
+$a(a_1).\overline{a_1}\langle b\rangle.0$
+
+Anche in questo caso, si comincia con il trovare i nomi legati dall'azione
+\lstinline{a}, e si usa la procedura \lstinline{fresh} per ottenere una
+nuova versione del nome \lstinline{x} usato per la trasmissione: se il
+nome in questione fa parte dei nomi legati da \lstinline{a}, viene
+operata la sua sostituzione all'interno della lista \lstinline{y} di nomi
+ricevuti.
+
+Per quanto riguarda il processo \lstinline{p}, \`e sufficiente operare una
+sostituzione per mezzo della procedura \lstinline{replace-name}.

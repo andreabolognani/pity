@@ -1,4 +1,4 @@
-personal_ws-1.1 it 118 
+personal_ws-1.1 it 125 
 sar
 cdr
 transparent
@@ -17,8 +17,8 @@ Lisp
 bn
 cio
 conformit
-LISt
 list
+LISt
 error
 capacit
 name
@@ -45,15 +45,18 @@ funzionalit
 is
 join
 foldl
+flip
 na
 nb
 guard
 action
 names
+ambiguit
 refresh
 Report
 regexp
 sort
+nn
 double
 sommer
 Scribble
@@ -62,6 +65,7 @@ process
 l'ambiguit
 member
 flessibilit
+nx
 number
 Algorithmic
 equal
@@ -101,10 +105,12 @@ boolean
 replication
 Revised
 sorting
+letrec
 provide
 empty
 num
 struct
+intersect
 cadr
 parts
 self
@@ -113,6 +119,7 @@ three
 expected
 car
 and
+replace
 leggibilit
 cons
 rep
