@@ -455,6 +455,13 @@
       (let* ([str "(a1)(a2<a5>.0|a2(a1).0)|a1<a4>.0"]
              [canonical-str "(a6)(a2<a5>.0|a2(a7).0)|a1<a4>.0"]
              [canonical (string->process canonical-str)])
+        (check-equal? (string->process str) canonical)))
+
+    (test-case
+      "Correctly detect bound name scope"
+      (let* ([str "a(a).a<a>.a(a).a<a>.0"]
+             [canonical-str "a(a2).a2<a2>.a2(a1).a1<a1>.0"]
+             [canonical (string->process canonical-str)])
         (check-equal? (string->process str) canonical)))))
 
 

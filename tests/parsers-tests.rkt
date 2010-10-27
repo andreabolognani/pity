@@ -104,6 +104,14 @@
         (check-equal? (string->process str) process)))
 
     (test-case
+      "Parse an input action with a single parameter (same as channel)"
+      (let* ([str "a(a).0"]
+             [params (list (name "a1"))]
+             [action (input (name "a") params)]
+             [process (prefix action (nil))])
+        (check-equal? (string->process str) process)))
+
+    (test-case
       "Parse an input action with two parameters"
       (let* ([str "a(b,c).0"]
              [params (list (name "b") (name "c"))]
@@ -123,6 +131,14 @@
       "Parse an output action with a single parameter"
       (let* ([str "a<b>.0"]
              [params (list (name "b"))]
+             [action (output (name "a") params)]
+             [process (prefix action (nil))])
+        (check-equal? (string->process str) process)))
+
+    (test-case
+      "Parse an output action with a single parameter (same as channel)"
+      (let* ([str "a<a>.0"]
+             [params (list (name "a"))]
              [action (output (name "a") params)]
              [process (prefix action (nil))])
         (check-equal? (string->process str) process)))

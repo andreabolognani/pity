@@ -45,28 +45,14 @@
 ;  that might be needed to ensure no name capture occurrs.
 
 
-; Guard for output action
-(define (output-guard x y type-name)
+; Guard for actions
+(define (action-guard x y type-name)
   (when (not (name? x))
         (error type-name
                (format "expected <name?>, given: ~a" x)))
   (when (not ((non-empty-listof-distinct name?) y))
         (error type-name
                (format "expected <(non-empty-listof-distinct name?)>, given: ~a" y)))
-  (values x y))
-
-
-; Guard for input action
-(define (input-guard x y type-name)
-  (when (not (name? x))
-        (error type-name
-               (format "expected <name?>, given: ~a" x)))
-  (when (not ((non-empty-listof-distinct name?) y))
-        (error type-name
-               (format "expected <(non-empty-listof-distinct name?)>, given: ~a" y)))
-  (when (member x y)
-        (error type-name
-               (format "~a cannot be part of the input object" x)))
   (values x y))
 
 
@@ -83,9 +69,24 @@
                (format "expected <process?>, given: ~a" p)))
   (let* ([bound (process-bound-names p)]
          [bound (set-intersect bound (names/action a))]
-         [bound (set->list bound)])
-    (values a
-            (foldl (flip process-refresh-name) p bound))))
+         [bound (set->list bound)]
+         [p (foldl (flip process-refresh-name) p bound)])
+    (if (not (input? a))
+        (values a p)
+        (letrec ([get-name (lambda (a p x)
+                             (let ([nx (fresh-name p x)]
+                                   [names (names/action a)])
+                               (if (not (set-member? names nx))
+                                   nx
+                                   (get-name a p nx))))])
+          (let* ([bound (bound-names/action a)]
+                 [x (input-x a)]
+                 [nn (get-name a p x)]
+                 [y (input-y a)]
+                 [y (if (set-member? bound x) (list-replace y x nn) y)]
+                 [a (input x y)]
+                 [p (if (set-member? bound x) (replace-name p x nn) p)])
+            (values a p))))))
 
 
 ; Guard for restriction.
@@ -160,10 +161,10 @@
 (struct nil         ()
                     #:transparent)
 (struct input       (x y)
-                    #:guard input-guard
+                    #:guard action-guard
                     #:transparent)
 (struct output      (x y)
-                    #:guard output-guard
+                    #:guard action-guard
                     #:transparent)
 (struct prefix      (a p)
                     #:guard prefix-guard
