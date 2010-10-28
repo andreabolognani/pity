@@ -67,28 +67,27 @@
   (when (not (process? p))
         (error type-name
                (format "expected <process?>, given: ~a" p)))
-  (letrec ([fresh (lambda (a p x)
-                     (let ([nx (fresh-name p x)]
-                           [names (names/action a)])
-                       (if (not (set-member? names nx))
-                           nx
-                           (fresh a p nx))))]
-           [refresh (lambda (q n)
-                      (replace-name q n (fresh a q n)))])
-    (let* ([bound (process-bound-names p)]
-           [bound (set-intersect bound (names/action a))]
+    (let* ([refresh (lambda (q n)
+                      (let* ([an (fresh-name a n)]
+                             [qn (fresh-name q n)]
+                             [nn (name-max an qn)])
+                        (replace-name q n nn)))]
+           [bound (process-bound-names p)]
+           [bound (set-intersect bound (process-names a))]
            [bound (set->list bound)]
            [p (foldl (flip refresh) p bound)])
       (if (not (input? a))
           (values a p)
-          (let* ([bound (bound-names/action a)]
+          (let* ([bound (process-bound-names a)]
                  [x (input-x a)]
-                 [nn (fresh a p x)]
                  [y (input-y a)]
+                 [na (fresh-name a x)]
+                 [np (fresh-name p x)]
+                 [nn (name-max na np)]
                  [y (if (set-member? bound x) (list-replace y x nn) y)]
                  [a (input x y)]
                  [p (if (set-member? bound x) (replace-name p x nn) p)])
-            (values a p))))))
+            (values a p)))))
 
 
 ; Guard for restriction.
