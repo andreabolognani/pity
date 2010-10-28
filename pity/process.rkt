@@ -67,28 +67,27 @@
   (when (not (process? p))
         (error type-name
                (format "expected <process?>, given: ~a" p)))
-  (letrec ([fresh-name/2 (lambda (a p x)
-                           (let ([nx (fresh-name p x)]
-                                 [names (names/action a)])
-                             (if (not (set-member? names nx))
-                                 nx
-                                 (fresh-name/2 a p nx))))])
-    (let* ([bound (process-bound-names p)]
-           [bound (set-intersect bound (names/action a))]
+    (let* ([refresh (lambda (q n)
+                      (let* ([an (fresh-name a n)]
+                             [qn (fresh-name q n)]
+                             [nn (name-max an qn)])
+                        (replace-name q n nn)))]
+           [bound (process-bound-names p)]
+           [bound (set-intersect bound (process-names a))]
            [bound (set->list bound)]
-           [refresh (lambda (q n)
-                      (replace-name q n (fresh-name/2 a q n)))]
            [p (foldl (flip refresh) p bound)])
       (if (not (input? a))
           (values a p)
-          (let* ([bound (bound-names/action a)]
+          (let* ([bound (process-bound-names a)]
                  [x (input-x a)]
-                 [nn (fresh-name/2 a p x)]
                  [y (input-y a)]
+                 [na (fresh-name a x)]
+                 [np (fresh-name p x)]
+                 [nn (name-max na np)]
                  [y (if (set-member? bound x) (list-replace y x nn) y)]
                  [a (input x y)]
                  [p (if (set-member? bound x) (replace-name p x nn) p)])
-            (values a p))))))
+            (values a p)))))
 
 
 ; Guard for restriction.
@@ -212,6 +211,8 @@
 (define (process-free-names process)
   (match process
     [(nil)             (free-names/nil)]
+    [(input x y)       (free-names/input x y)]
+    [(output x y)      (free-names/output x y)]
     [(prefix a p)      (free-names/prefix a p)]
     [(restriction x p) (free-names/restriction x p)]
     [(replication p)   (free-names/replication p)]
@@ -222,6 +223,8 @@
 (define (process-bound-names process)
   (match process
     [(nil)             (bound-names/nil)]
+    [(input x y)       (bound-names/input x y)]
+    [(output x y)      (bound-names/output x y)]
     [(prefix a p)      (bound-names/prefix a p)]
     [(restriction x p) (bound-names/restriction x p)]
     [(replication p)   (bound-names/replication p)]
@@ -232,6 +235,8 @@
 (define (process-names process)
   (match process
     [(nil)             (names/nil)]
+    [(input x y)       (names/input x y)]
+    [(output x y)      (names/output x y)]
     [(prefix a p)      (names/prefix a p)]
     [(restriction x p) (names/restriction x p)]
     [(replication p)   (names/replication p)]
@@ -299,16 +304,16 @@
 
 (define (free-names/prefix a p)
   (set-subtract
-    (set-union (free-names/action a)
+    (set-union (process-free-names a)
                (process-free-names p))
-    (bound-names/action a)))
+    (process-bound-names a)))
 
 (define (bound-names/prefix a p)
-  (set-union (bound-names/action a)
+  (set-union (process-bound-names a)
              (process-bound-names p)))
 
 (define (names/prefix a p)
-  (set-union (names/action a)
+  (set-union (process-names a)
              (process-names p)))
 
 
@@ -386,11 +391,18 @@
 ; really good idea to obtain a guaranteed fresh name first.
 (define (replace-name self n m)
   (match self
-    [(nil)             (nil)]
+    [(nil)             (replace-name/nil n m)]
+    [(input x y)       (replace-name/input x y n m)]
+    [(output x y)      (replace-name/output x y n m)]
     [(prefix a p)      (replace-name/prefix a p n m)]
     [(restriction x p) (replace-name/restriction x p n m)]
     [(replication p)   (replace-name/replication p n m)]
     [(composition p q) (replace-name/composition p q n m)]))
+
+
+; Replace a name in the nil process
+(define (replace-name/nil n m)
+  (nil))
 
 
 ; Replace a name in an input action
@@ -416,7 +428,7 @@
 
 ; Replace a name in a prefix
 (define (replace-name/prefix a p n m)
-  (prefix (replace-name/action a n m)
+  (prefix (replace-name a n m)
           (replace-name p n m)))
 
 
@@ -503,12 +515,17 @@
 ; Glue procedure
 (define (check-typing process srt env)
   (match process
-    [(nil)                   #t]
+    [(nil)                   (check-typing/nil srt env)]
     [(prefix (input x y) p)  (check-typing/input x y p srt env)]
     [(prefix (output x y) p) (check-typing/output x y p srt env)]
     [(restriction x p)       (check-typing/restriction x p srt env)]
-    [(replication p)         (check-typing p srt env)]
+    [(replication p)         (check-typing/replication p srt env)]
     [(composition p q)       (check-typing/composition p q srt env)]))
+
+
+; Check typing for the nil process
+(define (check-typing/nil srt env)
+  #t)
 
 
 ; Check typing for an input action
@@ -547,6 +564,11 @@
         (foldl bor #f (set-map sorts recur)))))
 
 
+; Check typing for a replication
+(define (check-typing/replication p srt env)
+  (check-typing p srt env))
+
+
 ; Check typing for a composition
 (define (check-typing/composition p q srt env)
   (and (check-typing p srt env)
@@ -567,11 +589,18 @@
 ; Convert a process to a string
 (define (process->string process)
   (match process
-    [(nil)             "0"]
+    [(nil)             (process->string/nil)]
+    [(input x y)       (process->string/input x y)]
+    [(output x y)      (process->string/output x y)]
     [(prefix a p)      (process->string/prefix a p)]
     [(restriction x p) (process->string/restriction x p)]
     [(replication p)   (process->string/replication p)]
     [(composition p q) (process->string/composition p q)]))
+
+
+; Convert a nil process to a string
+(define (process->string/nil)
+  "0")
 
 
 ; Convert an action to a string
@@ -595,7 +624,7 @@
 
 ; Convert a prefix to a string
 (define (process->string/prefix a p)
-  (string-append (process->string/action a)
+  (string-append (process->string a)
                  "."
                  (if (composition? p)
                      (enclose (process->string p))
