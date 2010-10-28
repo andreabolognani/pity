@@ -88,6 +88,8 @@ $\pi$-calcolo: nel caso dei nomi legati, ad esempio, si ha
       (define (process-bound-names process)
         (match process
           [(nil)             (bound-names/nil)]
+          [(input x y)       (bound-names/input x y)]
+          [(output x y)      (bound-names/output x y)]
           [(prefix a p)      (bound-names/prefix a p)]
           [(restriction x p) (bound-names/restriction x p)]
           [(replication p)   (bound-names/replication p)]
@@ -120,7 +122,7 @@ procedure private specializzate:
       ; I nomi legati in un prefisso sono quelli legati
       ; dall'azione, uniti a quelli legati nella continuazione
       (define (bound-names/prefix a p)
-        (set-union (bound-names/action a)
+        (set-union (process-bound-names a)
                    (process-bound-names p)))
 
       ; I nomi legati in una restrizione sono quelli legati nel
@@ -139,6 +141,14 @@ procedure private specializzate:
         (set-union (process-bound-names p)
                    (process-bound-names q)))
 \end{lstlisting}
+
+Si pu\`o notare che la procedura \lstinline{process-bound-names} accetta
+come parametro anche un \lstinline{input} o un \lstinline{output}, che
+non rispettano il contratto \lstinline{process?}: questo semplifica la
+scrittura di alcune procedure interne al modulo, e non causa problemi
+agli utilizzatori esterni perch\'e il contratto usato per esportarla,
+\lstinline{(process? . -> . (setof name?))}, impedisce un utilizzo scorretto
+all'esterno del modulo.
 
 La procedura \lstinline{process-refresh-name} permette di eliminare tutti
 i riferimenti al nome \lstinline{x} da un processo \lstinline{p}
@@ -310,36 +320,37 @@ i nomi di \lstinline{p} (condizione che si verifica ad esempio quando viene
 chiesto di sostituire $x_1$ in $\overline{x_1}\langle x_2\rangle$), e il
 nome \lstinline{m} viene restituito.
 
+TODO process-refresh-name
+
 La guardia per il prefisso \`e ancora pi\`u complessa:
 
 \begin{lstlisting}
       (define (prefix-guard a p type-name)
-        (letrec ([fresh (lambda (a p x)
-                           (let ([nx (fresh-name p x)]
-                                 [names (names/action a)])
-                             (if (not (set-member? names nx))
-                                 nx
-                                 (fresh a p nx))))]
-                 [refresh (lambda (q n)
-                            (replace-name q n (fresh a q n)))])
-          (let* ([bound (process-bound-names p)]
-                 [bound (set-intersect bound (names/action a))]
-                 [bound (set->list bound)]
-                 [p (foldl (flip refresh) p bound)])
-            (if (not (input? a))
-                (values a p)
-                (let* ([bound (bound-names/action a)]
-                       [x (input-x a)]
-                       [nn (fresh a p x)]
-                       [y (input-y a)]
-                       [y (if (not (set-member? bound x))
-                              y
-                              (list-replace y x nn))]
-                       [a (input x y)]
-                       [p (if (not (set-member? bound x))
-                              p
-                              (replace-name p x nn))])
-                  (values a p))))))
+        (let* ([refresh (lambda (q n)
+                          (let* ([an (fresh-name a n)]
+                                 [qn (fresh-name q n)]
+                                 [nn (name-max an qn)])
+                            (replace-name q n nn)))]
+               [bound (process-bound-names p)]
+               [bound (set-intersect bound (process-names a))]
+               [bound (set->list bound)]
+               [p (foldl (flip refresh) p bound)])
+          (if (not (input? a))
+              (values a p)
+              (let* ([bound (process-bound-names a)]
+                     [x (input-x a)]
+                     [y (input-y a)]
+                     [na (fresh-name a x)]
+                     [np (fresh-name p x)]
+                     [nn (name-max na np)]
+                     [y (if (not (set-member? bound x))
+                            y
+                            (list-replace y x nn))]
+                     [a (input x y)]
+                     [p (if (not (set-member? bound x))
+                            y
+                            (replace-name p x nn))])
+                (values a p)))))
 \end{lstlisting}
 
 dove ancora una volta sono stati tralasciati i controlli iniziali, che
@@ -357,15 +368,13 @@ effettuato il cambio di nomi si deve ottenere il processo
 $\overline{b}\langle c\rangle.a(b_1).0$, privo di ambiguit\`a.
 
 In questo primo caso \`e sufficiente rinominare l'occorrenza legata di $b$:
-nella procedura \lstinline{prefix-guard}, si comincia il dichiarare due
-procedure di supporto, \lstinline{fresh} e \lstinline{refresh}; la prima
-funziona in maniera identica a \lstinline{fresh-name}, ma accetta come
-ulteriore argomento l'azione \lstinline{a}, e si assicura che il nome
-restituito non sia stato usato n\'e in \lstinline{p} n\'e in \lstinline{a},
-mentre la seconda lavora come \lstinline{process-refresh-name} ma fa uso
-di \lstinline{fresh} per evitare la cattura di nomi in \lstinline{a}.
+nella procedura \lstinline{prefix-guard}, si comincia con il dichiarare una
+procedura di supporto, \lstinline{refresh}, che funziona nello stesso modo
+di \lstinline{process-refresh-name}, ma si assicura che il nome usato per
+la sostituzione non sia presente n\'e in \lstinline{p} n\'e in
+\lstinline{a}, evitando quindi la cattura di nomi.
 
-Definite queste procedure, si prosegue con l'assegnare alla variabile
+Definita questa procedura, si prosegue con l'assegnare alla variabile
 \lstinline{bound} l'insieme dei nomi legati in \lstinline{p}, al quale
 vengono sottratti tutti i nomi che non compaiono in \lstinline{a};
 l'insieme viene poi convertito in una lista, e tramite la chiamata
@@ -390,8 +399,8 @@ differenziarla, ottenendo il processo
 $a(a_1).\overline{a_1}\langle b\rangle.0$
 
 Anche in questo caso, si comincia con il trovare i nomi legati dall'azione
-\lstinline{a}, e si usa la procedura \lstinline{fresh} per ottenere una
-nuova versione del nome \lstinline{x} usato per la trasmissione: se il
+\lstinline{a}, e si usa la procedura \lstinline{fresh-name} per ottenere
+una nuova versione del nome \lstinline{x} usato per la trasmissione: se il
 nome in questione fa parte dei nomi legati da \lstinline{a}, viene
 operata la sua sostituzione all'interno della lista \lstinline{y} di nomi
 ricevuti.

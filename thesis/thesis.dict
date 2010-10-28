@@ -1,4 +1,4 @@
-personal_ws-1.1 it 125 
+personal_ws-1.1 it 129 
 sar
 cdr
 transparent
@@ -12,13 +12,14 @@ verr
 values
 expressions
 format
+an
 newline
 Lisp
 bn
 cio
 conformit
-list
 LISt
+list
 error
 capacit
 name
@@ -60,6 +61,7 @@ nn
 double
 sommer
 Scribble
+np
 Scheme
 process
 l'ambiguit
@@ -70,6 +72,7 @@ number
 Algorithmic
 equal
 str
+qn
 pu
 string
 nil
@@ -124,3 +127,4 @@ leggibilit
 cons
 rep
 res
+perch
