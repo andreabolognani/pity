@@ -320,7 +320,76 @@ i nomi di \lstinline{p} (condizione che si verifica ad esempio quando viene
 chiesto di sostituire $x_1$ in $\overline{x_1}\langle x_2\rangle$), e il
 nome \lstinline{m} viene restituito.
 
-TODO process-refresh-name
+Serve una procedura che gestisca l'effettiva sostituzione di un nome
+all'interno di un processo: questa procedura privata, chiamata
+\lstinline{replace-name}, \`e definita come
+
+\begin{lstlisting}
+      (define (replace-name self n m)
+        (match self
+          [(nil)             (replace-name/nil n m)]
+          [(input x y)       (replace-name/input x y n m)]
+          [(output x y)      (replace-name/output x y n m)]
+          [(prefix a p)      (replace-name/prefix a p n m)]
+          [(restriction x p) (replace-name/restriction x p n m)]
+          [(replication p)   (replace-name/replication p n m)]
+          [(composition p q) (replace-name/composition p q n m)]))
+\end{lstlisting}
+
+e, come gi\`a nel caso di \lstinline{process-bound-names}, delega
+l'implementazione a delle procedure pi\`u specifiche, che sono
+
+\begin{lstlisting}
+      (define (replace-name/nil n m)
+        (nil))
+
+      (define (replace-name/input x y n m)
+        (let ([x1 (if (equal? x n) m x)]
+              [y1 (list-replace y n m)])
+          (input x1 y1)))
+
+      (define (replace-name/output x y n m)
+        (let ([x1 (if (equal? x n) m x)]
+              [y1 (list-replace y n m)])
+          (output x1 y1)))
+
+      (define (replace-name/action a n m)
+        (match a
+          [(input x y)  (replace-name/input x y n m)]
+          [(output x y) (replace-name/output x y n m)]))
+
+      (define (replace-name/prefix a p n m)
+        (prefix (replace-name a n m)
+                (replace-name p n m)))
+
+      (define (replace-name/restriction x p n m)
+        (let ([x1 (if (equal? x n) m x)])
+          (restriction x1 (replace-name p n m))))
+
+      (define (replace-name/replication p n m)
+        (replication (replace-name p n m)))
+
+      (define (replace-name/composition p q n m)
+        (composition (replace-name p n m)
+                     (replace-name q n m)))
+\end{lstlisting}
+
+Come si pu\`o vedere, \lstinline{replace-name} non effettua alcun
+controllo sui nomi passati come parametro per garantire che non avvenga
+la cattura di nomi; per questo, se si vuole che il processo ottenuto
+abbia lo stesso significato di quello originale, bisogna avere cura di
+utilizzare un nome totalmente nuovo: si pu\`o quindi combinare
+\lstinline{replace-name} con \lstinline{fresh-name} nella seguente
+maniera:
+
+\begin{lstlisting}
+      ; process-refresh-name : process? name? -> process?
+      (define (process-refresh-name self n)
+        (replace-name self n (fresh-name self n)))
+\end{lstlisting}
+
+per ottenere una sostituzione di nome che rispetta sempre il significato
+del processo originale, evitando cattura di nomi ed ambiguit\`a.
 
 La guardia per il prefisso \`e ancora pi\`u complessa:
 
