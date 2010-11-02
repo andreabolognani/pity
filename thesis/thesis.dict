@@ -1,4 +1,4 @@
-personal_ws-1.1 it 129 
+personal_ws-1.1 it 135 
 sar
 cdr
 transparent
@@ -10,6 +10,7 @@ any
 compatible
 verr
 values
+procs
 expressions
 format
 an
@@ -18,8 +19,8 @@ Lisp
 bn
 cio
 conformit
-list
 LISt
+list
 error
 capacit
 name
@@ -63,6 +64,7 @@ sommer
 Scribble
 np
 Scheme
+nq
 process
 l'ambiguit
 member
@@ -80,6 +82,7 @@ parser
 anzich
 RS
 caddr
+fix
 Hello
 matching
 lst
@@ -89,6 +92,7 @@ composition
 bytecode
 prefix
 verit
+err
 listof
 zA
 entit
@@ -101,6 +105,7 @@ keyword
 not
 when
 fresh
+null
 Language
 pity
 bound
@@ -115,6 +120,7 @@ num
 struct
 intersect
 cadr
+cond
 parts
 self
 PLT

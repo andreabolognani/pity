@@ -391,7 +391,8 @@ maniera:
 per ottenere una sostituzione di nome che rispetta sempre il significato
 del processo originale, evitando cattura di nomi ed ambiguit\`a.
 
-La guardia per il prefisso \`e ancora pi\`u complessa:
+La guardia per il prefisso \`e pi\`u complessa di quella della
+restrizione:
 
 \begin{lstlisting}
       (define (prefix-guard a p type-name)
@@ -430,11 +431,25 @@ Questa procedura si deve assicurare che due situazioni di errore vengano
 gestite correttamente: la prima \`e quella che si verifica quando uno dei
 nomi di \lstinline{a} \`e gi\`a presente tra i nomi legati di
 \lstinline{p}, come ad esempio nel processo
-$\overline{b}\langle c\rangle.a(b).0$, dove l'occorrenza di $b$
-in $\overline{b}\langle c\rangle$ fa riferimento ad un nome che \`e diverso
-da quello a cui fa riferimento l'occorrenza di $b$ in $a(b)$; una volta
-effettuato il cambio di nomi si deve ottenere il processo
-$\overline{b}\langle c\rangle.a(b_1).0$, privo di ambiguit\`a.
+
+\begin{pilisting}
+$
+    \overline{b}\langle c\rangle.a(b).0
+$
+\end{pilisting}
+
+dove l'occorrenza di $b$ in $\overline{b}\langle c\rangle$ fa riferimento
+ad un nome che \`e diverso da quello a cui fa riferimento l'occorrenza di
+$b$ in $a(b)$; una volta effettuato il cambio di nomi si deve ottenere il
+processo
+
+\begin{pilisting}
+$
+    \overline{b}\langle c\rangle.a(b_1).0
+$
+\end{pilisting}
+
+privo di ambiguit\`a.
 
 In questo primo caso \`e sufficiente rinominare l'occorrenza legata di $b$:
 nella procedura \lstinline{prefix-guard}, si comincia con il dichiarare una
@@ -456,16 +471,28 @@ ci sia assicura che i nomi trovati (che sono quelli problematici) siano
 stati sostituiti da nomi non presenti n\'e in \lstinline{p} n\'e in
 \lstinline{a}.
 
-Se l'azione \`e di output, non serve controllare altro, e si pu\`o procedere
-con la normale costruzione della struttura.
+Se l'azione \`e di output, non serve controllare altro, e si pu\`o
+procedere con la normale costruzione della struttura.
 
 Se invece l'azione \`e di input, bisogna gestire la seconda situazione
 d'errore, ovvero quella che si verifica in un processo quale
-$a(a).\overline{a}\langle b\rangle.0$, dove la prima istanza di $a$ si
-riferisce ad un nome diverso da quello a cui fanno riferimento le altre due
-occorrenze, quindi \`e necessario operare un cambio di nome per
-differenziarla, ottenendo il processo
-$a(a_1).\overline{a_1}\langle b\rangle.0$
+
+\begin{pilisting}
+$
+    a(a).\overline{a}\langle b\rangle.0
+$
+\end{pilisting}
+
+dove la prima occorrenza di $a$ si riferisce ad un nome diverso da
+quello a cui fanno riferimento le altre due occorrenze, quindi \`e
+necessario operare un cambio di nome per differenziarla, ottenendo il
+processo
+
+\begin{pilisting}
+$
+    a(a_1).\overline{a_1}\langle b\rangle.0
+$
+\end{pilisting}
 
 Anche in questo caso, si comincia con il trovare i nomi legati dall'azione
 \lstinline{a}, e si usa la procedura \lstinline{fresh-name} per ottenere
@@ -476,3 +503,99 @@ ricevuti.
 
 Per quanto riguarda il processo \lstinline{p}, \`e sufficiente operare una
 sostituzione per mezzo della procedura \lstinline{replace-name}.
+
+Resta da considerare la costruzione di una \lstinline{composition}: la
+guardia \`e
+
+\begin{lstlisting}
+      (define (composition-guard p q type-name)
+        (letrec ([fix (lambda (procs names)
+                        (if (null? names)
+                            procs
+                            (let* ([p (car procs)]
+                                   [q (cdr procs)]
+                                   [n (car names)]
+                                   [names (cdr names)]
+                                   [np (fresh-name p n)]
+                                   [nq (fresh-name q n)]
+                                   [nn (name-max np nq)])
+                              (cond
+                                [(set-member? (process-bound-names p)
+                                              n)
+                                 (fix (cons (replace-name p n nn)
+                                             q)
+                                      names)]
+                                [(set-member? (process-bound-names q)
+                                              n)
+                                 (fix (cons p
+                                            (replace-name q n nn))
+                                      names)]))))])
+          (let* ([bound (process-bound-names p)]
+                 [names (process-names q)]
+                 [err (set-intersect bound names)]
+                 [bound (process-bound-names q)]
+                 [names (process-names p)]
+                 [err (set-union err (set-intersect bound names))]
+                 [err (set->list err)]
+                 [procs (fix (cons p q) err)])
+            (values (car procs)
+                    (cdr procs)))))
+\end{lstlisting}
+
+dove \lstinline{p} e \lstinline{q} rispettano entrambi il contratto
+\lstinline{process?}.
+
+Quando due processi vengono eseguiti in parallelo, bisogna assicurarsi
+che nessuno dei due contenga legati dei nomi che sono presenti liberi
+nell'altro: ad esempio, nel processo
+
+\begin{pilisting}
+$
+    \overline{a}\langle b\rangle.0 \; | \;
+    b(a).0
+$
+\end{pilisting}
+
+l'occorrenza di sinistra del nome $a$ ha significato diverso rispetto
+all'occorrenza di destra, quindi quest'ultima deve essere rinominata,
+portando al processo
+
+\begin{pilisting}
+$
+    \overline{a}\langle b\rangle.0 \; | \;
+    b(a_1).0
+$
+\end{pilisting}
+
+che rispetta i requisiti.
+
+Per svolgere questo compito, viene dichiarata una procedura interna
+chiamata \lstinline{fix}. La procedura accetta come parametri la coppia,
+creata con la primitiva \lstinline{cons}, di processi su cui si sta
+lavorando e una lista contenente i nomi problematici.
+
+Se tale lista non \`e vuota (il controllo viene effettuato tramite il
+predicato \lstinline{null?}) si estraggono i due processi dalla coppia
+usando le primitive \lstinline{car} e \lstinline{cdr}, e si assegna il
+primo nome della lista alla variabile \lstinline{n}.
+
+Usando la procedura \lstinline{fresh-name} si trova un nuovo nome
+derivato da \lstinline{n} sia nel processo \lstinline{p} che in
+\lstinline{q}, e si sceglie quello che non compare in nessuno dei due
+usando \lstinline{name-max}.
+
+Una volta trovato il nuovo nome, \`e sufficiente sostituirlo a
+\lstinline{n} nel processo dove quest'ultimo ha occorrenze legate: quale
+dei due processi debba essere oggetto della sostituzione viene stabilito
+dalla sintassi \lstinline{cond}; la procedura \lstinline{fix} viene poi
+chiamata ricorsivamente sul resto dei nomi.
+
+La lista dei nomi problematici viene generata alla chiamata della
+procedura guardia, unendo l'insieme dei processi che sono liberi in
+\lstinline{p} e legati in \lstinline{p} con quello dei nomi che, al
+contrario, sono legati in \lstinline{p} e liberi in \lstinline{q}.
+
+Assegnando le guardie descritte alle varie strutture utilizzate per
+descrivere processi del $\pi$-calcolo, si ha la garanzia che i processi
+generati rispettino sempre i requisiti necessari ad applicare le
+regole di inferenza che stanno alla base del type system.
