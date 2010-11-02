@@ -156,96 +156,6 @@ mantenendone invariato il significato, evitando cio\`e la cattura di nomi:
 effettuare questo tipo di sostituzione \`e fondamentale per garantire che
 i nomi legati in un processo siano distinti da tutti gli altri nomi.
 
-Prima di illustrare il funzionamento di \lstinline{process-refresh-name},
-bisogna spiegare il criterio utilizzato per la generazione di nuovi nomi.
-
-Si ricordi che tutti i nomi rispettano il contratto \lstinline{id-string?},
-sono cio\`e costituiti da una serie di caratteri, eventualmente seguita
-da una parte numerica. La procedura privata \lstinline{parts}, definita
-all'interno del modulo \lstinline{pity/name}, estrae le due parti
-utilizzando un'espressione regolare:
-
-\begin{lstlisting}
-      (define (parts n)
-         (let* ([parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
-                [str (cadr parts)]
-                [num (caddr parts)])
-           (cons str num)))
-\end{lstlisting}
-
-Per generare un nuovo nome, \`e sufficiente incrementare la parte numerica
-del nome di partenza: \`e esattamente quello che fa la procedura pubblica
-\lstinline{name-refresh}
-
-\begin{lstlisting}
-      ; name-refresh : name? -> name?
-      (define (name-refresh self)
-        (let* ([n (name-n self)]
-               [parts (parts n)]
-               [str (car parts)]
-               [num (cdr parts)]
-               [num (if (equal? num "") 0 (string->number num))]
-               [num (+ num 1)]
-               [n (string-append str (number->string num))])
-          (name n)))
-\end{lstlisting}
-
-La prima volta, alla variabile \lstinline{num} viene assegnato il secondo
-valore restituito da \lstinline{(parts n)}: questo valore \`e una stringa
-contenente la parte numerica, che pu\`o essere vuota.
-
-Nel secondo assegnamento viene usata la sintassi \lstinline{if} per
-assegnare il valore numerico \lstinline{0} alla stringa vuota: come
-conseguenza, un nome privo di parte numerica come quello ottenuto usando
-\lstinline{(name "a")} viene considerato avere parte numerica pari a
-\lstinline{0}. Subito dopo, la parte numerica \`e incrementata e un nuovo
-nome viene restituito.
-
-Questo algoritmo di generazione nomi ha il vantaggio di essere veloce e
-semplice da implementare; inoltre, il nome generato \`e sempre prevedibile
-conoscendo il nome di partenza, e questo rende possibile la verifica
-dell'implementazione tramite casi di test, cosa che non sarebbe possibile
-se ad esempio il nuovo nome venisse generato casualmente.
-
-Due nomi possono essere confrontati tra di loro semplicemente confrontando
-le stringhe che li rappresentano:
-
-\begin{lstlisting}
-      ; name-max : name? name? -> name?
-      (define (name-max a b)
-        (let ([na (name-n a)]
-              [nb (name-n b)])
-          (if (string>=? na nb)
-              a
-              b)))
-\end{lstlisting}
-
-Si noti che, con questa definizione di \lstinline{name-max}, si verifica
-
-\begin{lstlisting}
-      (name-max (name "x5") (name "y2")) ; ==> (name "y2")
-\end{lstlisting}
-
-il che potrebbe causare problemi in alcune applicazioni. Per capire quando
-due nomi possano essere confrontati usando \lstinline{name-max} senza
-ottenere risultati inaspettati, si pu\`o usare il predicato
-\lstinline{name-compatible?}, definito come
-
-\begin{lstlisting}
-      ; name-compatible? : name? name? -> boolean?
-      (define (name-compatible? a b)
-        (let* ([n (name-n a)]
-               [p (parts n)]
-               [na (car p)]
-               [n (name-n b)]
-               [p (parts n)]
-               [nb (car p)])
-          (equal? na nb)))
-\end{lstlisting}
-
-che restituisce \lstinline{#t} se i due nomi differiscono solamente nella
-parte numerica, \lstinline{#f} altrimenti.
-
 Per implementare correttamente \lstinline{process-refresh-name}, tuttavia,
 non \`e sufficiente che il nome designato sia sostituito con quello
 restituito da \lstinline{name-refresh}: per capire come questo approccio
@@ -544,6 +454,11 @@ guardia \`e
 
 dove \lstinline{p} e \lstinline{q} rispettano entrambi il contratto
 \lstinline{process?}.
+
+Questa guardia \`e pi\`u complessa di quella del prefisso, ma molto
+simile nell'approccio; la difficolt\`a aggiuntiva deriva principalmente
+dalla natura simmetrica del costrutto, che obbliga a controllare
+entrambe le parti di una composizione.
 
 Quando due processi vengono eseguiti in parallelo, bisogna assicurarsi
 che nessuno dei due contenga legati dei nomi che sono presenti liberi

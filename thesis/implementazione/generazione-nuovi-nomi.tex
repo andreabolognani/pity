@@ -1,0 +1,94 @@
+\subsection{Generazione di nuovi nomi}
+
+Lavorando con i processi, ci si trover\`a spesso a dover generare dei
+nuovi nomi per garantire che le propriet\`a richieste per dal type
+system siano rispettate.
+
+Un approccio possibile sarebbe quello di generare un nuovo nome creando
+una stringa casuale, ma tale approccio non \`e desiderabile per due
+motivi: il primo \`e che richiede potenzialmente molti passaggi, dato
+che non esiste garanzia che il nome generato casualmente non sia uguale
+ad un nome gi\`a in uso; il secondo \`e che renderebbe impossibile la
+scrittura di una test suite automatizzata, rendendo di conseguenza il
+testing del software allo stesso tempo pi\`u complesso e meno affidabile.
+
+Si \`e quindi seguito un approccio alternativo: si ricordi che tutti i
+nomi rispettano il contratto \lstinline{id-string?}, sono cio\`e
+costituiti da una serie di caratteri, eventualmente seguita da una parte
+numerica. La procedura privata \lstinline{parts} estrae le due parti
+utilizzando un'espressione regolare:
+
+\begin{lstlisting}
+      (define (parts n)
+         (let* ([parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
+                [str (cadr parts)]
+                [num (caddr parts)])
+           (cons str num)))
+\end{lstlisting}
+
+Per generare un nuovo nome, \`e sufficiente incrementare la parte numerica
+del nome di partenza: \`e esattamente quello che fa la procedura pubblica
+\lstinline{name-refresh}
+
+\begin{lstlisting}
+      ; name-refresh : name? -> name?
+      (define (name-refresh self)
+        (let* ([n (name-n self)]
+               [parts (parts n)]
+               [str (car parts)]
+               [num (cdr parts)]
+               [num (if (equal? num "") 0 (string->number num))]
+               [num (+ num 1)]
+               [n (string-append str (number->string num))])
+          (name n)))
+\end{lstlisting}
+
+La prima volta, alla variabile \lstinline{num} viene assegnato il secondo
+valore restituito da \lstinline{(parts n)}: questo valore \`e una stringa
+contenente la parte numerica, che pu\`o essere vuota.
+
+Nel secondo assegnamento viene usata la sintassi \lstinline{if} per
+assegnare il valore numerico \lstinline{0} alla stringa vuota: come
+conseguenza, un nome privo di parte numerica come quello ottenuto usando
+\lstinline{(name "a")} viene considerato avere parte numerica pari a
+\lstinline{0}. Subito dopo, la parte numerica \`e incrementata e un nuovo
+nome viene restituito.
+
+Due nomi possono essere confrontati tra di loro semplicemente confrontando
+le stringhe che li rappresentano:
+
+\begin{lstlisting}
+      ; name-max : name? name? -> name?
+      (define (name-max a b)
+        (let ([na (name-n a)]
+              [nb (name-n b)])
+          (if (string>=? na nb)
+              a
+              b)))
+\end{lstlisting}
+
+Si noti che, con questa definizione di \lstinline{name-max}, si verifica
+
+\begin{lstlisting}
+      (name-max (name "x5") (name "y2")) ; ==> (name "y2")
+\end{lstlisting}
+
+il che potrebbe causare problemi in alcune applicazioni. Per capire quando
+due nomi possano essere confrontati usando \lstinline{name-max} senza
+ottenere risultati inaspettati, si pu\`o usare il predicato
+\lstinline{name-compatible?}, definito come
+
+\begin{lstlisting}
+      ; name-compatible? : name? name? -> boolean?
+      (define (name-compatible? a b)
+        (let* ([n (name-n a)]
+               [p (parts n)]
+               [na (car p)]
+               [n (name-n b)]
+               [p (parts n)]
+               [nb (car p)])
+          (equal? na nb)))
+\end{lstlisting}
+
+che restituisce \lstinline{#t} se i due nomi differiscono solamente nella
+parte numerica, \lstinline{#f} altrimenti.
