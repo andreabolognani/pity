@@ -1,66 +1,156 @@
 \subsection{Racket}
 
-\emph{Racket} \`e un linguaggio di programmazione appartenente alla
-famiglia Lisp.
+Come si pu\`o capire gi\`a dal primo impatto con $\pi$-calcolo, la sua
+definizione formale \`e naturalmente ricorsiva: si parte infatti dal
+processo nullo $0$, al quale si pu\`o aggiungere un'azione per ottenere
+un nuovo processo, nel quale si pu\`o restringere un nome per ottenere un
+nuovo processo, e cos\`i via.
 
-Nato come implementazione del linguaggio di programmazione funzionale Scheme
-sotto il nome PLT Scheme, si \`e successivamente discostato da questo
-linguaggio abbastanza da convincere i suoi autori a modificarne il nome;
-nonostante questo, Racket si allontana ben poco da Scheme, e pu\`o
-ragionevolmente essere considerato una sua implementazione.
+Le regole di inferenza che costituiscono il type system sono a loro volta
+basate sulla ricorsione: ad esempio, per verificare che il processo
+$P \; | \; Q$ rispetti un sorting, \`e necessario prima verificare che
+$P$ e $Q$ rispettino singolarmente tale sorting.
 
-Le ragioni che hanno portato ad utilizzare Racket anzich\'e una delle
-numerose implementazioni del linguaggio Scheme cos\`i come definito nello
-standard R$^{5}$RS (Revised$^{5}$ Report on the Algorithmic Language
-Scheme\cite{r5rs}, la versione pi\`u diffusamente supportata) sono
-molteplici: innanzitutto, Scheme \`e un linguaggio progettato secondo
-criteri di minimalismo, e se questo ha da una parte portato ad
-un'encomiabile purezza del risultato, dall'altra rende necessario
-l'utilizzo di librerie esterne per svolgere compiti quali la generazione di
-parser, il pattern matching o lo sviluppo di una test suite; Racket, dal
-canto suo, fornisce implementazioni complete e solide di tutte queste
-funzionalit\`a.
+Quando ci si trova a dover descrivere queste interazioni in un programma,
+viene quindi naturale utilizzare un linguaggio di programmazione
+funzionale, dove la ricorsione \`e il principale metodo per effettuare
+computazione.
 
-Racket \`e estremamente ben documentato, e fornisce al programmatore un
-sistema di typesetting, denominato \emph{Scribble}, che consente di
-realizzare con facilit\`a documentazione della stessa qualit\`a.
+Tra i vari linguaggi di programmazione funzionale esistenti, la scelta
+\`e ricaduta su \emph{Racket}, un linguaggio di programmazione
+appartenente alla famiglia Lisp.
 
-Racket \`e \emph{Software Libero} rilasciato sotto licenza GNU LGPL, \`e
-disponibile su tutte le principali piattaforme, ed \`e in grado di compilare
-il codice sia in bytecode altamente efficiente che in formato eseguibile
-nativo, oltre ad interpretarlo. Tutte queste caratteristiche rendono Racket
-una piattaforma di sviluppo decisamente attraente.
+Racket \`e un dialetto di \emph{Scheme}, una delle tre principali
+varianti del linguaggio Lisp; le restanti due sono Common Lisp e Emacs
+Lisp.
+
+Emacs Lisp costituisce un caso a s\'e, in quanto \`e integrato con
+l'editor di testo Emacs al punto tale che non \`e possibile
+utilizzarlo al di fuori di esso; questo fatto lo rende ovviamente poco
+appetibile come linguaggio di programmazione al di l\`a dell'ambito
+delle estensioni all'editor.
+
+Common Lisp non ha questo tipo di problemi, ma soffre di alcune
+limitazioni e particolarit\`a dovute dall'et\`a del suo design, come
+ad esempio il fatto di utilizzare due spazi di indirizzamento diversi
+per variabili e funzioni, e di gestire lo scoping di una variabile in
+maniera diversa a seconda di come viene dichiarata.
+
+Queste caratteristiche, unite all'enorme numero di moduli (talvolta
+scarsamente documentati) di cui Common Lisp dispone, rendono l'approccio
+a questo linguaggio poco amichevole.
+
+Il linguaggio Scheme, invece, ha un design minimalista, direttamente
+derivato dal $\lambda$-calcolo, che parte da un numero molto ridotto di
+costrutti base dal quale poi viene derivato tutto il linguaggio.
+
+Le variabili e le funzioni condividono un singolo spazio di
+indirizzamento, e tutte le variabili hanno scoping lessicale; la sintassi
+\`e estremamente regolare e favorisce parole inglesi esistenti piuttosto
+che usare abbreviazioni o acronimi.
+
+Tutte queste caratteristiche rendono possibile imparare Scheme in pochi
+giorni, e acquisire dimestichezza con praticamente tutti i costrutti che
+lo compongono in un paio di settimane. Per questo motivo, Scheme \`e
+frequentemente utilizzato nell'ambito dell'educazione.
+
+Il linguaggio Scheme \`e definito formalmente da una serie di report: il
+pi\`u recente \`e R$^{6}$RS (Revised$^{6}$ Report on the Algorithmic
+Language Scheme), pubblicato nel 2007, mentre la versione che \`e pi\`u
+ampiamente supportata \`e la precedente R$^{5}$RS (Revised$^{5}$ Report
+on the Algorithmic Language Scheme\cite{r5rs}), del 1998.
+
+Al di fuori delle specifiche ufficiali, esiste un processo chiamato
+SRFI (Scheme Requests For Implementation), che consente ai membri della
+comunit\`a di utilizzatori di proporre estensioni al linguaggio, complete
+di implementazione, che possono essere incluse nello standard successivo
+oppure distribuite come estensioni autonome.
+
+Molte delle implementazioni di Scheme disponibili supportano lo
+standard R$^{5}$RS pi\`u un certo numero di SRFI. Alcune di esse sono
+in grado di funzionare utilizzando una quantit\`a estremamente ridotta
+di memoria, il che, unito alla sintassi minimale del linguaggio, le
+rende particolarmente adatte ad essere incluse in un programma pi\`u
+ampio in qualit\`a di linguaggio di estensione.
+
+Racket \`e nato come implementazione del linguaggio Scheme sotto il nome
+PLT Scheme, si \`e successivamente discostato da questo linguaggio
+abbastanza da convincere i suoi autori a modificarne il nome; nonostante
+questo, Racket non presenta estensioni incompatibili con R$^{5}$RS, e
+se ne differenzia principalmente offrendo estensioni e librerie
+aggiuntive.
+
+Proprio l'ampia disponibilit\`a di librerie ben documentate \`e stato
+uno dei fattori chiave nella scelta di Racket come linguaggio da
+utilizzare per l'implementazione: oltre a supportare un ampio numero
+di SRFI, Racket comprende un sistema di moduli che consente di separare
+il proprio codice in unit\`a funzionali indipendenti, un sistema di
+contratti che garantisce la corretta tipizzazione del codice, un
+generatore di lexer e parser, una completa libreria di pattern matching
+e una libreria per la scrittura ed esecuzione di test suite.
+
+La documentazione di Racket, come gi\`a accennato, \`e estremamente
+completa e ben organizzata; inoltre, \`e possibile per il programmatore
+utilizzare \emph{Scribble}, il sistema di typesetting utilizzato per
+generare tale documentazione, con il proprio codice.
+
+Racket \`e \emph{Software Libero} rilasciato sotto licenza GNU LGPL, ed
+\`e disponibile su tutte le principali piattaforme. L'interprete Racket
+pu\`o eseguire il codice al volo, oppure compilare il codice sotto forma
+di bytecode altamente efficiente, oltre ad essere in grado di generare
+un singolo eseguibile nativo che permette di far girare un'applicazione
+scritta in Racket senza richiedere l'installazione dell'ambiente di
+sviluppo.
 
 La sintassi di Racket \`e fortemente influenzata dalla sintassi del
 linguaggio Lisp, ed \`e basata su \emph{S-expressions}, ovvero espressioni
 racchiuse tra parentesi tonde dove il primo elemento \`e la procedura
-da chiamare e gli elementi successivi, se presenti, sono i suoi argomenti
+da chiamare e gli elementi successivi, se presenti, sono i suoi
+argomenti.
+
+Il classico programma di Hello World si scrive in Racket come
 
 \begin{lstlisting}
-      (define greet "Hello!")
+      (define greet "Hello, World!")
       (display greet)
       (newline)
 \end{lstlisting}
 
-Diversamente da quanto avviene con la maggior parte dei linguaggi di
-programmazione, praticamente ogni parte di Racket, compresi gli operatori
-matematici di base, \`e implementata sotto forma di funzione.
+Questo semplice frammento di codice definisce una nuova variabile
+chiamata \lstinline{greet}, alla quale viene assegnata la stringa
+\lstinline{"Hello!"}; la stringa viene visualizzata utilizzando la
+procedura \lstinline{display}, e ad essa viene fatto seguire un
+ritorno a capo tramite la procedura \lstinline{newline}.
 
-Questo fatto, unito alla peculiare sintassi di Racket, pu\`o inizialmente
-causare confusione: \`e frequente incontrare espressioni simili a
+La sintassi prefissa di Racket pu\`o inizialmente causare confusione,
+in particolare quando si ha a che fare con espressioni matematiche,
+come
 
 \begin{lstlisting}
       (- p (* p p))
 \end{lstlisting}
 
-indubbiamente meno immediate di quanto la stessa espressione non sarebbe
-se espressa in un linguaggio derivato da C.
+che appare meno immediata di quanto la stessa espressione non sarebbe
+se espressa in un linguaggio derivato da C; con il tempo, ci si abitua
+a questo tipo di sintassi, che risulta comunque molto meno limitante
+al di fuori dell'ambito della pura algebra.
 
-Superato l'impatto iniziale, ci si rende conto che la sintassi estremamente
-regolare di Racket fornisce un vantaggio durante l'analisi del codice, e
-che l'avere la quasi totalit\`a del linguaggio implementato in termini di
-funzioni consente una flessibilit\`a difficilmente raggiungibile in altri
-linguaggi.
+In alcuni casi, l'utilizzo della sintassi prefissa si rivela essere un
+vantaggio: ad esempio, sfruttando il fatto che l'operatore \lstinline{+}
+accetta un numero variabile di argomenti, si possono sommare sette numeri
+in maniera molto concisa:
+
+\begin{lstlisting}
+      (+ 1 8 12 6 5 9 3)
+\end{lstlisting}
+
+In ogni caso, una volta superato l'impatto iniziale, la sintassi di
+Racket non causa alcun problema di comprensione, soprattutto se il
+codice \`e adeguatamente indentato.
+
+Diversamente da quanto avviene con la maggior parte dei linguaggi di
+programmazione, praticamente ogni parte di Racket, compresi gli operatori
+matematici di base, \`e implementata sotto forma di funzione.
 
 Si prenda ad esempio il seguente frammento di codice:
 
@@ -69,14 +159,14 @@ Si prenda ad esempio il seguente frammento di codice:
       (foldl + 0 lst) ; ==> 6
 \end{lstlisting}
 
-nella riga 1, la funzione \lstinline{list} viene chiamata con argomenti
-\lstinline{1}, \lstinline{2} e \lstinline{3} per creare una lista, alla
-quale viene assegnato il nome \lstinline{lst}.
+nella prima riga, la procedura standard \lstinline{list} viene chiamata
+con argomenti \lstinline{1}, \lstinline{2} e \lstinline{3} per creare una
+lista, che viene assegnata alla variabile \lstinline{lst}.
 
-Nella riga 2, la lista \lstinline{lst} viene manipolata dalla funzione
-\lstinline{foldl}: questa funzione accetta come argomenti, nell'ordine,
-una funzione a due argomenti, un valore con cui inizializzare
-l'accumulatore, ed una lista su cui lavorare.
+Nella riga successiva, la lista \lstinline{lst} viene manipolata dalla
+procedura \lstinline{foldl}: questa procedura accetta come argomenti,
+nell'ordine, una funzione a due argomenti, un valore con cui
+inizializzare l'accumulatore, ed una lista su cui lavorare.
 
 Il fatto che l'operatore matematico \lstinline{+} sia implementato come
 funzione ci consente di passarlo direttamente alla \lstinline{foldl}, che
@@ -99,6 +189,128 @@ sono totalmente equivalenti tra di loro:
         (lambda (x)
           (* 2 x)))
 \end{lstlisting}
+
+Le procedure dichiarate possono contenere variabili libere: al momento
+della chiamata, Racket cerca un binding nell'ambiente di definizione
+della procedura, e utilizza quel valore:
+
+\begin{lstlisting}
+      (define (three) (+ two 1))
+      (three) ; ==> ERRORE
+      (define two 2)
+      (three) ; ==> 3
+\end{lstlisting}
+
+Questa caratteristica pu\`o essere usata per costruire, ad esempio, una
+funzione che mantiene stato tra una chiamata e l'altra, come un semplice
+contatore:
+
+\begin{lstlisting}
+      (define next! #f)
+      (let ([number 0])
+        (set! next! (lambda ()
+                       (set! number (+ 1 number))
+                       number)))
+      (next!) ; ==> 1
+      (next!) ; ==> 2
+      (define number 9)
+      (next!) ; ==> 3
+\end{lstlisting}
+
+Inizialmente, si definisce una variabile \lstinline{next!}, inizializzata
+con il valore \lstinline{#f}, che servir\`a per contenere la procedura
+contatore.
+
+Si usa poi la sintassi \lstinline{let} per creare un nuovo ambiente,
+nel quale il valore \lstinline{0} viene assegnato alla variabile
+\lstinline{number}. Nello scope di questo assegnamento, si assegna
+alla variabile \lstinline{next!} (nello scope esterno, visto che non ci
+sono dichiarazioni nello scope interno che la nascondono) una nuova
+procedura, che incrementa il valore della variabile \lstinline{number}
+prima di restituirlo.
+
+Nello scope esterno, ogni chiamata alla funzione \lstinline{next!}
+restituisce un nuovo valore; inoltre, dichiarare una variabile di nome
+\lstinline{number} non influenza il valore di ritorno della
+funzione \lstinline{next!}. Questo perch\'e la funzione \lstinline{next!}
+fa sempre riferimento alla variabile \lstinline{number} dichiarata
+nello scope interno.
+
+La procedura \lstinline{set!} permette di modificare il valore di una
+variabile. Il simbolo \lstinline{!} indica appunto una procedura non
+\emph{pura}; \`e convenzione in Racket utilizzare questo simbolo nel
+nome delle funzioni che alterano dello stato globale. Le funzioni non
+pure vengono solitamente evitate in Racket, preferendo ad esse procedure
+che operano in maniera non distruttiva e prive di effetti secondari.
+
+Cos\`i come le procedure non pure per convenzione terminano con il
+simbolo \lstinline{!}, in Racket viene utilizzata la convenzione di
+terminare con il simbolo \lstinline{?} i predicati, ovvero le procedure
+che restituiscono valori di verit\`a, come \lstinline{list?} o
+\lstinline{procedure?}:
+
+\begin{lstlisting}
+      (number? "2") ; ==> #f
+      (list? (list 1 2 3)) ; ==> #t
+      (false? procedure?) ; ==> #f
+\end{lstlisting}
+
+Si pu\`o vedere nell'ultima riga che \lstinline{procedure?} \`e
+considerato un valore di verit\`a positivo: in Racket ogni valore
+diverso da \lstinline{#f} \`e considerato tale.
+
+I valori di verit\`a possono essere utilizzati nei costrutti
+condizionali:
+
+\begin{lstlisting}
+      (if (and (list? a)
+               (not (null? a)))
+          (display (car a))
+          (display a))
+\end{lstlisting}
+
+Se la variabile \lstinline{a} contiene una lista non vuota, viene
+mostrato il primo elemento della lista, in caso contrario viene
+mostrato il contenuto della variabile.
+
+Contrariamente a quanto succede in altri linguaggi, in Racket bisogna
+sempre specificare entrambi i rami della sintassi \lstinline{if}.
+Questo causa problemi se si vogliono avere pi\`u chiamate a funzione
+nel corpo di uno dei due rami, ma si pu\`o facilmente aggirare questa
+limitazione usando la sintassi \lstinline{begin}:
+
+\begin{lstlisting}
+      (define (display-list lst)
+        (if (null? lst)
+          (newline)
+          (begin
+            (display (car lst))
+            (display " ")
+            (display-list (cdr lst)))))
+\end{lstlisting}
+
+Un'altra sintassi, pi\`u generica, che si pu\`o utilizzare per i
+costrutti condizionali \`e \lstinline{cond}, che consente un numero
+arbitrario di coppie condizione-risultato:
+
+\begin{lstlisting}
+      (cond
+        [(number? a)        a]
+        [(string->number a) (string->number a)]
+        [else               0])
+\end{lstlisting}
+
+Le condizioni vengono valutate dalla prima all'ultima, e appena si
+trova una condizione verificata viene restituito il valore
+corrispondente; se \`e presente una clausola \lstinline{else} e
+nessuna condizione \`e verificata, viene restituito il valore
+assegnato alla clausola \lstinline{else}.
+
+In questo caso, se la variabile \lstinline{a} contiene un numero, il
+numero viene restituito; se invece \`e una stringa che pu\`o essere
+convertita in un numero, viene restituito il valore ottenuto tramite
+la conversione; se nessuna delle condizioni precedenti \`e verificata,
+viene restituito il valore \lstinline{0}.
 
 In quanto discendente del linguaggio Lisp (il cui nome sta per LISt
 Processor), Racket pone una particolare enfasi sulla manipolazione di
@@ -140,9 +352,37 @@ sintassi \lstinline{lambda} nel seguente modo:
       (map (lambda (x) (max 4 x)) lst) ; ==> (list 6 4 4)
 \end{lstlisting}
 
-Questi esempi dovrebbero aver dato un'idea piuttosto precisa di come Racket
-funzioni, e su quali concetti si basi.
+Si pu\`o utilizzare \lstinline{apply} per chiamare una procedura con
+gli argomenti contenuti in una lista. Per calcolare la somma dei
+numeri contenuti in una lista, al posto di usare \lstinline{foldl}
+come visto sopra, si pu\`o usare
 
-Nelle pagine successive verr\`a analizzato il codice dell'implementazione
-del type system per il $\pi$-calcolo, e si incontreranno molte altre
-caratteristiche di questo linguaggio.
+\begin{lstlisting}
+      (define lst (list 1 2 3))
+      (apply + lst) ; ==> 6
+\end{lstlisting}
+
+\lstinline{apply}, unita alla possibilit\`a di dichiarare una funzione
+che riceve i suoi argomenti in una lista, consente di scrivere
+facilmente funzioni che trasformano altre funzioni, come ad esempio la
+seguente procedura \lstinline{flip}:
+
+\begin{lstlisting}
+      (define (flip proc)
+        (lambda rest (apply proc (reverse rest))))
+\end{lstlisting}
+
+Con la sintassi \lstinline{(lambda rest ...)} si crea una funzione che
+riceve i suoi argomenti nella lista \lstinline{rest}: gli argomenti
+sono rovesciati con la chiamata a \lstinline{reverse}, e la procedura
+originale \lstinline{proc} viene chiamata usando \lstinline{apply}.
+
+Un esempio dell'utilizzo di \lstinline{flip}:
+
+\begin{lstlisting}
+      ((flip list) 1 2 3) ; ==> (list 3 2 1)
+\end{lstlisting}
+
+Come si \`e potuto vedere, in Racket \`e possibile eseguire potenti
+manipolazioni su procedure con poche righe di codice. Dal momento che
+ogni computazione viene

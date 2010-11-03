@@ -110,6 +110,73 @@ $
 $
 \vspace{3mm}
 
+Risulta ora evidente la motivazione che porta alla richiesta di avere
+nomi distinti: se questa condizione non fosse verificata¸ all'interno
+dell'ambiente si dovrebbero assegnare ad uno stesso nome pi\`u sort,
+potenzialmente in conflitto tra loro.
+
 Si dice che un processo $P$ \emph{rispetta} un sorting $\lambda$ se esiste
 un qualche ambiente $\Psi$ tale che \`e possibile usare le regole di
 inferenza appena descritte per derivare la conclusione $\Psi |- P$.
+
+Ad esempio, si pu\`o verificare che il processo
+
+\begin{pilisting}
+$
+    \overline{a}\langle b\rangle.0 \; | \;
+    a(c).0
+$
+\end{pilisting}
+
+rispetta il sorting $\lambda$ definito sopra negli ambienti
+$\Psi_1 = \{a:t,b:s\}$ e $\Psi_2 = \{a:r,b:r\}$, usando rispettivamente
+le derivazioni
+
+\begin{pilisting}
+\inference[]
+  {\inference[]
+     {\inference
+        {}
+        {\emptyset |- 0}}
+     {\{a:t,b:s\} |- \overline{a}\langle b\rangle.0}
+    &
+   \inference[]
+     {\inference[]
+        {}
+        {\{b:s,c:s\} |- 0}}
+     {\{a:t,b:s\} |- a(c).0}}
+  {\Psi_1 |- \overline{a}\langle b\rangle.0 \; | \; a(c).0}
+\end{pilisting}
+
+e
+
+\begin{pilisting}
+\inference[]
+  {\inference[]
+     {\inference
+        {}
+        {\emptyset |- 0}}
+     {\{a:r,b:r\} |- \overline{a}\langle b\rangle.0}
+    &
+   \inference[]
+     {\inference[]
+        {}
+        {\{b:r,c:r\} |- 0}}
+     {\{a:r,b:r\} |- a(c).0}}
+  {\Psi_2 |- \overline{a}\langle b\rangle.0 \; | \; a(c).0}
+\end{pilisting}
+
+Dati un sorting ed un ambiente di partenza, \`e relativamente semplice
+verificare che un processo rispetti il sorting in quell'ambiente; come
+si \`e appena visto, per\`o, gli ambienti di partenza validi potrebbero
+essere pi\`u di uno, e in ogni caso verificare che un singolo ambiente
+non consente di costruire un albero di derivazione completo non \`e
+sufficiente per affermare che il processo non rispetta il sorting.
+
+Un approccio sistematico d\`a garanzia di successo, ma soprattutto nel
+caso di sistemi pi\`u complessi di quelli estremamente semplici visti
+finora, pu\`o rivelarsi un lavoro lungo e facilmente soggetto ad
+errori; questi sono alcuni dei motivi che portano all'interesse nello
+sviluppo di un software in grado di effettuare in maniera automatica
+tutti i controlli necessari a dimostrare se un processo rispetti un
+determinato sorting.

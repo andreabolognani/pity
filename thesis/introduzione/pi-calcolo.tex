@@ -40,7 +40,7 @@ costruzione di qualsiasi processo di $\pi$-calcolo; ad ogni processo pu\`o
 essere aggiunto come \emph{prefisso} un'azione, ottenendo come risultato un
 processo che compie l'azione per poi comportarsi come il processo originale.
 
-Un esempio \`e il processo
+Esempi sono il processo
 
 \begin{pilisting}
 $
@@ -49,7 +49,17 @@ $
 \end{pilisting}
 
 che trasmette il nome $b$ sul canale $a$ prima di comportarsi come $0$,
-ovvero fermarsi.
+ovvero fermarsi, o il processo
+
+\begin{pilisting}
+$
+    a(b).\overline{b}\langle c\rangle.0
+$
+\end{pilisting}
+
+dove un nome viene ricevuto sul canale $a$ ed assegnato al nome privato
+$b$, che viene poi utilizzato per trasmettere un terzo nome $c$ prima di
+terminare.
 
 Tramite l'operatore $|$ \`e possibile creare una composizione di processi:
 nel processo
@@ -82,7 +92,8 @@ $
 
 il processo mittente invia un solo nome, mentre il processo destinatario
 si aspetta di riceverne due. Il type system implementato ha proprio lo
-scopo di garantire che una simile situazione non si venga mai a verificare.
+scopo di garantire che questa situazione, o altre situazioni che possono
+causare problemi, non si vengano mai a verificare.
 
 L'operatore di \emph{restrizione} $\nu x$ consente di creare un nuovo nome
 $x$, che pu\`o successivamente essere utilizzato per comunicare tra un
@@ -128,8 +139,9 @@ precedentemente ricevuto, e a mettersi in attesa di una nuova richiesta.
 
 Le occorrenze di $x$ in $\nu x \, P$ e in $ a(x).P$ sono \emph{leganti}:
 questo significa che tutte le occorrenze successive di $x$ in $P$ fanno
-riferimento allo stesso nome $x$. L'insieme dei nomi legati in un processo
-$P$ si indica con $bn(P)$.
+riferimento allo stesso nome $x$. Lo scope \`e in entrambi i casi il
+processo $P$; l'insieme dei nomi legati in un processo $P$ si indica con
+$bn(P)$.
 
 Le occorrenze di un nome che non sono nello scope di un'occorrenza legante
 sono \emph{libere}: ad esempio, l'occorrenza di $a$ in
