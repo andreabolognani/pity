@@ -1,11 +1,12 @@
 THESIS_OUT=thesis.pdf
 
 THESIS_MAIN=main.tex
-THESIS_CHAPTERS=abstract/* \
-                introduzione/* \
-                implementazione/* \
-                implementazione/nomi/* \
-                conclusioni/*
+THESIS_CHAPTERS=abstract/*.tex \
+                introduzione/*.tex \
+                implementazione/*.tex \
+                implementazione/nomi/*.tex \
+                implementazione/processi/*.tex \
+                conclusioni/*.tex
 THESIS_OTHER=common.tex
 THESIS_BIB=references.bib
 THESIS_IN=$(THESIS_MAIN) \
