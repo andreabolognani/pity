@@ -282,11 +282,11 @@ limitazione usando la sintassi \lstinline{begin}:
 \begin{lstlisting}
       (define (display-list lst)
         (if (null? lst)
-          (newline)
-          (begin
-            (display (car lst))
-            (display " ")
-            (display-list (cdr lst)))))
+            (newline)
+            (begin
+              (display (car lst))
+              (display " ")
+              (display-list (cdr lst)))))
 \end{lstlisting}
 
 Un'altra sintassi, pi\`u generica, che si pu\`o utilizzare per i
