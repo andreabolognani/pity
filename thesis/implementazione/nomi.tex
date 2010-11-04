@@ -10,9 +10,9 @@ punto di partenza \`e la dichiarazione di un nuovo tipo, chiamato proprio
 dichiarazione \`e la seguente:
 
 \begin{lstlisting}
-      (struct name (n)
-                   #:guard name-guard
-                   #:transparent)
+    (struct name (n)
+                 #:guard name-guard
+                 #:transparent)
 \end{lstlisting}
 
 La struttura dichiarata contiene un singolo campo, \lstinline{n}, ed \`e
@@ -37,7 +37,7 @@ viene chiamata con argomenti non compatibili -- ad esempio, la procedura
 
 Ci sono vari modi per ottenere lo stesso comportamento per le strutture e
 le procedure definite dall'utente: uno di questi modi \`e quello, gi\`a
-visto, di assegnare un contratto alla procedura di costruzione; un'altro
+visto, di assegnare un contratto alla procedura di costruzione; un altro
 modo \`e quello di utilizzare una procedura guardia.
 
 Mentre per le procedure che manipolano le strutture verr\`a dichiarato
@@ -53,11 +53,11 @@ uso; per i nomi si usa la stessa tecnica in nome della consistenza.
 La guardia per la struttura \lstinline{name} \`e
 
 \begin{lstlisting}
-      (define (name-guard n type-name)
-        (when (not (id-string? n))
-              (error type-name
-                     (format "expected <id-string?>, given: ~a" n)))
-        (values n))
+    (define (name-guard n type-name)
+      (when (not (id-string? n))
+            (error type-name
+                   (format "expected <id-string?>, given: ~a" n)))
+      (values n))
 \end{lstlisting}
 
 Come prima cosa ci si assicura che \lstinline{n}, la stringa passata al
@@ -76,9 +76,9 @@ L'implementazione del predicato \`e resa estremamente semplice dal supporto
 alle espressioni regolari di Racket:
 
 \begin{lstlisting}
-      (define (id-string? x)
-        (and (string? x)
-             (regexp-match #rx"^[a-zA-Z]+[0-9]*$" x)))
+    (define (id-string? x)
+      (and (string? x)
+           (regexp-match #rx"^[a-zA-Z]+[0-9]*$" x)))
 \end{lstlisting}
 
 Il risultato della chiamata \`e \lstinline{#t} se \lstinline{x} \`e una
@@ -89,16 +89,16 @@ A questo punto vengono definite alcune routine di conversione tra nomi e
 stringhe, che saranno utili pi\`u avanti:
 
 \begin{lstlisting}
-      (define (name->string n)
-        (name-n n))
+    (define (name->string n)
+      (name-n n))
 
-      (define (name-list->string lst)
-        (string-join (map name->string lst) ","))
+    (define (name-list->string lst)
+      (string-join (map name->string lst) ","))
 
-      (define (string->name-list str)
-        (if (equal? str "")
-            '()
-            (map name (regexp-split #rx", *" str))))
+    (define (string->name-list str)
+      (if (equal? str "")
+          '()
+          (map name (regexp-split #rx", *" str))))
 \end{lstlisting}
 
 La prima procedura, \lstinline{name->string}, estrae semplicemente la
@@ -127,10 +127,10 @@ ognuno di essi tramite \lstinline{map}.
 Esempi di utilizzo di queste procedure:
 
 \begin{lstlisting}
-      (name-list->string '()) ; ==> ""
-      (name-list->string (list (name "a") (name "b"))) ; ==> "a,b"
-      (string->name-list "c") ; ==> (list (name "c"))
-      (string->name-list 2) ; ==> ERRORE!
+    (name-list->string '()) ; ==> ""
+    (name-list->string (list (name "a") (name "b"))) ; ==> "a,b"
+    (string->name-list "c") ; ==> (list (name "c"))
+    (string->name-list 2) ; ==> ERRORE!
 \end{lstlisting}
 
 L'errore nell'ultimo utilizzo di \lstinline{string->name-list} \`e dovuto
@@ -154,7 +154,7 @@ infissa sfruttando il fatto che Racket considera un elemento preceduto e
 seguito da punto il primo della lista in cui compare: ad esempio
 
 \begin{lstlisting}
-      (string? . -> . (listof name?))
+    (string? . -> . (listof name?))
 \end{lstlisting}
 
 \`e un contratto rispettato da ogni procedura che accetta come argomento una
@@ -166,8 +166,8 @@ esporta (rende disponibile agli altri moduli) usando la forma
 \lstinline{provide/contract}, come in
 
 \begin{lstlisting}
-      (provide/contract
-        [string->name-list (string? . -> . (listof name?))])
+    (provide/contract
+      [string->name-list (string? . -> . (listof name?))])
 \end{lstlisting}
 
 \`E opportuno notare che Racket non differenzia tra parentesi tonde e quadre;

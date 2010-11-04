@@ -19,11 +19,11 @@ numerica. La procedura privata \lstinline{parts} estrae le due parti
 utilizzando un'espressione regolare:
 
 \begin{lstlisting}
-      (define (parts n)
-         (let* ([parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
-                [str (cadr parts)]
-                [num (caddr parts)])
-           (cons str num)))
+    (define (parts n)
+       (let* ([parts (regexp-match #rx"^([a-zA-Z]+)([0-9]*)$" n)]
+              [str (cadr parts)]
+              [num (caddr parts)])
+         (cons str num)))
 \end{lstlisting}
 
 Per generare un nuovo nome, \`e sufficiente incrementare la parte numerica
@@ -31,16 +31,16 @@ del nome di partenza: \`e esattamente quello che fa la procedura pubblica
 \lstinline{name-refresh}
 
 \begin{lstlisting}
-      ; name-refresh : name? -> name?
-      (define (name-refresh self)
-        (let* ([n (name-n self)]
-               [parts (parts n)]
-               [str (car parts)]
-               [num (cdr parts)]
-               [num (if (equal? num "") 0 (string->number num))]
-               [num (+ num 1)]
-               [n (string-append str (number->string num))])
-          (name n)))
+    ; name-refresh : name? -> name?
+    (define (name-refresh self)
+      (let* ([n (name-n self)]
+             [parts (parts n)]
+             [str (car parts)]
+             [num (cdr parts)]
+             [num (if (equal? num "") 0 (string->number num))]
+             [num (+ num 1)]
+             [n (string-append str (number->string num))])
+        (name n)))
 \end{lstlisting}
 
 La prima volta, alla variabile \lstinline{num} viene assegnato il secondo
@@ -58,19 +58,19 @@ Due nomi possono essere confrontati tra di loro semplicemente confrontando
 le stringhe che li rappresentano:
 
 \begin{lstlisting}
-      ; name-max : name? name? -> name?
-      (define (name-max a b)
-        (let ([na (name-n a)]
-              [nb (name-n b)])
-          (if (string>=? na nb)
-              a
-              b)))
+    ; name-max : name? name? -> name?
+    (define (name-max a b)
+      (let ([na (name-n a)]
+            [nb (name-n b)])
+        (if (string>=? na nb)
+            a
+            b)))
 \end{lstlisting}
 
 Si noti che, con questa definizione di \lstinline{name-max}, si verifica
 
 \begin{lstlisting}
-      (name-max (name "x5") (name "y2")) ; ==> (name "y2")
+    (name-max (name "x5") (name "y2")) ; ==> (name "y2")
 \end{lstlisting}
 
 il che potrebbe causare problemi in alcune applicazioni. Per capire quando
@@ -79,15 +79,15 @@ ottenere risultati inaspettati, si pu\`o usare il predicato
 \lstinline{name-compatible?}, definito come
 
 \begin{lstlisting}
-      ; name-compatible? : name? name? -> boolean?
-      (define (name-compatible? a b)
-        (let* ([n (name-n a)]
-               [p (parts n)]
-               [na (car p)]
-               [n (name-n b)]
-               [p (parts n)]
-               [nb (car p)])
-          (equal? na nb)))
+    ; name-compatible? : name? name? -> boolean?
+    (define (name-compatible? a b)
+      (let* ([n (name-n a)]
+             [p (parts n)]
+             [na (car p)]
+             [n (name-n b)]
+             [p (parts n)]
+             [nb (car p)])
+        (equal? na nb)))
 \end{lstlisting}
 
 che restituisce \lstinline{#t} se i due nomi differiscono solamente nella

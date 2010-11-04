@@ -16,20 +16,20 @@ Oltre ai predicati definiti automaticamente dalla sintassi
 \lstinline{struct}, sono stati definiti due predicati di supporto:
 
 \begin{lstlisting}
-      ; process? : any/c -> boolean?
-      (define (process? v)
-        (or
-          (nil? v)
-          (prefix? v)
-          (restriction? v)
-          (replication? v)
-          (composition? v)))
+    ; process? : any/c -> boolean?
+    (define (process? v)
+      (or
+        (nil? v)
+        (prefix? v)
+        (restriction? v)
+        (replication? v)
+        (composition? v)))
 
-      ; action? : any/c -> boolean?
-      (define (action? v)
-        (or
-          (input? v)
-          (output? v)))
+    ; action? : any/c -> boolean?
+    (define (action? v)
+      (or
+        (input? v)
+        (output? v)))
 
 \end{lstlisting}
 
@@ -59,12 +59,12 @@ La guardia della restrizione garantisce che la propriet\`a sia sempre
 verificata:
 
 \begin{lstlisting}
-      (define (restriction-guard x p type-name)
-        (let ([bound (process-bound-names p)])
-          (values x
-                  (if (not (set-member? bound x))
-                      p
-                      (process-refresh-name p x)))))
+    (define (restriction-guard x p type-name)
+      (let ([bound (process-bound-names p)])
+        (values x
+                (if (not (set-member? bound x))
+                    p
+                    (process-refresh-name p x)))))
 \end{lstlisting}
 
 dove non \`e stato riportato il controllo iniziale sui tipi dei parametri,
@@ -84,16 +84,16 @@ procedure ad essa strettamente collegate, \lstinline{process-free-names} e
 $\pi$-calcolo: nel caso dei nomi legati, ad esempio, si ha
 
 \begin{lstlisting}
-      ; process-bound-names : process? -> (setof name?)
-      (define (process-bound-names process)
-        (match process
-          [(nil)             (bound-names/nil)]
-          [(input x y)       (bound-names/input x y)]
-          [(output x y)      (bound-names/output x y)]
-          [(prefix a p)      (bound-names/prefix a p)]
-          [(restriction x p) (bound-names/restriction x p)]
-          [(replication p)   (bound-names/replication p)]
-          [(composition p q) (bound-names/composition p q)]))
+    ; process-bound-names : process? -> (setof name?)
+    (define (process-bound-names process)
+      (match process
+        [(nil)             (bound-names/nil)]
+        [(input x y)       (bound-names/input x y)]
+        [(output x y)      (bound-names/output x y)]
+        [(prefix a p)      (bound-names/prefix a p)]
+        [(restriction x p) (bound-names/restriction x p)]
+        [(replication p)   (bound-names/replication p)]
+        [(composition p q) (bound-names/composition p q)]))
 \end{lstlisting}
 
 La procedura pubblica fa uso della sintassi \lstinline{match} per distinguere
@@ -101,45 +101,45 @@ il tipo di processo, e delega il calcolo dei nomi legati alle rispettive
 procedure private specializzate:
 
 \begin{lstlisting}
-      ; Il processo nullo non ha nomi legati
-      (define (bound-names/nil)
-        (set))
+    ; Il processo nullo non ha nomi legati
+    (define (bound-names/nil)
+      (set))
 
-      ; I nomi legati sono quelli in oggetto
-      (define (bound-names/input x y)
-        (list->set y))
+    ; I nomi legati sono quelli in oggetto
+    (define (bound-names/input x y)
+      (list->set y))
 
-      ; Un'azione di output non ha nomi legati
-      (define (bound-names/output x y)
-        (set))
+    ; Un'azione di output non ha nomi legati
+    (define (bound-names/output x y)
+      (set))
 
-      ; I nomi legati in un'azione dipendono dal tipo di azione
-      (define (bound-names/action a)
-        (match a
-          [(input x y)  (bound-names/input x y)]
-          [(output x y) (bound-names/output x y)]))
+    ; I nomi legati in un'azione dipendono dal tipo di azione
+    (define (bound-names/action a)
+      (match a
+        [(input x y)  (bound-names/input x y)]
+        [(output x y) (bound-names/output x y)]))
 
-      ; I nomi legati in un prefisso sono quelli legati
-      ; dall'azione, uniti a quelli legati nella continuazione
-      (define (bound-names/prefix a p)
-        (set-union (process-bound-names a)
-                   (process-bound-names p)))
+    ; I nomi legati in un prefisso sono quelli legati
+    ; dall'azione, uniti a quelli legati nella continuazione
+    (define (bound-names/prefix a p)
+      (set-union (process-bound-names a)
+                 (process-bound-names p)))
 
-      ; I nomi legati in una restrizione sono quelli legati nel
-      ; processo sotto restrizione e il nome oggetto della restrizione
-      (define (bound-names/restriction x p)
-        (set-union (set x)
-                   (process-bound-names p)))
+    ; I nomi legati in una restrizione sono quelli legati nel
+    ; processo sotto restrizione e il nome oggetto della restrizione
+    (define (bound-names/restriction x p)
+      (set-union (set x)
+                 (process-bound-names p)))
 
-      ; I nomi legati non vengono modificati dalla replicazione
-      (define (bound-names/replication p)
-        (process-bound-names p))
+    ; I nomi legati non vengono modificati dalla replicazione
+    (define (bound-names/replication p)
+      (process-bound-names p))
 
-      ; I nomi legati in una composizione sono i nomi legati nel primo
-      ; processo uniti a quelli legati nel secondo processo
-      (define (bound-names/composition p q)
-        (set-union (process-bound-names p)
-                   (process-bound-names q)))
+    ; I nomi legati in una composizione sono i nomi legati nel primo
+    ; processo uniti a quelli legati nel secondo processo
+    (define (bound-names/composition p q)
+      (set-union (process-bound-names p)
+                 (process-bound-names q)))
 \end{lstlisting}
 
 Si pu\`o notare che la procedura \lstinline{process-bound-names} accetta
@@ -183,17 +183,17 @@ essere nuovi, cio\`e non presenti nel processo corrente: per fare ci\`o, si
 pu\`o usare la procedura privata \lstinline{fresh-name}
 
 \begin{lstlisting}
-      (define (fresh-name p n)
-        (let* ([names (process-names p)]
-               [m (name-refresh n)]
-               [ok? (lambda (x)
-                      (or (not (name-compatible? x m))
-                          (equal? (name-max x m) m)))]
-               [res (set-map names ok?)])
-           (if (and (not (member #f res))
-                    (not (set-member? names m)))
-               m
-               (fresh-name p m))))
+    (define (fresh-name p n)
+      (let* ([names (process-names p)]
+             [m (name-refresh n)]
+             [ok? (lambda (x)
+                    (or (not (name-compatible? x m))
+                        (equal? (name-max x m) m)))]
+             [res (set-map names ok?)])
+         (if (and (not (member #f res))
+                  (not (set-member? names m)))
+             m
+             (fresh-name p m))))
 \end{lstlisting}
 
 Questa procedura trova un nome compatibile con \lstinline{n} che \`e
@@ -235,61 +235,61 @@ all'interno di un processo: questa procedura privata, chiamata
 \lstinline{replace-name}, \`e definita come
 
 \begin{lstlisting}
-      (define (replace-name self n m)
-        (match self
-          [(nil)             (replace-name/nil n m)]
-          [(input x y)       (replace-name/input x y n m)]
-          [(output x y)      (replace-name/output x y n m)]
-          [(prefix a p)      (replace-name/prefix a p n m)]
-          [(restriction x p) (replace-name/restriction x p n m)]
-          [(replication p)   (replace-name/replication p n m)]
-          [(composition p q) (replace-name/composition p q n m)]))
+    (define (replace-name self n m)
+      (match self
+        [(nil)             (replace-name/nil n m)]
+        [(input x y)       (replace-name/input x y n m)]
+        [(output x y)      (replace-name/output x y n m)]
+        [(prefix a p)      (replace-name/prefix a p n m)]
+        [(restriction x p) (replace-name/restriction x p n m)]
+        [(replication p)   (replace-name/replication p n m)]
+        [(composition p q) (replace-name/composition p q n m)]))
 \end{lstlisting}
 
 e, come gi\`a nel caso di \lstinline{process-bound-names}, delega
 l'implementazione a delle procedure pi\`u specifiche, che sono
 
 \begin{lstlisting}
-      ; Sostituisce un nome nel processo nullo
-      (define (replace-name/nil n m)
-        (nil))
+    ; Sostituisce un nome nel processo nullo
+    (define (replace-name/nil n m)
+      (nil))
 
-      ; Sostituisce un nome nell'azione di input
-      (define (replace-name/input x y n m)
-        (let ([x1 (if (equal? x n) m x)]
-              [y1 (list-replace y n m)])
-          (input x1 y1)))
+    ; Sostituisce un nome nell'azione di input
+    (define (replace-name/input x y n m)
+      (let ([x1 (if (equal? x n) m x)]
+            [y1 (list-replace y n m)])
+        (input x1 y1)))
 
-      ; Sostituisce un nome nell'azione di output
-      (define (replace-name/output x y n m)
-        (let ([x1 (if (equal? x n) m x)]
-              [y1 (list-replace y n m)])
-          (output x1 y1)))
+    ; Sostituisce un nome nell'azione di output
+    (define (replace-name/output x y n m)
+      (let ([x1 (if (equal? x n) m x)]
+            [y1 (list-replace y n m)])
+        (output x1 y1)))
 
-      ; Sostituisce un nome in un'azione
-      (define (replace-name/action a n m)
-        (match a
-          [(input x y)  (replace-name/input x y n m)]
-          [(output x y) (replace-name/output x y n m)]))
+    ; Sostituisce un nome in un'azione
+    (define (replace-name/action a n m)
+      (match a
+        [(input x y)  (replace-name/input x y n m)]
+        [(output x y) (replace-name/output x y n m)]))
 
-      ; Sostituisce un nome in un prefisso
-      (define (replace-name/prefix a p n m)
-        (prefix (replace-name a n m)
-                (replace-name p n m)))
+    ; Sostituisce un nome in un prefisso
+    (define (replace-name/prefix a p n m)
+      (prefix (replace-name a n m)
+              (replace-name p n m)))
 
-      ; Sostituisce un nome in una restrizione
-      (define (replace-name/restriction x p n m)
-        (let ([x1 (if (equal? x n) m x)])
-          (restriction x1 (replace-name p n m))))
+    ; Sostituisce un nome in una restrizione
+    (define (replace-name/restriction x p n m)
+      (let ([x1 (if (equal? x n) m x)])
+        (restriction x1 (replace-name p n m))))
 
-      ; Sostituisce un nome in una replicazione
-      (define (replace-name/replication p n m)
-        (replication (replace-name p n m)))
+    ; Sostituisce un nome in una replicazione
+    (define (replace-name/replication p n m)
+      (replication (replace-name p n m)))
 
-      ; Sostituisce un nome in una composizione
-      (define (replace-name/composition p q n m)
-        (composition (replace-name p n m)
-                     (replace-name q n m)))
+    ; Sostituisce un nome in una composizione
+    (define (replace-name/composition p q n m)
+      (composition (replace-name p n m)
+                   (replace-name q n m)))
 \end{lstlisting}
 
 Come si pu\`o vedere, \lstinline{replace-name} non effettua alcun
@@ -301,9 +301,9 @@ utilizzare un nome totalmente nuovo: si pu\`o quindi combinare
 maniera:
 
 \begin{lstlisting}
-      ; process-refresh-name : process? name? -> process?
-      (define (process-refresh-name self n)
-        (replace-name self n (fresh-name self n)))
+    ; process-refresh-name : process? name? -> process?
+    (define (process-refresh-name self n)
+      (replace-name self n (fresh-name self n)))
 \end{lstlisting}
 
 per ottenere una sostituzione di nome che rispetta sempre il significato
@@ -313,32 +313,32 @@ La guardia per il prefisso \`e pi\`u complessa di quella della
 restrizione:
 
 \begin{lstlisting}
-      (define (prefix-guard a p type-name)
-        (let* ([refresh (lambda (q n)
-                          (let* ([an (fresh-name a n)]
-                                 [qn (fresh-name q n)]
-                                 [nn (name-max an qn)])
-                            (replace-name q n nn)))]
-               [bound (process-bound-names p)]
-               [bound (set-intersect bound (process-names a))]
-               [bound (set->list bound)]
-               [p (foldl (flip refresh) p bound)])
-          (if (not (input? a))
-              (values a p)
-              (let* ([bound (process-bound-names a)]
-                     [x (input-x a)]
-                     [y (input-y a)]
-                     [na (fresh-name a x)]
-                     [np (fresh-name p x)]
-                     [nn (name-max na np)]
-                     [y (if (not (set-member? bound x))
-                            y
-                            (list-replace y x nn))]
-                     [a (input x y)]
-                     [p (if (not (set-member? bound x))
-                            y
-                            (replace-name p x nn))])
-                (values a p)))))
+    (define (prefix-guard a p type-name)
+      (let* ([refresh (lambda (q n)
+                        (let* ([an (fresh-name a n)]
+                               [qn (fresh-name q n)]
+                               [nn (name-max an qn)])
+                          (replace-name q n nn)))]
+             [bound (process-bound-names p)]
+             [bound (set-intersect bound (process-names a))]
+             [bound (set->list bound)]
+             [p (foldl (flip refresh) p bound)])
+        (if (not (input? a))
+            (values a p)
+            (let* ([bound (process-bound-names a)]
+                   [x (input-x a)]
+                   [y (input-y a)]
+                   [na (fresh-name a x)]
+                   [np (fresh-name p x)]
+                   [nn (name-max na np)]
+                   [y (if (not (set-member? bound x))
+                          y
+                          (list-replace y x nn))]
+                   [a (input x y)]
+                   [p (if (not (set-member? bound x))
+                          y
+                          (replace-name p x nn))])
+              (values a p)))))
 \end{lstlisting}
 
 dove ancora una volta sono stati tralasciati i controlli iniziali, che
@@ -382,7 +382,7 @@ vengono sottratti tutti i nomi che non compaiono in \lstinline{a};
 l'insieme viene poi convertito in una lista, e tramite la chiamata
 
 \begin{lstlisting}
-      (foldl (flip refresh) p bound)
+    (foldl (flip refresh) p bound)
 \end{lstlisting}
 
 ci sia assicura che i nomi trovati (che sono quelli problematici) siano
@@ -426,38 +426,38 @@ Resta da considerare la costruzione di una \lstinline{composition}: la
 guardia \`e
 
 \begin{lstlisting}
-      (define (composition-guard p q type-name)
-        (letrec ([fix (lambda (procs names)
-                        (if (null? names)
-                            procs
-                            (let* ([p (car procs)]
-                                   [q (cdr procs)]
-                                   [n (car names)]
-                                   [names (cdr names)]
-                                   [np (fresh-name p n)]
-                                   [nq (fresh-name q n)]
-                                   [nn (name-max np nq)])
-                              (cond
-                                [(set-member? (process-bound-names p)
-                                              n)
-                                 (fix (cons (replace-name p n nn)
-                                             q)
-                                      names)]
-                                [(set-member? (process-bound-names q)
-                                              n)
-                                 (fix (cons p
-                                            (replace-name q n nn))
-                                      names)]))))])
-          (let* ([bound (process-bound-names p)]
-                 [names (process-names q)]
-                 [err (set-intersect bound names)]
-                 [bound (process-bound-names q)]
-                 [names (process-names p)]
-                 [err (set-union err (set-intersect bound names))]
-                 [err (set->list err)]
-                 [procs (fix (cons p q) err)])
-            (values (car procs)
-                    (cdr procs)))))
+    (define (composition-guard p q type-name)
+      (letrec ([fix (lambda (procs names)
+                      (if (null? names)
+                          procs
+                          (let* ([p (car procs)]
+                                 [q (cdr procs)]
+                                 [n (car names)]
+                                 [names (cdr names)]
+                                 [np (fresh-name p n)]
+                                 [nq (fresh-name q n)]
+                                 [nn (name-max np nq)])
+                            (cond
+                              [(set-member? (process-bound-names p)
+                                            n)
+                               (fix (cons (replace-name p n nn)
+                                           q)
+                                    names)]
+                              [(set-member? (process-bound-names q)
+                                            n)
+                               (fix (cons p
+                                          (replace-name q n nn))
+                                    names)]))))])
+        (let* ([bound (process-bound-names p)]
+               [names (process-names q)]
+               [err (set-intersect bound names)]
+               [bound (process-bound-names q)]
+               [names (process-names p)]
+               [err (set-union err (set-intersect bound names))]
+               [err (set->list err)]
+               [procs (fix (cons p q) err)])
+          (values (car procs)
+                  (cdr procs)))))
 \end{lstlisting}
 
 dove \lstinline{p} e \lstinline{q} rispettano entrambi il contratto

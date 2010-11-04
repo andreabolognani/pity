@@ -111,9 +111,9 @@ argomenti.
 Il classico programma di Hello World si scrive in Racket come
 
 \begin{lstlisting}
-      (define greet "Hello, World!")
-      (display greet)
-      (newline)
+    (define greet "Hello, World!")
+    (display greet)
+    (newline)
 \end{lstlisting}
 
 Questo semplice frammento di codice definisce una nuova variabile
@@ -127,7 +127,7 @@ in particolare quando si ha a che fare con espressioni matematiche,
 come
 
 \begin{lstlisting}
-      (- p (* p p))
+    (- p (* p p))
 \end{lstlisting}
 
 che appare meno immediata di quanto la stessa espressione non sarebbe
@@ -141,7 +141,7 @@ accetta un numero variabile di argomenti, si possono sommare sette numeri
 in maniera molto concisa:
 
 \begin{lstlisting}
-      (+ 1 8 12 6 5 9 3)
+    (+ 1 8 12 6 5 9 3)
 \end{lstlisting}
 
 In ogni caso, una volta superato l'impatto iniziale, la sintassi di
@@ -155,8 +155,8 @@ matematici di base, \`e implementata sotto forma di funzione.
 Si prenda ad esempio il seguente frammento di codice:
 
 \begin{lstlisting}
-      (define lst (list 1 2 3))
-      (foldl + 0 lst) ; ==> 6
+    (define lst (list 1 2 3))
+    (foldl + 0 lst) ; ==> 6
 \end{lstlisting}
 
 nella prima riga, la procedura standard \lstinline{list} viene chiamata
@@ -180,14 +180,14 @@ come in Racket le funzioni siano un tipo di dato di prim'ordine.
 sono totalmente equivalenti tra di loro:
 
 \begin{lstlisting}
-      (define (double x)
-        (* 2 x))
+    (define (double x)
+      (* 2 x))
 \end{lstlisting}
 
 \begin{lstlisting}
-      (define double
-        (lambda (x)
-          (* 2 x)))
+    (define double
+      (lambda (x)
+        (* 2 x)))
 \end{lstlisting}
 
 Le procedure dichiarate possono contenere variabili libere: al momento
@@ -195,10 +195,10 @@ della chiamata, Racket cerca un binding nell'ambiente di definizione
 della procedura, e utilizza quel valore:
 
 \begin{lstlisting}
-      (define (three) (+ two 1))
-      (three) ; ==> ERRORE
-      (define two 2)
-      (three) ; ==> 3
+    (define (three) (+ two 1))
+    (three) ; ==> ERRORE
+    (define two 2)
+    (three) ; ==> 3
 \end{lstlisting}
 
 Questa caratteristica pu\`o essere usata per costruire, ad esempio, una
@@ -206,15 +206,15 @@ funzione che mantiene stato tra una chiamata e l'altra, come un semplice
 contatore:
 
 \begin{lstlisting}
-      (define next! #f)
-      (let ([number 0])
-        (set! next! (lambda ()
-                       (set! number (+ 1 number))
-                       number)))
-      (next!) ; ==> 1
-      (next!) ; ==> 2
-      (define number 9)
-      (next!) ; ==> 3
+    (define next! #f)
+    (let ([number 0])
+      (set! next! (lambda ()
+                    (set! number (+ 1 number))
+                    number)))
+    (next!) ; ==> 1
+    (next!) ; ==> 2
+    (define number 9)
+    (next!) ; ==> 3
 \end{lstlisting}
 
 Inizialmente, si definisce una variabile \lstinline{next!}, inizializzata
@@ -250,9 +250,9 @@ che restituiscono valori di verit\`a, come \lstinline{list?} o
 \lstinline{procedure?}:
 
 \begin{lstlisting}
-      (number? "2") ; ==> #f
-      (list? (list 1 2 3)) ; ==> #t
-      (false? procedure?) ; ==> #f
+    (number? "2") ; ==> #f
+    (list? (list 1 2 3)) ; ==> #t
+    (false? procedure?) ; ==> #f
 \end{lstlisting}
 
 Si pu\`o vedere nell'ultima riga che \lstinline{procedure?} \`e
@@ -263,10 +263,10 @@ I valori di verit\`a possono essere utilizzati nei costrutti
 condizionali:
 
 \begin{lstlisting}
-      (if (and (list? a)
-               (not (null? a)))
-          (display (car a))
-          (display a))
+    (if (and (list? a)
+             (not (null? a)))
+        (display (car a))
+        (display a))
 \end{lstlisting}
 
 Se la variabile \lstinline{a} contiene una lista non vuota, viene
@@ -280,13 +280,13 @@ nel corpo di uno dei due rami, ma si pu\`o facilmente aggirare questa
 limitazione usando la sintassi \lstinline{begin}:
 
 \begin{lstlisting}
-      (define (display-list lst)
-        (if (null? lst)
-            (newline)
-            (begin
-              (display (car lst))
-              (display " ")
-              (display-list (cdr lst)))))
+    (define (display-list lst)
+      (if (null? lst)
+          (newline)
+          (begin
+            (display (car lst))
+            (display " ")
+            (display-list (cdr lst)))))
 \end{lstlisting}
 
 Un'altra sintassi, pi\`u generica, che si pu\`o utilizzare per i
@@ -294,10 +294,10 @@ costrutti condizionali \`e \lstinline{cond}, che consente un numero
 arbitrario di coppie condizione-risultato:
 
 \begin{lstlisting}
-      (cond
-        [(number? a)        a]
-        [(string->number a) (string->number a)]
-        [else               0])
+    (cond
+      [(number? a)        a]
+      [(string->number a) (string->number a)]
+      [else               0])
 \end{lstlisting}
 
 Le condizioni vengono valutate dalla prima all'ultima, e appena si
@@ -326,10 +326,10 @@ liste, fornendo diverse primitive utili: le funzioni \lstinline{car} e
 lista, e gli elementi rimanenti:
 
 \begin{lstlisting}
-      (define three (lambda () 3))
-      (define lst (list 1 "two" three))
-      (car lst) ; ==> 1
-      (cdr lst) ; ==> (list "two" three)
+    (define three (lambda () 3))
+    (define lst (list 1 "two" three))
+    (car lst) ; ==> 1
+    (cdr lst) ; ==> (list "two" three)
 \end{lstlisting}
 
 Come si pu\`o vedere, una lista \`e in grado di contenere elementi
@@ -342,9 +342,9 @@ sulle liste, ma sulle coppie, che sono i costituenti fondamentali delle
 liste, e che si possono creare con la primitiva \lstinline{cons}:
 
 \begin{lstlisting}
-      (define v (cons 2 "3"))
-      (car v) ; ==> 2
-      (cdr v) ; ==> "3"
+    (define v (cons 2 "3"))
+    (car v) ; ==> 2
+    (cdr v) ; ==> "3"
 \end{lstlisting}
 
 come si pu\`o vedere, \lstinline{car} e \lstinline{cdr} restituiscono
@@ -352,14 +352,14 @@ rispettivamente il primo e il secondo elemento di una coppia; le liste
 vengono costruite partendo dalla lista vuota \lstinline{(list)}
 
 \begin{lstlisting}
-      (cons "3" (list)) ; ==> (list "3")
+    (cons "3" (list)) ; ==> (list "3")
 \end{lstlisting}
 
 e ulteriori elementi possono essere aggiunti alla lista con altre chiamate
 a \lstinline{cons}:
 
 \begin{lstlisting}
-      (cons 2 (cons "3" (list))) ; ==> (list 2 "3")
+    (cons 2 (cons "3" (list))) ; ==> (list 2 "3")
 \end{lstlisting}
 
 Esistono varianti combinate delle primitive \lstinline{car} e
@@ -369,9 +369,9 @@ il cui primo elemento \`e a sua volta una lista, e restituisce tutti i
 valori contenuti nel primo elemento tranne i primi due:
 
 \begin{lstlisting}
-      (define lst (list (list 1 2 3) 4 5 6))
-      (cadr lst) ; ==> 4
-      (cddar lst) ; ==> (list 3)
+    (define lst (list (list 1 2 3) 4 5 6))
+    (cadr lst) ; ==> 4
+    (cddar lst) ; ==> (list 3)
 \end{lstlisting}
 
 \`E possibile selezionare solamente alcuni elementi di una lista tramite
@@ -379,12 +379,12 @@ la procedura \lstinline{filter}, che accetta un predicato ed una lista, e
 restituisce tutti i valori della lista che soddisfano il predicato:
 
 \begin{lstlisting}
-      (define lst (list -1 5 0 -22 10 -4))
-      (define (positive-even-number? x)
-        (and (number? x)
-             (positive? x)
-             (even? x)))
-      (filter positive-even-number? lst) ; ==> (list 10)
+    (define lst (list -1 5 0 -22 10 -4))
+    (define (positive-even-number? x)
+      (and (number? x)
+           (positive? x)
+           (even? x)))
+    (filter positive-even-number? lst) ; ==> (list 10)
 \end{lstlisting}
 
 Altra procedura fondamentale di manipolazione liste \`e la \lstinline{map},
@@ -392,8 +392,8 @@ che applica una funzione ad ogni elemento di una lista, restituendo la
 lista contenente gli elementi trasformati:
 
 \begin{lstlisting}
-      (define lst (list 6 2 4))
-      (map (curry max 4) lst) ; ==> (list 6 4 4)
+    (define lst (list 6 2 4))
+    (map (curry max 4) lst) ; ==> (list 6 4 4)
 \end{lstlisting}
 
 La chiamata a \lstinline{map} applica la funzione \lstinline{(curry max 4)}
@@ -405,8 +405,8 @@ effetto si sarebbe potuto ottenere, in maniera meno tersa, utilizzando la
 sintassi \lstinline{lambda} nel seguente modo:
 
 \begin{lstlisting}
-      (define lst (list 6 2 4))
-      (map (lambda (x) (max 4 x)) lst) ; ==> (list 6 4 4)
+    (define lst (list 6 2 4))
+    (map (lambda (x) (max 4 x)) lst) ; ==> (list 6 4 4)
 \end{lstlisting}
 
 Si pu\`o utilizzare \lstinline{apply} per chiamare una procedura con
@@ -415,8 +415,8 @@ numeri contenuti in una lista, al posto di usare \lstinline{foldl}
 come visto sopra, si pu\`o usare
 
 \begin{lstlisting}
-      (define lst (list 1 2 3))
-      (apply + lst) ; ==> 6
+    (define lst (list 1 2 3))
+    (apply + lst) ; ==> 6
 \end{lstlisting}
 
 \lstinline{apply}, unita alla possibilit\`a di dichiarare una funzione
@@ -425,8 +425,8 @@ facilmente funzioni che trasformano altre funzioni, come ad esempio la
 seguente procedura \lstinline{flip}:
 
 \begin{lstlisting}
-      (define (flip proc)
-        (lambda rest (apply proc (reverse rest))))
+    (define (flip proc)
+      (lambda rest (apply proc (reverse rest))))
 \end{lstlisting}
 
 Con la sintassi \lstinline{(lambda rest ...)} si crea una funzione che
@@ -437,7 +437,7 @@ originale \lstinline{proc} viene chiamata usando \lstinline{apply}.
 Un esempio dell'utilizzo di \lstinline{flip}:
 
 \begin{lstlisting}
-      ((flip list) 1 2 3) ; ==> (list 3 2 1)
+    ((flip list) 1 2 3) ; ==> (list 3 2 1)
 \end{lstlisting}
 
 Come si \`e potuto vedere, in Racket \`e possibile eseguire potenti
@@ -454,21 +454,21 @@ utilizzando una quantit\`a fissa di memoria.
 Ad esempio, l'implementazione pi\`u ovvia del fattoriale
 
 \begin{lstlisting}
-      (define (fact x)
-        (if (zero? x)
-            1
-            (* x (fact (- x 1)))))
+    (define (fact x)
+      (if (zero? x)
+          1
+          (* x (fact (- x 1)))))
 \end{lstlisting}
 
 pu\`o essere riscritta in modo da utilizzare la chiamata in coda
 
 \begin{lstlisting}
-      (define (fact x)
-        (letrec ([do (lambda (x acc)
-                       (if (zero? x)
-                           acc
-                           (do (- x 1) (* x acc))))])
-          (do x 1)))
+    (define (fact x)
+      (letrec ([do (lambda (x acc)
+                     (if (zero? x)
+                         acc
+                         (do (- x 1) (* x acc))))])
+        (do x 1)))
 \end{lstlisting}
 
 Mentre la prima implementazione usa tanta pi\`u memoria quanto pi\`u \`e
@@ -481,10 +481,10 @@ Il pattern matching \`e disponibile in Racket tramite la sintassi
 \lstinline{match}:
 
 \begin{lstlisting}
-      (match f
-        [(list _ b ...) (apply * b)]
-        [(cons a b)     (+ a b)]
-        [else           0])
+    (match f
+      [(list _ b ...) (apply * b)]
+      [(cons a b)     (+ a b)]
+      [else           0])
 \end{lstlisting}
 
 Questo particolare pattern restituisce il prodotto di tutti gli elementi
@@ -496,16 +496,16 @@ Il pattern matching funziona anche sulle strutture definite dall'utente:
 se \`e stata dichiarata la struttura \lstinline{point} tramite
 
 \begin{lstlisting}
-      (struct point (x y))
+    (struct point (x y))
 \end{lstlisting}
 
 si possono estrarre e manipolare comodamente le singole coordinate usando
 la sintassi \lstinline{match} come in
 
 \begin{lstlisting}
-      (match (point 2 5)
-        [(point a b) (point (+ b 1) (- a 1))]
-        [else        (point 0 0)]) ; ==> (point 6 1)
+    (match (point 2 5)
+      [(point a b) (point (+ b 1) (- a 1))]
+      [else        (point 0 0)]) ; ==> (point 6 1)
 \end{lstlisting}
 
 \`E da notare che, contrariamente a quanto accade ad esempio con il
@@ -513,8 +513,8 @@ linguaggio OCaml, non viene effettuato alcun controllo per garantire che
 un pattern sia esaustivo: ad esempio, il pattern
 
 \begin{lstlisting}
-      (match (list)
-        [(list a b ...) (cons a (reverse b))])
+    (match (list)
+      [(list a b ...) (cons a (reverse b))])
 \end{lstlisting}
 
 genera un errore a runtime, dal momento che non \`e stata dichiarata una
@@ -528,8 +528,8 @@ corretta tipizzazione dei parametri di una procedura.
 Si prenda come esempio la seguente procedura:
 
 \begin{lstlisting}
-      (define (make-it-double str)
-        (string-append str str))
+    (define (make-it-double str)
+      (string-append str str))
 \end{lstlisting}
 
 Se questa procedura viene chiamata con un argomento che non \`e una
@@ -540,8 +540,8 @@ un errore, ed il programma termina.
 esportazione: usando la sintassi
 
 \begin{lstlisting}
-      (provide/contract
-        [make-it-double (string? . -> . string?)])
+    (provide/contract
+      [make-it-double (string? . -> . string?)])
 \end{lstlisting}
 
 ci si assicura che ogni chiamata alla procedura
@@ -559,9 +559,9 @@ le chiamate effettuate dall'interno del modulo; basta utilizzare la
 sintassi \lstinline{define/contract} nel seguente modo:
 
 \begin{lstlisting}
-      (define/contract (make-it-double str)
-                       (string? . -> . string?) '()
-        (string-append str str))
+    (define/contract (make-it-double str)
+                     (string? . -> . string?) '()
+      (string-append str str))
 \end{lstlisting}
 
 per garantire che ogni singola chiamata alla procedura venga fatta con
