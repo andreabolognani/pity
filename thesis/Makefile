@@ -4,6 +4,7 @@ THESIS_MAIN=main.tex
 THESIS_CHAPTERS=abstract/* \
                 introduzione/* \
                 implementazione/* \
+                implementazione/nomi/* \
                 conclusioni/*
 THESIS_OTHER=common.tex
 THESIS_BIB=references.bib
