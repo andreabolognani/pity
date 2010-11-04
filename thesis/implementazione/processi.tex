@@ -105,7 +105,7 @@ procedure private specializzate:
       (define (bound-names/nil)
         (set))
 
-      ; I nomi legati di sono quelli in oggetto
+      ; I nomi legati sono quelli in oggetto
       (define (bound-names/input x y)
         (list->set y))
 
@@ -250,35 +250,43 @@ e, come gi\`a nel caso di \lstinline{process-bound-names}, delega
 l'implementazione a delle procedure pi\`u specifiche, che sono
 
 \begin{lstlisting}
+      ; Sostituisce un nome nel processo nullo
       (define (replace-name/nil n m)
         (nil))
 
+      ; Sostituisce un nome nell'azione di input
       (define (replace-name/input x y n m)
         (let ([x1 (if (equal? x n) m x)]
               [y1 (list-replace y n m)])
           (input x1 y1)))
 
+      ; Sostituisce un nome nell'azione di output
       (define (replace-name/output x y n m)
         (let ([x1 (if (equal? x n) m x)]
               [y1 (list-replace y n m)])
           (output x1 y1)))
 
+      ; Sostituisce un nome in un'azione
       (define (replace-name/action a n m)
         (match a
           [(input x y)  (replace-name/input x y n m)]
           [(output x y) (replace-name/output x y n m)]))
 
+      ; Sostituisce un nome in un prefisso
       (define (replace-name/prefix a p n m)
         (prefix (replace-name a n m)
                 (replace-name p n m)))
 
+      ; Sostituisce un nome in una restrizione
       (define (replace-name/restriction x p n m)
         (let ([x1 (if (equal? x n) m x)])
           (restriction x1 (replace-name p n m))))
 
+      ; Sostituisce un nome in una replicazione
       (define (replace-name/replication p n m)
         (replication (replace-name p n m)))
 
+      ; Sostituisce un nome in una composizione
       (define (replace-name/composition p q n m)
         (composition (replace-name p n m)
                      (replace-name q n m)))

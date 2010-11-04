@@ -1,6 +1,6 @@
 \subsection{Nomi}
 
-Come abbiamo visto, il concetto di nome \`e alla base del $\pi$-calcolo,
+Come si \`e visto, il concetto di nome \`e alla base del $\pi$-calcolo,
 quindi viene naturale partire con l'implementazione proprio creando creando
 un modo di rappresentare un nome.
 
@@ -36,9 +36,19 @@ viene chiamata con argomenti non compatibili -- ad esempio, la procedura
 \lstinline{2} --  viene segnalato un errore.
 
 Ci sono vari modi per ottenere lo stesso comportamento per le strutture e
-le procedure definite dall'utente: uno di questi modi \`e appunto usare una
-guardia, che consente di analizzare gli argomenti passati al costruttore e
-di interrompere la costruzione se non sono di tipo compatibile.
+le procedure definite dall'utente: uno di questi modi \`e quello, gi\`a
+visto, di assegnare un contratto alla procedura di costruzione; un'altro
+modo \`e quello di utilizzare una procedura guardia.
+
+Mentre per le procedure che manipolano le strutture verr\`a dichiarato
+un contratto, per la costruzione si user\`a una procedura guardia
+perch\'e, a differenza di quanto succede usando un contratto, una
+procedura guardia permette di manipolare in maniera arbitraria i campi
+di una struttura.
+
+Questa caratteristica non \`e utile per quanto riguarda i nomi, ma
+quando ci si trover\`a a dover costruire processi se ne far\`a ampio
+uso; per i nomi si usa la stessa tecnica in nome della consistenza.
 
 La guardia per la struttura \lstinline{name} \`e
 
@@ -93,8 +103,9 @@ stringhe, che saranno utili pi\`u avanti:
 
 La prima procedura, \lstinline{name->string}, estrae semplicemente la
 stringa che rappresenta un nome, chiamando la procedura di supporto
-\lstinline{name-n}; tale procedura viene generata in maniera automatica
-dalla forma \lstinline{struct} per ognuno dei campi di una struttura.
+\lstinline{name-n}; una procedura simile viene generata in maniera
+automatica dalla forma \lstinline{struct} per ognuno dei campi di una
+struttura.
 
 La seconda procedura, \lstinline{name-list->string}, converte una lista
 di nomi nella loro rappresentazione sotto forma di stringa, separandoli
