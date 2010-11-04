@@ -54,11 +54,11 @@ La procedura che converte un processo in una stringa \`e
     (define (process->string process)
       (match process
         [(nil)             (process->string/nil)]
-        [(input x y)       (process->string/input x y)] 
-        [(output x y)      (process->string/output x y)] 
-        [(prefix a p)      (process->string/prefix a p)] 
-        [(restriction x p) (process->string/restriction x p)] 
-        [(replication p)   (process->string/replication p)] 
+        [(input x y)       (process->string/input x y)]
+        [(output x y)      (process->string/output x y)]
+        [(prefix a p)      (process->string/prefix a p)]
+        [(restriction x p) (process->string/restriction x p)]
+        [(replication p)   (process->string/replication p)]
         [(composition p q) (process->string/composition p q)]))
 \end{lstlisting}
 
@@ -72,32 +72,32 @@ che delega la conversione a delle procedure specializzate
     ; Rappresentazione testuale di un'azione
     (define (process->string/action a)
       (match a
-        [(input x y)  (process->string/input x y)] 
+        [(input x y)  (process->string/input x y)]
         [(output x y) (process->string/output x y)]))
 
     ; Rappresentazione testuale di un'azione di input
     (define (process->string/input x y)
-      (string-append (name->string x) "(" 
+      (string-append (name->string x) "("
                      (name-list->string y) ")"))
 
     ; Rappresentazione testuale di un'azione di output
     (define (process->string/output x y)
-      (string-append (name->string x) "<" 
+      (string-append (name->string x) "<"
                      (name-list->string y) ">"))
 
     ; Rappresentazione testuale di un prefisso
     (define (process->string/prefix a p)
       (string-append (process->string a)
-                     "." 
+                     "."
                      (if (composition? p)
-                         (enclose (process->string p)) 
+                         (enclose (process->string p))
                          (process->string p))))
 
     ; Rappresentazione testuale di una restrizione
     (define (process->string/restriction x p)
-      (string-append (enclose (name->string x)) 
+      (string-append (enclose (name->string x))
                      (if (composition? p)
-                         (enclose (process->string p)) 
+                         (enclose (process->string p))
                          (process->string p))))
 
     ; Rappresentazione testuale di una replicazione
