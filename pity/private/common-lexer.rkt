@@ -38,10 +38,13 @@
 
 
 (define-lex-abbrevs
-  (letter (union (char-range "a" "z") (char-range "A" "Z")))
-  (digit (char-range "0" "9"))
-  (space (union #\tab #\space))
-  (id (concatenation letter (repetition 0 +inf.0 (union letter digit)))))
+  (letter (union (char-range #\a #\z)
+                 (char-range #\A #\Z)))
+  (digit  (char-range #\0 #\9))
+  (space  (union #\tab
+                 #\space))
+  (id     (concatenation (repetition 1 +inf.0 letter)
+                         (repetition 0 +inf.0 digit))))
 
 
 
