@@ -1,0 +1,206 @@
+\subsubsection{Stampa e parsing}
+
+Avendo dichiarato tutti i tipi necessari, \`e ora possibile rappresentare
+ogni processo di $\pi$-calcolo si desideri.
+
+Ad esempio, una rappresentazione del processo
+
+\begin{pilisting}
+$
+    ! \; \nu z \; (
+      \overline{z}\langle q\rangle.0 \; | \;
+      z(w).0
+    )
+$
+\end{pilisting}
+
+pu\`o essere ottenuta valutando l'espressione
+
+\begin{lstlisting}
+    (replication
+      (restriction (name "z")
+                   (composition (prefix
+                                  (output (name "z")
+                                          (list (name "q")))
+                                  (nil))
+                                (prefix
+                                  (input (name "z")
+                                         (list (name "w")))
+                                  (nil)))))
+\end{lstlisting}
+
+Questa rappresentazione \`e senza dubbio fedele al processo originale;
+tuttavia, l'eleganza e la chiarezza dell'espressione matematica sono
+andate perdute.
+
+Per evitare che la dichiarazione di processi diventi un processo lungo
+e tedioso, verr\`a utilizzata una semplice rappresentazione testuale,
+molto vicina a quella matematica, che consentir\`a di scrivere e leggere
+velocemente processi: utilizzando questa rappresentazione, il processo
+appena visto pu\`o essere scritto come
+
+\begin{lstlisting}
+    !(z)(z<q>.0|z(w).0)
+\end{lstlisting}
+
+Verr\`a definita come prima cosa la conversione da processo a stringa,
+e successivamente quella opposta, da stringa a processo.
+
+La procedura che converte un processo in una stringa \`e
+\lstinline{process->string}, cos\`i definita:
+
+\begin{lstlisting}
+    ; process->string : process? -> string?
+    (define (process->string process)
+      (match process
+        [(nil)             (process->string/nil)]
+        [(input x y)       (process->string/input x y)] 
+        [(output x y)      (process->string/output x y)] 
+        [(prefix a p)      (process->string/prefix a p)] 
+        [(restriction x p) (process->string/restriction x p)] 
+        [(replication p)   (process->string/replication p)] 
+        [(composition p q) (process->string/composition p q)]))
+\end{lstlisting}
+
+che delega la conversione a delle procedure specializzate
+
+\begin{lstlisting}
+    ; Rappresentazione testuale del processo nullo
+    (define (process->string/nil)
+      "0")
+
+    ; Rappresentazione testuale di un'azione
+    (define (process->string/action a)
+      (match a
+        [(input x y)  (process->string/input x y)] 
+        [(output x y) (process->string/output x y)]))
+
+    ; Rappresentazione testuale di un'azione di input
+    (define (process->string/input x y)
+      (string-append (name->string x) "(" 
+                     (name-list->string y) ")"))
+
+    ; Rappresentazione testuale di un'azione di output
+    (define (process->string/output x y)
+      (string-append (name->string x) "<" 
+                     (name-list->string y) ">"))
+
+    ; Rappresentazione testuale di un prefisso
+    (define (process->string/prefix a p)
+      (string-append (process->string a)
+                     "." 
+                     (if (composition? p)
+                         (enclose (process->string p)) 
+                         (process->string p))))
+
+    ; Rappresentazione testuale di una restrizione
+    (define (process->string/restriction x p)
+      (string-append (enclose (name->string x)) 
+                     (if (composition? p)
+                         (enclose (process->string p)) 
+                         (process->string p))))
+
+    ; Rappresentazione testuale di una replicazione
+    (define (process->string/replication p)
+      (string-append "!"
+                     (if (composition? p)
+                         (enclose (process->string p))
+                         (process->string p))))
+
+    ; Rappresentazione testuale di una composizione
+    (define (process->string/composition p q)
+      (string-append (process->string p)
+                     "|"
+                     (process->string q)))
+\end{lstlisting}
+
+Le procedure di conversione sono molto semplici; l'unico fattore degno
+di nota \`e l'utilizzo della procedura privata \lstinline{enclose} quando
+si converte un prefisso, una restrizione o una replicazione: tale
+procedura, definita come
+
+\begin{lstlisting}
+    (define (enclose stuff)
+      (string-append "(" stuff ")"))
+\end{lstlisting}
+
+garantisce che la precedenza degli operatori sia salvaguardata.
+
+Se le composizioni non venissero adeguatamente racchiuse tra parentesi,
+il processo usato come esempio verrebbe rappresentato come
+
+\begin{lstlisting}
+    !(z)z<q>.0|z(w).0
+\end{lstlisting}
+
+che ha un significato ben diverso da quello originale (il nome $z$ \`e
+ristretto solamente nel lato sinistro della composizione; allo stesso
+modo, solo il lato sinistro \`e oggetto di replicazione).
+
+Per effettuare la conversione da stringa a processo si crea un parser
+utilizzando il modulo \lstinline{parser-tools} di Racket.
+
+Come prima cosa \`e necessario creare un \emph{lexer}: il modulo
+privato \lstinline{common-lexer} contiene l'implementazione.
+
+Vengono definite una serie di abbreviazioni per semplificare la
+definizione dei pattern utilizzati per estrarre le varie parti della
+stringa sorgente:
+
+\begin{lstlisting}
+    (define-lex-abbrevs
+      (letter (union (char-range "a" "z")
+                     (char-range "A" "Z")))
+      (digit  (char-range "0" "9"))
+      (space  (union #\tab
+                     #\space))
+      (id     (concatenation (repetition 1 +inf.0 letter)
+                             (repetition 0 +inf.0 digit))))
+\end{lstlisting}
+
+L'abbreviazione \lstinline{letter} corrisponde ad un carattere alfabetico
+maiuscolo o minuscolo; \lstinline{digit} ad una cifra; \lstinline{space}
+a uno spazio o ad un carattere di tabulazione; \lstinline{id} ad una
+stringa costituita da uno o pi\`u caratteri alfabetici seguiti da zero o
+pi\`u cifre, ovvero ad una stringa che soddisfa il predicato
+\lstinline{id-string?}.
+
+Vengono poi definiti una serie di \emph{token}, la quasi totalit\`a dei
+quali privi di contenuto:
+
+\begin{lstlisting}
+    (define-empty-tokens common-symbols (EOF NIL DOT COMMA PIPE BANG
+                                         COLON SEMICOLON EQ
+                                         LP RP LAB RAB LCB RCB))
+    (define-tokens       common-values  (ID))
+\end{lstlisting}
+
+Infine viene dichiarata la procedura di lexing vera e propria,
+assegnando ad ogni token il pattern che lo contraddistingue:
+
+\begin{lstlisting}
+    (define common-lexer
+      (lexer
+        [id     (token-ID lexeme)]
+        ["0"    (token-NIL)]
+        ["."    (token-DOT)]
+        [","    (token-COMMA)]
+        ["|"    (token-PIPE)]
+        ["!"    (token-BANG)]
+        [":"    (token-COLON)]
+        [";"    (token-SEMICOLON)]
+        ["="    (token-EQ)]
+        ["("    (token-LP)]
+        [")"    (token-RP)]
+        ["<"    (token-LAB)]
+        [">"    (token-RAB)]
+        ["{"    (token-LCB)]
+        ["}"    (token-RCB)]
+        [space  (common-lexer input-port)] ; Ignora gli spazi
+        [(eof)  (token-EOF)]))
+\end{lstlisting}
+
+Si pu\`o notare che i simboli riconosciuti dal lexer sono pi\`u di
+quelli necessari a definire la rappresentazione testuale dei processi:
+questo perch\'e lo stesso lexer verr\`a successivamente per riconoscere
+le rappresentazioni testuali di altre entit\`a.
