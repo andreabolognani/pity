@@ -149,9 +149,9 @@ stringa sorgente:
 
 \begin{lstlisting}
     (define-lex-abbrevs
-      (letter (union (char-range "a" "z")
-                     (char-range "A" "Z")))
-      (digit  (char-range "0" "9"))
+      (letter (union (char-range #\a #\z)
+                     (char-range #\A #\Z)))
+      (digit  (char-range #\0 #\9))
       (space  (union #\tab
                      #\space))
       (id     (concatenation (repetition 1 +inf.0 letter)
