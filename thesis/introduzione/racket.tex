@@ -56,9 +56,9 @@ frequentemente utilizzato nell'ambito dell'educazione.
 
 Il linguaggio Scheme \`e definito formalmente da una serie di report: il
 pi\`u recente \`e R$^{6}$RS (Revised$^{6}$ Report on the Algorithmic
-Language Scheme), pubblicato nel 2007, mentre la versione che \`e pi\`u
-ampiamente supportata \`e la precedente R$^{5}$RS (Revised$^{5}$ Report
-on the Algorithmic Language Scheme\cite{r5rs}), del 1998.
+Language Scheme\cite{r6rs}), pubblicato nel 2009, mentre la versione che
+\`e pi\`u ampiamente supportata \`e la precedente R$^{5}$RS (Revised$^{5}$
+Report on the Algorithmic Language Scheme\cite{r5rs}), del 1998.
 
 Al di fuori delle specifiche ufficiali, esiste un processo chiamato
 SRFI (Scheme Requests For Implementation), che consente ai membri della
@@ -312,6 +312,13 @@ convertita in un numero, viene restituito il valore ottenuto tramite
 la conversione; se nessuna delle condizioni precedenti \`e verificata,
 viene restituito il valore \lstinline{0}.
 
+La procedura \lstinline{string->number} \`e una delle numerose procedure
+di conversione tra tipi fornite da Racket. Convenzionalmente, queste
+procedure hanno come nome il tipo di partenza, i simboli \lstinline{->}
+e il tipo di arrivo. Quando la conversione fallisce (ad esempio se viene
+richiesta la conversione della stringa \lstinline{"foo"} in un numero)
+il valore restituito \`e solitamente \lstinline{#f}.
+
 In quanto discendente del linguaggio Lisp (il cui nome sta per LISt
 Processor), Racket pone una particolare enfasi sulla manipolazione di
 liste, fornendo diverse primitive utili: le funzioni \lstinline{car} e
@@ -329,6 +336,56 @@ Come si pu\`o vedere, una lista \`e in grado di contenere elementi
 eterogenei: nel nostro caso, il numero \lstinline{1}, la stringa
 \lstinline{"two"}, e una procedura che accetta zero argomenti e restituisce
 il numero \lstinline{3}.
+
+In realt\`a le primitive \lstinline{car} e \lstinline{cdr} operano non
+sulle liste, ma sulle coppie, che sono i costituenti fondamentali delle
+liste, e che si possono creare con la primitiva \lstinline{cons}:
+
+\begin{lstlisting}
+      (define v (cons 2 "3"))
+      (car v) ; ==> 2
+      (cdr v) ; ==> "3"
+\end{lstlisting}
+
+come si pu\`o vedere, \lstinline{car} e \lstinline{cdr} restituiscono
+rispettivamente il primo e il secondo elemento di una coppia; le liste
+vengono costruite partendo dalla lista vuota \lstinline{(list)}
+
+\begin{lstlisting}
+      (cons "3" (list)) ; ==> (list "3")
+\end{lstlisting}
+
+e ulteriori elementi possono essere aggiunti alla lista con altre chiamate
+a \lstinline{cons}:
+
+\begin{lstlisting}
+      (cons 2 (cons "3" (list))) ; ==> (list 2 "3")
+\end{lstlisting}
+
+Esistono varianti combinate delle primitive \lstinline{car} e
+\lstinline{cdr}, come ad esempio \lstinline{cadr}, che restituisce il
+secondo elemento di una lista, o \lstinline{cddar}, che accetta una lista
+il cui primo elemento \`e a sua volta una lista, e restituisce tutti i
+valori contenuti nel primo elemento tranne i primi due:
+
+\begin{lstlisting}
+      (define lst (list (list 1 2 3) 4 5 6))
+      (cadr lst) ; ==> 4
+      (cddar lst) ; ==> (list 3)
+\end{lstlisting}
+
+\`E possibile selezionare solamente alcuni elementi di una lista tramite
+la procedura \lstinline{filter}, che accetta un predicato ed una lista, e
+restituisce tutti i valori della lista che soddisfano il predicato:
+
+\begin{lstlisting}
+      (define lst (list -1 5 0 -22 10 -4))
+      (define (positive-even-number? x)
+        (and (number? x)
+             (positive? x)
+             (even? x)))
+      (filter positive-even-number? lst) ; ==> (list 10)
+\end{lstlisting}
 
 Altra procedura fondamentale di manipolazione liste \`e la \lstinline{map},
 che applica una funzione ad ogni elemento di una lista, restituendo la
@@ -384,5 +441,131 @@ Un esempio dell'utilizzo di \lstinline{flip}:
 \end{lstlisting}
 
 Come si \`e potuto vedere, in Racket \`e possibile eseguire potenti
-manipolazioni su procedure con poche righe di codice. Dal momento che
-ogni computazione viene
+manipolazioni su procedure con poche righe di codice.
+
+Dal momento che ogni computazione viene eseguita tramite l'applicazione
+di procedure, \`e importante che la chiamata a procedura sia
+un'operazione che richiede poche risorse. Per assicurare che questo
+avvenga, lo standard R$^{5}$RS richiede che ogni implementazione supporti
+l'ottimizzazione della chiamata in coda, in modo che codice scritto
+in maniera adeguata possa eseguire un numero illimitato di ricorsioni
+utilizzando una quantit\`a fissa di memoria.
+
+Ad esempio, l'implementazione pi\`u ovvia del fattoriale
+
+\begin{lstlisting}
+      (define (fact x)
+        (if (zero? x)
+            1
+            (* x (fact (- x 1)))))
+\end{lstlisting}
+
+pu\`o essere riscritta in modo da utilizzare la chiamata in coda
+
+\begin{lstlisting}
+      (define (fact x)
+        (letrec ([do (lambda (x acc)
+                       (if (zero? x)
+                           acc
+                           (do (- x 1) (* x acc))))])
+          (do x 1)))
+\end{lstlisting}
+
+Mentre la prima implementazione usa tanta pi\`u memoria quanto pi\`u \`e
+grande il numero di cui viene calcolato il fattoriale, la seconda
+implementazione \`e in grado di calcolare il fattoriale di qualsiasi
+numero utilizzando la stessa quantit\`a di memoria, oltre che risultare
+spesso pi\`u veloce.
+
+Il pattern matching \`e disponibile in Racket tramite la sintassi
+\lstinline{match}:
+
+\begin{lstlisting}
+      (match f
+        [(list _ b ...) (apply * b)]
+        [(cons a b)     (+ a b)]
+        [else           0])
+\end{lstlisting}
+
+Questo particolare pattern restituisce il prodotto di tutti gli elementi
+di \lstinline{f} tranne il primo, se \lstinline{f} \`e una lista; oppure
+la somma dei due elementi che compongono \lstinline{f}, se \lstinline{f}
+\`e una coppia; \lstinline{0} in caso contrario.
+
+Il pattern matching funziona anche sulle strutture definite dall'utente:
+se \`e stata dichiarata la struttura \lstinline{point} tramite
+
+\begin{lstlisting}
+      (struct point (x y))
+\end{lstlisting}
+
+si possono estrarre e manipolare comodamente le singole coordinate usando
+la sintassi \lstinline{match} come in
+
+\begin{lstlisting}
+      (match (point 2 5)
+        [(point a b) (point (+ b 1) (- a 1))]
+        [else        (point 0 0)]) ; ==> (point 6 1)
+\end{lstlisting}
+
+\`E da notare che, contrariamente a quanto accade ad esempio con il
+linguaggio OCaml, non viene effettuato alcun controllo per garantire che
+un pattern sia esaustivo: ad esempio, il pattern
+
+\begin{lstlisting}
+      (match (list)
+        [(list a b ...) (cons a (reverse b))])
+\end{lstlisting}
+
+genera un errore a runtime, dal momento che non \`e stata dichiarata una
+clausola da applicare sulla lista vuota. Al programmatore \`e quindi
+richiesta una maggiore cura ed attenzione nella definizione dei pattern.
+
+Uno strumento che pu\`o aiutare ad alleviare questo problema \`e il
+sistema di contratti fornito da Racket, che permette di garantire la
+corretta tipizzazione dei parametri di una procedura.
+
+Si prenda come esempio la seguente procedura:
+
+\begin{lstlisting}
+      (define (make-it-double str)
+        (string-append str str))
+\end{lstlisting}
+
+Se questa procedura viene chiamata con un argomento che non \`e una
+stringa, al momento di chiamare \lstinline{string-append} viene sollevato
+un errore, ed il programma termina.
+
+\`E possibile assegnare un contratto alla procedura in fase di
+esportazione: usando la sintassi
+
+\begin{lstlisting}
+      (provide/contract
+        [make-it-double (string? . -> . string?)])
+\end{lstlisting}
+
+ci si assicura che ogni chiamata alla procedura
+\lstinline{make-it-double} all'esterno del modulo avvenga con parametri
+del tipo atteso.
+
+All'interno del modulo il contratto non viene controllato, il che
+consente una maggiore flessibilit\`a e in generale non causa problemi,
+visto che il codice all'interno di un modulo solitamente chiama le
+procedure interne al modulo con i parametri corretti.
+
+La flessibilit\`a del sistema di contratti di Racket consente, nel
+caso lo si ritenesse necessario, di proteggere con un contratto anche
+le chiamate effettuate dall'interno del modulo; basta utilizzare la
+sintassi \lstinline{define/contract} nel seguente modo:
+
+\begin{lstlisting}
+      (define/contract (make-it-double str)
+                       (string? . -> . string?) '()
+        (string-append str str))
+\end{lstlisting}
+
+per garantire che ogni singola chiamata alla procedura venga fatta con
+parametri di tipo compatibile, anche all'interno del modulo.
+
+Tutte le procedure che formano la libreria standard di Racket sono
+protette da un contratto, che viene visualizzato nella documentazione.

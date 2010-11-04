@@ -1,5 +1,6 @@
-personal_ws-1.1 it 161 
+personal_ws-1.1 it 173 
 sar
+runtime
 cdr
 transparent
 given
@@ -51,6 +52,7 @@ cos
 funzionalit
 is
 join
+it
 World
 foldl
 unit
@@ -68,6 +70,7 @@ begin
 regexp
 sort
 nn
+cddar
 double
 sommer
 Scribble
@@ -79,6 +82,7 @@ process
 reverse
 dall'et
 quantit
+make
 l'ambiguit
 member
 flessibilit
@@ -92,10 +96,12 @@ rest
 comunit
 pu
 string
+OCaml
 nil
 parser
 anzich
 RS
+realt
 caddr
 fix
 Hello
@@ -111,10 +117,13 @@ Implementation
 prefix
 verit
 err
+point
 listof
+acc
 Requests
 zA
 entit
+foo
 finch
 For
 qualit
@@ -127,12 +136,14 @@ not
 when
 fresh
 null
+filter
 Language
 pity
 bound
 boolean
 replication
 trover
+fact
 Revised
 sorting
 letrec
@@ -146,6 +157,7 @@ cadr
 cond
 possibilit
 parts
+even
 self
 particolarit
 PLT
