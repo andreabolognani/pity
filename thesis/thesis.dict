@@ -1,4 +1,6 @@
-personal_ws-1.1 it 201 
+personal_ws-1.1 it 217 
+nonassoc
+while
 Language
 verit
 char
@@ -19,8 +21,10 @@ self
 Implementation
 Emacs
 stuff
+agent
 boolean
 DOT
+right
 cddar
 begin
 Hello
@@ -61,9 +65,11 @@ string
 lexer
 scoping
 procs
+marks
 empty
 bound
 unit
+exn
 append
 split
 flip
@@ -72,9 +78,11 @@ curryficate
 runtime
 common
 given
+handlers
 listof
 inf
 dall'et
+grammar
 LAB
 inp
 intersect
@@ -105,8 +113,8 @@ number
 compatible
 fact
 EQ
-gi
 fn
+gi
 lexeme
 flessibilit
 possibilit
@@ -118,10 +126,14 @@ cadr
 typesetting
 equal
 replication
+fail
+ip
+precs
 is
 it
 l'ambiguit
 cons
+void
 na
 nb
 digit
@@ -146,6 +158,7 @@ apply
 qn
 bytecode
 pu
+with
 contract
 fresh
 type
@@ -164,6 +177,7 @@ tokens
 sommer
 define
 zA
+raise
 RAB
 join
 member
@@ -185,6 +199,7 @@ Algorithmic
 make
 rest
 car
+descriptor
 and
 rep
 capacit
@@ -197,6 +212,7 @@ process
 error
 any
 report
+continuation
 concatenation
 proc
 cio
