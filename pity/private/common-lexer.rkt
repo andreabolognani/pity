@@ -23,7 +23,7 @@
 
 
 ; Tokens
-;-------
+; ------
 
 
 (define-empty-tokens common-symbols (EOF NIL DOT COMMA PIPE BANG

@@ -671,37 +671,32 @@
     (start  process)
     (end    EOF)
     (tokens common-symbols common-values)
+    (precs  (right PIPE) (nonassoc BANG))
     (error  (lambda (a b c) (void)))
 
     (grammar
 
       (process
-        [(subprocess)              $1]
-        [(subprocess PIPE process) (composition $1 $3)])
-
-      (subprocess
-        [(part)                    $1]
-        [(BANG subprocess)         (replication $2)])
-
-      (part
-        [(agent)                   $1]
-        [(LP name RP part)         (restriction $2 $4)])
+        [(agent)                $1]
+        [(BANG process)         (replication $2)]
+        [(process PIPE process) (composition $1 $3)])
 
       (agent
-        [(NIL)                     (nil)]
-        [(action DOT agent)        (prefix $1 $3)]
-        [(LP process RP)           $2])
+        [(NIL)                  (nil)]
+        [(action DOT agent)     (prefix $1 $3)]
+        [(LP name RP agent)     (restriction $2 $4)]
+        [(LP process RP)        $2])
 
       (action
-        [(name LP names RP)        (input $1 $3)]
-        [(name LAB names RAB)      (output $1 $3)])
+        [(name LP names RP)     (input $1 $3)]
+        [(name LAB names RAB)   (output $1 $3)])
 
       (names
-        [(name)                    (list $1)]
-        [(name COMMA names)        (list* $1 $3)])
+        [(name)                 (list $1)]
+        [(name COMMA names)     (list* $1 $3)])
 
       (name
-        [(ID)                      (name $1)]))))
+        [(ID)                   (name $1)]))))
 
 
 
