@@ -1,8 +1,8 @@
-personal_ws-1.1 it 230 
+personal_ws-1.1 it 236 
 nonassoc
 subj
 while
-Language
+language
 verit
 remove
 char
@@ -93,9 +93,11 @@ grammar
 LAB
 inp
 intersect
+value
 LCB
 anzich
 Scheme
+key
 expressions
 table
 ambiguit
@@ -115,6 +117,7 @@ pity
 map
 bn
 lex
+sorts
 Scribble
 prefix
 number
@@ -189,6 +192,7 @@ sommer
 define
 zA
 raise
+mapping
 RAB
 join
 member
@@ -227,5 +231,7 @@ any
 report
 continuation
 concatenation
+part
+praticit
 proc
 cio

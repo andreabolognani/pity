@@ -106,3 +106,109 @@ procedura chiamata sia la chiave che il valore ad essa associato.
 Dal momento che nel calcolo del dominio si \`e interessati unicamente
 alla chiave, il valore viene scartato. La lista ottenuta \`e poi
 trasformata in un insieme usando la procedura \lstinline{list->set}.
+
+Cos\`i come avviene per i processi, anche per i sorting viene definita
+per motivi di praticit\`a una semplice rappresentazione testuale.
+
+Usando questa rappresentazione, il sorting
+
+\begin{pilisting}
+$
+    \lambda(s) = (t,r) \;\;\;
+    \lambda(t) = (s)   \;\;\;
+    \lambda(r) = (r)
+$
+\end{pilisting}
+
+pu\`o essere scritto come
+
+\lstset{language=C}
+\begin{lstlisting}
+    s=(r,t);t=(s);r=(r)
+\end{lstlisting}
+\lstset{language=Racket}
+
+Per convertire un sorting nella sua rappresentazione testuale si usa
+la procedura \lstinline{sorting->string}:
+
+\begin{lstlisting}
+    ; sorting->string : sorting? -> string?
+    (define (sorting->string self)
+      (let ([mappings (sorting-mappings self)])
+        (string-join (hash-map mappings mapping->string) ";")))
+\end{lstlisting}
+
+che concatena con il separatore \lstinline{";"} le stringhe ottenute
+chiamando la procedura \lstinline{mapping->string} su ognuna delle
+coppie chiave-valore contenute nell'hash \lstinline{mappings}.
+
+La procedura privata \lstinline{mapping->string} \`e definita come
+
+\begin{lstlisting}
+    (define (mapping->string key value)
+      (string-append (sort->string key) "=("
+                     (sort-list->string value) ")"))
+\end{lstlisting}
+
+Per operare la conversione opposta viene dichiarato un parser che fa
+uso del lexer gi\`a dichiarato in precedenza:
+
+\begin{lstlisting}
+    (define sorting-parser
+      (parser
+
+        (start  sorting)
+        (end    EOF)
+        (tokens common-symbols common-values)
+        (error  (lambda (a b c) (void)))
+
+        (grammar
+
+          (sorting
+            [(part)                   (sorting-set (empty-sorting)
+                                                   (car $1)
+                                                   (cdr $1))]
+            [(sorting SEMICOLON part) (sorting-set $1
+                                                   (car $3)
+                                                   (cdr $3))])
+
+          (part
+            [(sort EQ LP sorts RP)    (cons $1 $4)])
+
+          (sorts
+            [(sort)                   (list $1)]
+            [(sort COMMA sorts)       (list* $1 $3)])
+
+          (sort
+            [(ID)                     (sort $1)]))))
+\end{lstlisting}
+
+Il non-terminale \lstinline{sorts} riconosce una lista di sort separati
+da virgola; il non-terminale \lstinline{part} riconosce un'associazione
+tra un sort e una lista di sort, e restituisce il \lstinline{cons} delle
+due parti. La coppia viene poi separata nelle sue componenti quando
+viene riconosciuto il non-terminale \lstinline{sorting}, e la relativa
+associazione aggiunta al sorting.
+
+La procedura \lstinline{string->sorting} chiama il parser per convertire
+una stringa in un sorting:
+
+\begin{lstlisting}
+    ; string->sorting : string? -> sorting?
+    (define (string->sorting str)
+      (if (not (equal? str ""))
+        (with-handlers ([exn:fail?
+                         (lambda (e)
+                           (raise (exn:fail
+                                    "Error while parsing sorting"
+                                    (exn-continuation-marks e))))])
+          (let ([ip (open-input-string str)])
+            (sorting-parser (lambda () (common-lexer ip)))))
+        (empty-sorting)))
+\end{lstlisting}
+
+L'unica differenza tra \lstinline{string->process} e
+\lstinline{string->sorting} \`e che, per semplificare il parser, il
+sorting vuoto viene gestito direttamente dalla procedura: se la
+stringa \lstinline{str} \`e vuota, viene restituito il sorting vuoto,
+in caso contrario viene usato il parser.
