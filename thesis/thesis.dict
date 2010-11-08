@@ -1,8 +1,10 @@
-personal_ws-1.1 it 217 
+personal_ws-1.1 it 230 
 nonassoc
+subj
 while
 Language
 verit
+remove
 char
 action
 letrec
@@ -65,11 +67,14 @@ string
 lexer
 scoping
 procs
+dall'hash
 marks
 empty
+nell'hash
 bound
 unit
 exn
+rename
 append
 split
 flip
@@ -78,7 +83,9 @@ curryficate
 runtime
 common
 given
+mappings
 handlers
+hash
 listof
 inf
 dall'et
@@ -90,6 +97,7 @@ LCB
 anzich
 Scheme
 expressions
+table
 ambiguit
 parsing
 token
@@ -110,11 +118,12 @@ lex
 Scribble
 prefix
 number
+domain
 compatible
 fact
 EQ
-fn
 gi
+fn
 lexeme
 flessibilit
 possibilit
@@ -135,6 +144,7 @@ l'ambiguit
 cons
 void
 na
+obj
 nb
 digit
 LP
@@ -156,6 +166,7 @@ nx
 entit
 apply
 qn
+all'hash
 bytecode
 pu
 with
@@ -195,6 +206,7 @@ trover
 PLT
 SEMICOLON
 port
+ref
 Algorithmic
 make
 rest
@@ -204,6 +216,7 @@ and
 rep
 capacit
 res
+l'hash
 sar
 format
 struct

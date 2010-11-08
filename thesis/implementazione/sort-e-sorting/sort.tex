@@ -1,0 +1,29 @@
+\subsubsection{Sort}
+
+I sort sono semplicemente delle stringhe, sulle quali non serve compiere
+alcuna operazione particolare: di conseguenza, la loro implementazione
+\`e particolarmente banale.
+
+Il tipo \`e definito come
+
+\begin{lstlisting}
+     (struct sort (s)
+                  #:guard sort-guard
+                  #:transparent)
+\end{lstlisting}
+
+dove la guardia \lstinline{sort-guard} ha come unico compito quello di
+assicurarsi che la stringa \lstinline{s} rispetti il contratto
+\lstinline{id-string?}.
+
+L'implementazione \`e completata dalle seguenti funzioni di conversione:
+
+\begin{lstlisting}
+    ; sort->string : sort? -> string?
+    (define (sort->string s)
+       (sort-s s))
+
+    ; sort-list->string : (listof sort?) -> string?
+    (define (sort-list->string lst)
+      (string-join (map sort->string lst) ","))
+\end{lstlisting}

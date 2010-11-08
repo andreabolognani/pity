@@ -1,0 +1,108 @@
+\subsubsection{Sorting}
+
+Un sorting \`e, a livello di formalismo matematico, una funzione che
+accetta in input un sort e restituisce una lista non vuota di sort.
+
+L'implementazione dei sorting in \lstinline{pity} utilizza una
+\emph{hash table} per ragioni di performance; questa scelta viene
+comunque nascosta all'utente, che pu\`o fare uso del sorting senza
+doversi preoccupare dei dettagli implementativi.
+
+La struttura \lstinline{sorting} \`e definita come
+
+\begin{lstlisting}
+    (struct sorting (mappings)
+                    #:transparent)
+\end{lstlisting}
+
+Si pu\`o notare che questa struttura, contrariamente a quelle viste
+finora, non \`e protetta da una guardia: la presenza di una guardia si
+rivela superflua perch\'e il costruttore non verr\`a mai chiamato
+dall'esterno del modulo.
+
+La costruzione di un sorting vuoto avviene tramite la seguente procedura:
+
+\begin{lstlisting}
+    ; empty-sorting : -> sorting?
+    (define (empty-sorting)
+      (sorting (hash)))
+\end{lstlisting}
+
+che costruisce un'istanza di \lstinline{sorting} contenente un
+\lstinline{hash} vuoto.
+
+La procedura \lstinline{empty-sorting} viene esportata all'esterno con
+il nome \lstinline{sorting} usando la sintassi
+
+\begin{lstlisting}
+    (provide/contract
+      [rename empty-sorting sorting (-> sorting?)])
+\end{lstlisting}
+
+Questo accorgimento consente di non esporre all'esterno del modulo il
+fatto che i sorting siano implementati usando \lstinline{hash};
+all'interno del modulo, la procedura \lstinline{sorting} fa riferimento
+al costruttore.
+
+Per aggiungere mappature ad un sorting si usa la procedura
+\lstinline{sorting-set}, definita come
+
+\begin{lstlisting}
+    ; sorting-set : sorting? sort? (non-empty-listof sort?)
+    ;            -> sorting?
+    (define (sorting-set self subj obj)
+      (let ([mappings (sorting-mappings self)])
+        (sorting (hash-set mappings subj obj))))
+\end{lstlisting}
+
+Il funzionamento \`e molto semplice: il campo \lstinline{mappings}
+viene estratto dal sorting, e viene restituito un nuovo sorting che
+contiene l'hash ottenuto aggiungendo la mappatura da \lstinline{subj} a
+\lstinline{obj} all'hash iniziale. Si noti che eventuali mappature per
+\lstinline{subj} presenti nell'hash iniziale vengono sostituite.
+
+Per ottenere la lista di sort assegnata ad un determinato sort si
+usa la procedura \lstinline{sorting-ref}, definita come
+
+\begin{lstlisting}
+    ; sorting-ref : sorting? sort?
+    ;            -> (or/c (non-empty-listof sort?) #f)
+    (define (sorting-ref self subj)
+      (let ([mappings (sorting-mappings self)])
+        (hash-ref mappings subj #f)))
+\end{lstlisting}
+
+che distingue il caso in cui una mappatura per \lstinline{subj} non sia
+presente restituendo \lstinline{#f}; l'uso di \lstinline{or/c} dichiara
+che solo uno tra i contratti \lstinline{(non-empty-listof sort?)} e
+\lstinline{#f} viene rispettato dal valore restituito.
+
+Volendo rimuovere una mappatura da un sorting, si pu\`o usare la
+procedura \lstinline{sorting-remove}, definita come
+
+\begin{lstlisting}
+    ; sorting-remove: sorting? sort? -> sorting?
+    (define (sorting-remove self subj)
+      (let ([mappings (sorting-mappings self)])
+        (sorting (hash-remove mappings subj))))
+\end{lstlisting}
+
+che internamente chiama \lstinline{hash-remove} per cancellare la
+mappatura dall'hash contenuto nel sorting.
+
+Anche calcolare il dominio del sorting \`e molto semplice:
+
+\begin{lstlisting}
+    ; sorting-domain : sorting? -> (setof sort?)
+    (define (sorting-domain self)
+      (let ([mappings (sorting-mappings self)])
+        (list->set (hash-map mappings (lambda (s o) s)))))
+\end{lstlisting}
+
+La procedura \lstinline{hash-map} funziona in maniera simile alla
+\lstinline{map}, ma lavora su hash, e passa come argomenti alla
+procedura chiamata sia la chiave che il valore ad essa associato.
+
+Dal momento che nel calcolo del dominio si \`e interessati unicamente
+alla chiave, il valore viene scartato. La lista ottenuta \`e poi
+trasformata in un insieme usando la procedura \lstinline{list->set}.
