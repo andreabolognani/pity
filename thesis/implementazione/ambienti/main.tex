@@ -1,0 +1,187 @@
+\subsection{Ambienti}
+
+Il modulo \lstinline{sort/environment} contiene l'implementazione degli
+ambienti.
+
+L'implementazione degli ambienti \`e molto simile a quella dei sorting:
+sia gli uni che gli altri sono infatti a livello matematico delle
+funzioni parziali, con la sola differenza che i sorting assegnano a
+un sort una lista non vuota di sort, mentre gli ambienti assegnano ad
+un nome un sort.
+
+La definizione del tipo \lstinline{environment} \`e
+
+\begin{lstlisting}
+    (struct environment (mappings)
+                        #:transparent)
+\end{lstlisting}
+
+dove ancora una volta la guardia non \`e necessaria, perch\'e la
+procedura
+
+\begin{lstlisting}
+    (define (empty-environment)
+      (environment (hash)))
+\end{lstlisting}
+
+viene esportata all'esterno del modulo con il nome
+\lstinline{environment} al posto del vero costruttore.
+
+Le procedure \lstinline{environment-set}, \lstinline{environment-ref},
+\lstinline{environment-remove} sono identiche alle rispettive procedure
+per i sorting; vengono inoltre definite delle versioni che aggiungono
+pi\`u mappature in un singolo passo.
+
+\begin{lstlisting}
+    ; environment-set-multiple : environment?
+    ;                            (listof name?) (listof sort?)
+    ;                         -> environment?
+    (define (environment-set-multiple self n s)
+      (if (or (null? n) (null? s))
+          self
+          (environment-set-multiple
+            (environment-set self (car n) (car s))
+            (cdr n)
+            (cdr s))))
+\end{lstlisting}
+
+La procedura \lstinline{environment-set-multiple} chiama
+\lstinline{environment-set} ricorsivamente usando come argomenti il
+primo elemento della lista \lstinline{n} ed il primo elemento della lista
+\lstinline{s}, fermandosi quando una delle due liste \`e vuota.
+
+La procedura \lstinline{environment-ref-multiple}, definita come
+
+\begin{lstlisting}
+    ; environment-ref-multiple : environment? (listof name?)
+    ;                         -> (listof sort?)
+    (define (environment-ref-multiple self n)
+      (map (curry environment-ref self) n))
+\end{lstlisting}
+
+usa \lstinline{map} per chiamare \lstinline{environment-ref} su tutti gli
+della lista passata come argomento, accumulando i rispettivi sort in una
+lista.
+
+La procedura \lstinline{environment-remove-multiple}, definita come
+
+\begin{lstlisting}
+    ; environment-remove-multiple : environment? (listof name?)
+    ;                            -> environment?
+    (define (environment-remove-multiple self n)
+      (foldl (flip environment-remove) self n))
+\end{lstlisting}
+
+rimuove ad una ad una le mappature dall'ambiente originale tramite una
+chiamata a \lstinline{foldl}.
+
+Per capire se la mappatura di un determinato nome con un dato sort \`e
+compatibile con un ambiente, il predicato da usare \`e
+\lstinline{environment-compatible?}:
+
+\begin{lstlisting}
+    ; environment-compatible? : environment? name? sort?
+    ;                        -> boolean?
+    (define (environment-compatible? self n s)
+      (let ([r (environment-ref self n)])
+        (or (not r)
+            (equal? r s))))
+\end{lstlisting}
+
+dove la definizione ricalca quella formale, e una mappatura \`e
+compatibile con un ambiente solo se l'ambiente non contiene gi\`a una
+mappatura per il nome, o se la contiene ed il sort \`e lo stesso.
+
+Anche per gli ambienti, cos\`i come per i processi e per i sorting,
+viene definita una semplice rappresentazione testuale, che permette di
+rappresentare l'ambiente
+
+\begin{pilisting}
+$
+    \{x:s,y:t\}
+$
+\end{pilisting}
+
+come
+
+\begin{lstlisting}
+    {x:s,y:t}
+\end{lstlisting}
+
+La conversione da ambiente a stringa \`e viene effettuata usando la
+procedura \lstinline{environment->string}:
+
+\begin{lstlisting}
+    ; environment->string : environment? -> string?
+    (define (environment->string self)
+      (let ([mappings (environment-mappings self)])
+        (string-append "{"
+                       (string-join
+                         (hash-map mappings mapping->string)
+                         ",")
+                       "}")))
+
+\end{lstlisting}
+
+che utilizza la procedura privata \lstinline{mapping->string}
+
+\begin{lstlisting}
+    (define (mapping->string n s)
+      (string-append (name->string n) ":" (sort->string s)))
+\end{lstlisting}
+
+Per operare la conversione inversa si usa un semplice parser:
+
+\begin{lstlisting}
+    (define environment-parser
+      (parser
+
+        (start  environment)
+        (end    EOF)
+        (tokens common-symbols common-values)
+        (error  (lambda (a b c) (void)))
+
+        (grammar
+
+         (environment
+           [(LCB contents RCB)       $2])
+
+         (contents
+           [(binding)                (environment-set
+                                       (empty-environment)
+                                       (car $1)
+                                       (cdr $1))]
+           [(contents COMMA binding) (environment-set
+                                       $1
+                                       (car $3)
+                                       (cdr $3))])
+
+         (binding
+           [(id COLON id)            (cons (name $1)
+                                           (sort $3))])
+
+         (id
+           [(ID)                     $1]))))
+\end{lstlisting}
+
+che lavora in maniera quasi identica a quello dei sorting.
+
+La procedura pubblica che da accesso al parser \`e
+\lstinline{string->environment}, definita come
+
+\begin{lstlisting}
+    ; string->environment : string? -> environment?
+    (define (string->environment str)
+      (if (not (equal? str "{}"))
+          (with-handlers
+            ([exn:fail?
+              (lambda (e)
+                (raise (exn:fail "Parsing error"
+                                 (exn-continuation-marks e))))])
+            (let ([ip (open-input-string str)])
+              (environment-parser (lambda () (common-lexer ip)))))
+          (empty-environment)))
+\end{lstlisting}
+
+Come si pu\`o vedere, l'ambiente vuoto \`e gestito dalla procedura
+anzich\'e dal parser.

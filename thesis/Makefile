@@ -7,6 +7,7 @@ THESIS_CHAPTERS=abstract/*.tex \
                 implementazione/nomi/*.tex \
                 implementazione/processi/*.tex \
                 implementazione/sort-e-sorting/*.tex \
+                implementazione/ambienti/*.tex \
                 conclusioni/*.tex
 THESIS_OTHER=common.tex
 THESIS_BIB=references.bib
