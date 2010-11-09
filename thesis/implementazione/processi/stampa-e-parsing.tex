@@ -253,11 +253,11 @@ e utilizza il parser appena definito per estrarne un processo:
 \begin{lstlisting}
     ; string->process : string? -> process?
     (define (string->process str)
-      (with-handlers ([exn:fail?
-                       (lambda (e)
-                         (raise (exn:fail
-                                  "Error while parsing process"
-                                  (exn-continuation-marks e))))])
+      (with-handlers
+        ([exn:fail?
+          (lambda (e)
+            (raise (exn:fail "Parsing error"
+                             (exn-continuation-marks e))))])
         (let ([ip (open-input-string str)])
           (process-parser (lambda () (common-lexer ip))))))
 \end{lstlisting}
