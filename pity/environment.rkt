@@ -122,13 +122,13 @@
 ; Convert a string to an environment
 (define (string->environment str)
   (if (not (equal? str "{}"))
-    (with-handlers ([exn:fail?
-                     (lambda (e)
-                       (raise (exn:fail "Error while parsing environment"
-                                        (exn-continuation-marks e))))])
-      (let ([ip (open-input-string str)])
-        (environment-parser (lambda () (common-lexer ip)))))
-    (empty-environment)))
+      (with-handlers ([exn:fail?
+                       (lambda (e)
+                         (raise (exn:fail "Parsing error"
+                                          (exn-continuation-marks e))))])
+        (let ([ip (open-input-string str)])
+          (environment-parser (lambda () (common-lexer ip)))))
+      (empty-environment)))
 
 
 ; Parser for environments
