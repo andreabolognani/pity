@@ -658,7 +658,7 @@
 (define (string->process str)
   (with-handlers ([exn:fail?
                    (lambda (e)
-                     (raise (exn:fail "Error while parsing process"
+                     (raise (exn:fail "Parsing error"
                                       (exn-continuation-marks e))))])
     (let ([ip (open-input-string str)])
       (process-parser (lambda () (common-lexer ip))))))

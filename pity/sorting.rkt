@@ -93,13 +93,13 @@
 ; Convert a sorting to a string
 (define (string->sorting str)
   (if (not (equal? str ""))
-    (with-handlers ([exn:fail?
-                     (lambda (e)
-                       (raise (exn:fail "Error while parsing sorting"
-                                        (exn-continuation-marks e))))])
-      (let ([ip (open-input-string str)])
-        (sorting-parser (lambda () (common-lexer ip)))))
-    (empty-sorting)))
+      (with-handlers ([exn:fail?
+                       (lambda (e)
+                         (raise (exn:fail "Parsing error"
+                                          (exn-continuation-marks e))))])
+        (let ([ip (open-input-string str)])
+          (sorting-parser (lambda () (common-lexer ip)))))
+      (empty-sorting)))
 
 
 ; Parser for sortings
