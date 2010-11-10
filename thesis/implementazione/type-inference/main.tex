@@ -111,3 +111,165 @@ d'esempio ne trasmette due.
 La procedura \lstinline{process-environments} si limita a generare tutti
 i possibili ambienti, validi o meno, e lascia ad altre parti del sistema
 il compito di scartare quelli che non hanno senso.
+
+La procedura pubblica \lstinline{process-respects?} si occupa proprio
+di questo: dati un processo ed un sorting, genera tutti gli ambienti
+possibili, e restituisce solamente quelli partendo dai quali \`e
+possibile creare un albero di derivazione usando le regole di inferenza
+che costituiscono il type system:
+
+\begin{lstlisting}
+    ; process-respects? : process? sorting?
+    ;                  -> (setof environment?)
+    (define (process-respects? p srt)
+      (let* ([envs (process-environments p srt)]
+             [collect (lambda (env)
+                        (if (check-typing p srt env)
+                            env
+                            #f))]
+             [res (filter (lambda (x) x) (set-map envs collect))])
+        (if (null? res)
+            #f
+            (list->set res))))
+\end{lstlisting}
+
+Il funzionamento \`e molto semplice: tutti gli ambienti vengono generati
+ed assegnati alla variabile \lstinline{envs}, poi la procedura interna
+\lstinline{collect} viene applicata ad ognuno di essi tramite
+\lstinline{set-map}.
+
+\lstinline{collect} si limita a chiamare \lstinline{check-typing} e a
+restituire l'ambiente se ha successo, \lstinline{#f} in caso contrario.
+
+Tramite la chiamata a \lstinline{filter}, dalla lista ottenuta vengono
+rimossi tutti i valori \lstinline{#f}, lasciando quindi solamente gli
+ambienti per i quali \lstinline{check-typing} ha avuto successo: se
+questa lista non \`e vuota, viene convertita in un insieme e restituita;
+in caso contrario \lstinline{process-respects?} restituisce
+\lstinline{#f}.
+
+La procedura privata \lstinline{check-typing} applica le regole di
+inferenza che formano il type system sui vari tipi di processo:
+
+\begin{lstlisting}
+   (define (check-typing process srt env)
+     (match process
+       [(nil)             (check-typing/nil srt env)]
+       [(prefix a p)      (check-typing/prefix a p srt env)]
+       [(restriction x p) (check-typing/restriction x p srt env)]
+       [(replication p)   (check-typing/replication p srt env)]
+       [(composition p q) (check-typing/composition p q srt env)]))
+\end{lstlisting}
+
+Le procedure chiamate da \lstinline{check-typing} sono in relazione
+univoca con le regole di inferenza.
+
+La procedura che implementa la regola
+
+\begin{pilisting}
+    \inference[nil ]
+      {}
+      {\Psi |- 0}
+\end{pilisting}
+
+\`e ovviamente la pi\`u semplice:
+
+\begin{lstlisting}
+    (define (check-typing/nil srt env)
+      #t)
+\end{lstlisting}
+
+ovvero il processo nullo rispetta ogni sorting in ogni ambiente.
+
+La regola di inferenza per la replicazione
+
+\begin{pilisting}
+    \inference[rep ]
+      {\Psi |- P}
+      {\Psi |- !P}
+\end{pilisting}
+
+\`e altrettanto semplice, dal momento che basta garantire che il
+processo replicato rispetti il sorting:
+
+\begin{lstlisting}
+    (define (check-typing/replication p srt env)
+      (check-typing p srt env))
+\end{lstlisting}
+
+Anche la regola per la composizione parallela
+
+\begin{pilisting}
+    \inference[par ]
+      {\Psi |- P_1 & \Psi |- P_2}
+      {\Psi |- P_1|P_2}
+\end{pilisting}
+
+si limita ad garantire che i due processi paralleli, presi singolarmente,
+rispettino il sorting:
+
+\begin{lstlisting}
+    (define (check-typing/composition p q srt env)
+      (and (check-typing p srt env)
+           (check-typing q srt env)))
+\end{lstlisting}
+
+La regola per la restrizione \`e
+
+\begin{pilisting}
+    \inference[res ]
+      {\Psi,z:s |- P}
+      {\Psi |- (z)P}
+\end{pilisting}
+
+dove deve valere
+
+\begin{pilisting}
+$
+    z \notin n(\Psi)
+$
+\end{pilisting}
+
+che si traduce nella procedura
+
+\begin{lstlisting}
+    (define (check-typing/restriction x p srt env)
+      (let ([names (environment-domain env)]
+            [sorts (sorting-domain srt)]
+            [bor (lambda (x y) (or x y))]
+            [recur (lambda (s)
+                     (if (environment-compatible? env x s)
+                         (check-typing p
+                                       srt
+                                       (environment-set env x s))
+                         #f))])
+        (if (set-member? names x)
+            #f
+            (foldl bor #f (set-map sorts recur)))))
+\end{lstlisting}
+
+La procedura inizia controllando se \lstinline{x} \`e parte dominio
+dell'ambiente, identificato dalla variabile \lstinline{names}: in tal
+caso, viene restituito il valore \lstinline{#f}, visto che la condizione
+sulla regola \`e stata violata.
+
+In caso contrario, si procede con il controllo: per affermare che il
+processo rispetta il sorting, bisogna verificare che il processo sotto
+restrizione rispetti il sorting in un ambiente uguale a quello di
+partenza, ma dove viene introdotta una mappatura dal nome oggetto
+della restrizione a uno dei sort.
+
+Viene effettuata un'iterazione sui sort tramite la chiamata a
+\lstinline{set-map}: per ogni sort viene chiamata la procedura
+interna \lstinline{recur}, che restituisce \lstinline{#f} se la
+mappatura del nome oggetto della restrizione con il sort non \`e
+compatibile con l'ambiente di partenza, e in caso contrario chiama
+ricorsivamente \lstinline{check-typing} sul processo sotto restrizione
+in un ambiente dove la mappatura in questione \`e stata aggiunta.
+
+La chiamata a \lstinline{foldl} sulla lista ottenuta (che contiene
+valori di verit\`a) con la procedura interna \lstinline{bor}, che
+implementa un \lstinline{or} binario, fa s\`i che il risultato sia
+\lstinline{#t} se la mappatura dal nome oggetto della restrizione ad
+almeno uno dei sort consente una corretta derivazione del processo
+sotto restrizione.
