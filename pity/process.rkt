@@ -515,17 +515,23 @@
 ; Glue procedure
 (define (check-typing process srt env)
   (match process
-    [(nil)                   (check-typing/nil srt env)]
-    [(prefix (input x y) p)  (check-typing/input x y p srt env)]
-    [(prefix (output x y) p) (check-typing/output x y p srt env)]
-    [(restriction x p)       (check-typing/restriction x p srt env)]
-    [(replication p)         (check-typing/replication p srt env)]
-    [(composition p q)       (check-typing/composition p q srt env)]))
+    [(nil)             (check-typing/nil srt env)]
+    [(prefix a p)      (check-typing/prefix a p srt env)]
+    [(restriction x p) (check-typing/restriction x p srt env)]
+    [(replication p)   (check-typing/replication p srt env)]
+    [(composition p q) (check-typing/composition p q srt env)]))
 
 
 ; Check typing for the nil process
 (define (check-typing/nil srt env)
   #t)
+
+
+; Check typing for a prefix
+(define (check-typing/prefix a p srt env)
+  (match a
+    [(input x y)  (check-typing/input x y p srt env)]
+    [(output x y) (check-typing/output x y p srt env)]))
 
 
 ; Check typing for an input action
