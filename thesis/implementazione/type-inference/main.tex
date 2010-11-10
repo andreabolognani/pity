@@ -1,0 +1,113 @@
+\subsection{Type inference}
+
+Quanto visto finora fornisce una rappresentazione di tutti i concetti
+matematici necessari all'implementazione del type system; a questo punto
+rimane da descrivere l'implementazione in s\'e.
+
+Descrivendo il type system, si \`e spiegato come, per affermare che
+un processo $P$ rispetta un sorting $\lambda$, bisogni trovare un
+ambiente $\Psi$ tale che sia possibile derivare $\Psi |- P$ usando le
+regole di inferenza che costituiscono il type system.
+
+\`E quindi necessario avere un modo per generare tutti gli ambienti
+di partenza possibili, cos\`i da poterli provare uno ad uno.
+
+Gli ambienti di partenza dipendono dal processo e dal sorting, e vengono
+creati dalla procedura \lstinline{process-environment}:
+
+\begin{lstlisting}
+    ; process-environments : process? sorting?
+    ;                     -> (setof environment?)
+    (define (process-environments p srt)
+      (let ([names (set->list (process-free-names p))]
+            [sorts (set->list (sorting-domain srt))])
+        (process-environments-real names sorts)))
+\end{lstlisting}
+
+Questa procedura crea due liste, una contenente i nomi liberi del
+processo (gli unici che possono avere un sort associato nell'ambiente)
+e l'altra i sort che compongono il dominio del sorting, e chiama una
+procedura privata per svolgere il lavoro.
+
+La procedura \lstinline{process-environments-real} \`e decisamente
+pi\`u complessa:
+
+\begin{lstlisting}
+    (define (process-environments-real names sorts)
+      (let ([collect (lambda (n envs)
+                       (foldl (lambda (s acc)
+                                (set-union
+                                  acc
+                                  (foldl (lambda (env int-acc)
+                                           (set-add
+                                             int-acc
+                                             (environment-set
+                                               env
+                                               n
+                                               s)))
+                                         (set)
+                                         envs)))
+                              (set)
+                              sorts))])
+        (cond
+          [(null? names) (set)]
+          [(null? (cdr names)) (collect (car names)
+                                        (list (environment)))]
+          [else (collect (car names)
+                         (set->list (process-environments-real
+                                      (cdr names)
+                                      sorts)))])))
+\end{lstlisting}
+
+Per costruire tutti gli ambienti, bisogna combinare i nomi con i sort
+in tutti i modi possibili.
+
+La procedura lavora ricorsivamente: nel caso base, in cui la lista di
+nomi \`e vuota, viene restituito l'insieme vuoto; se il nome \`e uno solo
+viene restituito l'insieme ottenuto chiamando la procedura interna
+\lstinline{collect} con argomenti il nome e una lista contenente
+solamente l'ambiente vuoto; se i nomi sono pi\`u di uno, la procedura
+\lstinline{collect} viene chiamata con argomenti il primo nome e la
+lista ottenuta tramite una chiamata ricorsiva a
+\lstinline{process-environments-real} sul resto dei nomi.
+
+La procedura interna \lstinline{collect} prende in input un nome e un
+insieme di ambienti, e svolge la costruzione degli ambienti usando due
+chiamate a \lstinline{foldl} una dentro l'altra: la chiamata pi\`u
+esterna fissa il nome e itera sui sort, quella pi\`u interna fissa sia
+nome che sort e itera sugli ambienti. L'iterazione \`e svolta creando
+delle procedure al volo tramite la sintassi \lstinline{lambda}.
+
+Quindi, ad ogni nome (chiamata a \lstinline{collect}) vengono messi in
+relazione uno ad uno tutti i sort (chiamata esterna a \lstinline{foldl})
+e la mappatura da nome a sort viene aggiunta ad ognuno degli ambienti
+(chiamata interna a \lstinline{foldl}); l'ambiente ottenuto viene
+aggiunto agli altri ambienti, e cos\`i via fino ad esaurire i nomi.
+
+Come semplice esempio del funzionamento di questa procedura, si
+consideri il seguente frammento di codice:
+
+\begin{lstlisting}
+    (define p (string->process "a(b,c).0"))
+    (define s (string->sorting "t=(s);s=(s,t)"))
+    (define envs (string-environments p s))
+
+    (set-map envs environment->string) ; ==> (list "{a:t}" "{a:s}")
+\end{lstlisting}
+
+dove si pu\`o vedere chiaramente che uno dei due ambienti generati,
+ovvero
+
+\begin{pilisting}
+$
+    \{a:t\}
+$
+\end{pilisting}
+
+non pu\`o essere valido, dal momento che il sorting indica che un nome
+di sort $t$ trasmette un singolo nome, mentre il nome $a$ nel processo
+d'esempio ne trasmette due.
+
+La procedura \lstinline{process-environments} si limita a generare tutti
+i possibili ambienti, validi o meno, e lascia ad altre parti del sistema
+il compito di scartare quelli che non hanno senso.

@@ -9,6 +9,7 @@ THESIS_CHAPTERS=abstract/*.tex \
                 implementazione/sort/*.tex \
                 implementazione/sorting/*.tex \
                 implementazione/ambienti/*.tex \
+                implementazione/type-inference/*.tex \
                 conclusioni/*.tex
 THESIS_OTHER=common.tex
 THESIS_BIB=references.bib
