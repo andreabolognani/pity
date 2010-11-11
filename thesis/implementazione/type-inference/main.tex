@@ -273,3 +273,124 @@ implementa un \lstinline{or} binario, fa s\`i che il risultato sia
 \lstinline{#t} se la mappatura dal nome oggetto della restrizione ad
 almeno uno dei sort consente una corretta derivazione del processo
 sotto restrizione.
+
+Non esiste una regola di inferenza per il prefisso in generale, quindi
+quando si incontra un prefisso si delega il controllo alla procedura
+per l'input o a quella per l'output in base al tipo di azione:
+
+\begin{lstlisting}
+    (define (check-typing/prefix a p srt env)
+      (match a
+        [(input x y)  (check-typing/input x y p srt env)]
+        [(output x y) (check-typing/output x y p srt env)]))
+\end{lstlisting}
+
+La regola per l'output \`e
+
+\begin{pilisting}
+    \inference[out ]
+      {\Psi |- P}
+      {\Psi,x:s,y_1:t_1,\ldots,y_n:t_n |-
+       \overline{x}\langle y_1\ldots y_n\rangle.P}
+\end{pilisting}
+
+con condizioni
+
+\begin{pilisting}
+$
+    \lambda(s) = (t_1\ldots t_n), \Psi \simeq x : s,
+    \Psi \simeq y_1 : t_1$ (per ogni $i$), $ x = y_i$ implica $ \\
+$
+\indent
+$
+    \; s = t_i$ (per qualche $i$) e $ y_i = y_j$ implica $
+    t_i = t_j$ (per qualche $i$, $j$)
+\end{pilisting}
+
+ed \`e implementata dalla procedura
+
+\begin{lstlisting}
+    (define (check-typing/output x y p srt env)
+      (let* ([s (environment-ref env x)]
+             [sorts (environment-ref-multiple env y)]
+             [obj-srt (if (not s) #f (sorting-ref srt s))])
+        (if (or (not obj-srt) (not (equal? sorts obj-srt)))
+            #f
+            (check-typing
+              p
+              srt
+              (environment-remove-multiple env (cons x y))))))
+\end{lstlisting}
+
+Come prima cosa, vengono estratti dall'ambiente il sort per il nome
+\lstinline{x} e i sort per i nomi in \lstinline{y}, che vengono assegnati
+rispettivamente alle variabili \lstinline{s} e \lstinline{sorts}.
+
+Se il sort di \lstinline{x} non risulta essere \lstinline{#f}, cio\`e
+se nell'ambiente esiste una mappatura relativa al nome, si usa
+\lstinline{sorting-ref} per trovare la lista di sort oggetto per il
+sort \lstinline{s} (sarebbe la lista $(t_1\ldots t_n)$ nelle condizioni)
+e si assegna tale lista alla variabile \lstinline{obj-srt}.
+
+Viene quindi effettuato un controllo per vedere se \lstinline{obj-srt}
+\`e uguale a \lstinline{sorts}: se le due liste non coincidono, le
+condizioni sulla regola di inferenza non sono rispettate, e il valore
+restituito dalla procedura \`e \lstinline{#f}; se invece le due liste
+contengono gli stessi valori, si effettua un controllo ricorsivo,
+chiamando \lstinline{check-typing} sul processo che segue l'azione di
+output nell'ambiente al quale vengono rimossi, tramite
+\lstinline{environment-remove-multiple}, tutte le mappature relative
+ai nomi coinvolti nell'azione.
+
+L'ultima regola di inferenza \`e quella relativa alle azioni di input
+
+\begin{pilisting}
+    \inference[inp ]
+      {\Psi,z_1:t_1,\ldots,z_n:t_n |- P}
+      {\Psi,x:s |- x(z_1\ldots z_n).P}
+\end{pilisting}
+
+con condizioni
+
+\begin{pilisting}
+$
+    \lambda(s) = (t_1\ldots t_n),
+    \Psi \simeq x : s$ e $z_1,\ldots,z_n \notin n(\Psi)
+$
+\end{pilisting}
+
+La procedura che implementa questa regola \`e
+
+\begin{lstlisting}
+    (define (check-typing/input x y p srt env)
+      (let* ([names (environment-domain env)]
+             [s (environment-ref env x)]
+             [obj-srt (if (not s) #f (sorting-ref srt s))]
+             [newenv (environment-remove env x)]
+             [arity-ok? (and obj-srt
+                             (= (length y) (length obj-srt)))])
+        (if (or (set-member-any? names y)
+                (not obj-srt)
+                (not arity-ok?))
+            #f
+            (check-typing
+              p
+              srt
+              (environment-set-multiple newenv y obj-srt)))))
+\end{lstlisting}
+
+Alle variabili \lstinline{s} e \lstinline{obj-srt} vengono assegnati
+rispettivamente il sort per \lstinline{x} presente nell'ambiente, e la
+lista di sort oggetto assegnati a \lstinline{s} nel sorting.
+
+Il controllo sull'arit\`a dell'azione viene fatto controllando che la
+lunghezza delle liste \lstinline{y} e \lstinline{obj-srt} siano uguali.
+
+Se qualche nome presente in \lstinline{y} fa parte del dominio
+dell'ambiente, o se dal nome \lstinline{x} non \`e possibile ricavare
+una lista di sort oggetto, o ancora se l'arit\`a dell'operazione non
+\`e corretta, la procedura restituisce il valore \lstinline{#f}; in
+caso contrario, il controllo viene effettuato sul processo che segue
+l'azione nell'ambiente al quale \`e stata tolta la mappatura per
+\lstinline{x}, e ogni nome di \lstinline{y} \`e stato associato al
+rispettivo sort di \lstinline{obj-srt}.
