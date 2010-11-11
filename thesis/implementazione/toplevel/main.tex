@@ -107,3 +107,215 @@ Il corpo della procedura \lstinline{recur} \`e protetto dalla sintassi
 \lstinline{with-handlers}, in modo che l'interruzione da tastiera,
 che solleva un'eccezione di tipo \lstinline{exn:break}, provochi
 una chiusura pulita del toplevel.
+
+Questo REPL \`e totalmente indipendente da Pity, e pu\`o essere
+facilmente adattato a qualsiasi altro scopo. La parte che implementa il
+comportamento del toplevel \`e in un file separato.
+
+Alla chiamata del toplevel, viene eseguito il seguente codice:
+
+\begin{lstlisting}
+    (let* ([args (current-command-line-arguments)]
+           [infile (if (< (vector-length args) 1)
+                       #f
+                       (vector-ref args 0))]
+           [port (if (not infile)
+                     (current-input-port)
+                     (open-input-file infile))])
+      (when (terminal-port? port)
+            (printf "Welcome to the Pity interactive toplevel!~n")
+            (printf "Type HELP and hit Enter for an overview.~n~n"))
+      (repl action (hash) "pity> " port)
+      (if (terminal-port? port)
+          (printf "Bye.~n")
+          (printf ""))
+      (unless (equal? (current-input-port) port)
+              (close-input-port port)))
+\end{lstlisting}
+
+Un vettore contenente tutti gli argomenti sulla riga di comando vengono
+ricavati dalla chiamata a \lstinline{current-command-line-arguments}. Di
+questo vettore si controlla la lunghezza, se \`e presente almeno un
+elemento il primo parametro viene considerato il nome del file di input,
+e la porta relativa viene assegnata alla variabile \lstinline{port}; in
+caso contrario, \lstinline{port} corrisponde allo standard input. Se la
+porta di input \`e un terminale, a questo punto viene mostrato il
+messaggio di benvenuto.
+
+La procedura \lstinline{repl} viene chiamata sulla porta di input, con
+stato iniziale una hash table vuota: questa hash table verr\`a usata per
+memorizzare le variabili interne al toplevel. Alla sua uscita, la porta
+di input viene chiusa se corrisponde ad un file.
+
+La procedura \lstinline{action} \`e quella che interpreta la riga di
+input letta da \lstinline{repl}:
+
+\begin{lstlisting}
+    (define (action line lineno port vars)
+      (let* ([parts (parts line)]
+             [cmd (car parts)]
+             [arg1 (cadr parts)]
+             [arg2 (caddr parts)])
+        (cond
+          [(string-ci=? cmd "SET!")
+           (set! vars (cmd-set! vars arg1 arg2 lineno port))]
+          [(string-ci=? cmd "DISPLAY")
+           (set! vars (cmd-display vars arg1 lineno port))]
+          [(string-ci=? cmd "RESPECTS?")
+           (set! vars (cmd-respects? vars arg1 arg2 lineno port))]
+          [(string-ci=? cmd "HELP")
+           (cmd-help)]
+          [(string-ci=? cmd "QUIT")
+           (set! vars #f)]
+          [else
+           (eprintf "~a:~a: Unknown command ~a~n"
+                    (object-name port)
+                    lineno
+                    cmd)])
+        vars))
+\end{lstlisting}
+
+La riga di input \lstinline{line} viene separata in comando, primo
+argomento e secondo argomento dalla procedura \lstinline{parts}:
+
+\begin{lstlisting}
+    (define (parts line)
+      (let ([parts (regexp-split #rx" +" line)])
+        (list (car parts)
+              (if (< (length parts) 2)
+                  ""
+                  (cadr parts))
+              (if (< (length parts) 3)
+                  ""
+                  (apply string-append (cddr parts))))))
+\end{lstlisting}
+
+Una volta ottenute le tre parti, viene decisa l'azione da svolgere
+tramite un semplice confronto tra \lstinline{cmd} e i vari comandi
+disponibili; in base al comando richiesto, viene chiamata una diversa
+procedura, e il valore restituito dalla procedura viene usato per
+aggiornare lo stato. Se il comando non \`e riconosciuto, viene mostrato
+un messaggio d'errore.
+
+Questo \`e l'unico punto in cui viene fatto uso dell'operatore
+\lstinline{set!}; il resto del codice \`e interamente puro.
+
+La procedura \lstinline{cmd-help} mostra una lista dei comandi
+disponibili, assieme al numero di argomenti richiesto ed una breve
+descrizione.
+
+Il comando \lstinline{QUIT} imposta lo stato a \lstinline{#f}; questo
+valore, come visto, causa la terminazione del loop di input.
+
+La procedura \lstinline{cmd-display} mostra il contenuto di una
+variabile del toplevel:
+
+\begin{lstlisting}
+    (define (cmd-display vars n lineno port)
+      (let ([v (hash-ref vars n #f)])
+        (if v
+            (begin
+              (cond
+                [(process? v)
+                 (printf "~a~n" (process->string v))]
+                [(sorting? v)
+                 (printf "~a~n" (sorting->string v))])
+              vars)
+            (begin
+              (eprintf "~a:~a: DISPLAY: Unknown name ~a~n"
+                       (object-name port) lineno n)
+              (if (terminal-port? port)
+                  vars
+                  #f)))))
+\end{lstlisting}
+
+Dalla hash table \lstinline{vars} viene estratto il valore \lstinline{v}
+corrispondente alla variabile del toplevel \lstinline{n}: se il valore
+ottenuto \`e \lstinline{#f}, la variabile del toplevel non \`e stata
+inizializzata, quindi viene mostrato un messaggio d'errore; in caso
+contrario, il contenuto di \lstinline{v} viene mostrato, usando
+\lstinline{process->string} o \lstinline{sorting->string} in base al
+tipo di variabile.
+
+Come si \`e appena visto, il toplevel supporta due tipi di variabili,
+processi e sorting. La procedura che effettua l'assegnamento ad una
+variabile deve essere in grado di riconoscere tra i due tipi.
+
+L'approccio seguito \`e molto semplice: la stringa viene prima passata a
+\lstinline{string->process} per la conversione in processo; se il parsing
+fallisce, viene tentata la conversione tramite
+\lstinline{string->process}; se anche questa volta il parsing fallisce,
+viene segnalato un errore.
+
+La procedura \lstinline{cmd-set!} implementa la prima parte del
+procedimento:
+
+\begin{lstlisting}
+    (define (cmd-set! vars n v lineno port)
+      (with-handlers ([exn:fail?
+                       (lambda (e)
+                         (cmd-set!/sorting vars n v lineno port))])
+        (if (id-string? n)
+            (hash-set vars n (string->process v))
+            (begin
+              (eprintf "~a:~a: SET!: Invalid name ~a~n"
+                       (object-name port) lineno n)
+              (if (terminal-port? port)
+                  vars
+                  #f)))))
+\end{lstlisting}
+
+Per prima cosa, viene controllato che il nome scelto per la variabile
+rispetti il contratto \lstinline{id-string?}, poi si prova a
+interpretare la stringa come processo.
+
+Se il parsing fallisce, l'eccezione \lstinline{exn:fail} sollevata
+viene catturata dalla sintassi \lstinline{with-handlers}, e il controllo
+viene ceduto alla procedura \lstinline{cmd-set!/sorting}:
+
+\begin{lstlisting}
+    (define (cmd-set!/sorting vars n v lineno port)
+      (with-handlers ([exn:fail?
+                       (lambda (e)
+                         (eprintf "~a:~a: SET!: Invalid value ~a~n"
+                                  (object-name port) lineno v)
+                         (if (terminal-port? port)
+                             vars
+                             #f))])
+        (hash-set vars n (string->sorting v))))
+\end{lstlisting}
+
+Il valore di ritorno della prima tra \lstinline{string->process} e
+\lstinline{string->sorting} ad avere successo viene associato al nome
+\lstinline{n} nell'hash table \lstinline{vars}.
+
+L'ultimo comando fornito dal toplevel \`e \lstinline{RESPECTS?},
+implementato dalla seguente procedura:
+
+\begin{lstlisting}
+    (define (cmd-respects? vars n1 n2 lineno port)
+      (let ([p (hash-ref vars n1 #f)]
+            [srt (hash-ref vars n2 #f)])
+        (if (and (process? p) (sorting? srt))
+            (let ([res (process-respects? p srt)])
+              (when res
+                    (set-for-each
+                      res
+                      (lambda (env)
+                        (printf "~a~n"
+                                (environment->string env)))))
+              vars)
+            (begin
+              (eprintf
+                "~a:~a: RESPECTS?: Need a process and a sorting~n"
+                (object-name port)
+                lineno)
+              #f))))
+\end{lstlisting}
+
+Vengono estratti i valori associati a \lstinline{n1} e \lstinline{n2}
+nell'hash table \lstinline{vars}: se non sono rispettivamente un
+processo ed un sorting, viene segnalato un errore; altrimenti, viene
+chiamata \lstinline{process-respects?}, e gli eventuali ambienti
+restituiti da questa procedura vengono mostrati uno per riga usando
+\lstinline{environment->string}.
