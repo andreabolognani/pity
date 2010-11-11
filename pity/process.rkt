@@ -540,8 +540,8 @@
          [s (environment-ref env x)]
          [obj-srt (if (not s) #f (sorting-ref srt s))]
          [newenv (environment-remove env x)]
-         [arity-ok (and obj-srt (= (length y) (length obj-srt)))])
-    (if (or (set-member-any? names y) (not obj-srt) (not arity-ok))
+         [arity-ok? (and obj-srt (= (length y) (length obj-srt)))])
+    (if (or (set-member-any? names y) (not obj-srt) (not arity-ok?))
         #f
         (check-typing p srt (environment-set-multiple newenv y obj-srt)))))
 
@@ -549,7 +549,7 @@
 ; Check typing for an output action
 (define (check-typing/output x y p srt env)
   (let* ([s (environment-ref env x)]
-         [sorts (map (curry environment-ref env) y)]
+         [sorts (environment-ref-multiple env y)]
          [obj-srt (if (not s) #f (sorting-ref srt s))])
     (if (or (not obj-srt) (not (equal? sorts obj-srt)))
         #f
