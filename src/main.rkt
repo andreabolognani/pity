@@ -99,16 +99,24 @@
   (printf "  QUIT                          Quit~n"))
 
 
+; Split an input line into command, first argument and second argument
+(define (parts line)
+  (let ([parts (regexp-split #rx" +" line)])
+    (list (car parts)
+          (if (< (length parts) 2) "" (cadr parts))
+          (if (< (length parts) 3) "" (apply string-append (cddr parts))))))
+
+
 ; Parse the input and act accordingly
 (define (action line lineno port vars)
-  (let* ([parts (regexp-split #rx" +" line)]
+  (let* ([parts (parts line)]
          [cmd (car parts)]
-         [lop (if (< (length parts) 2) "" (cadr parts))]
-         [rop (if (< (length parts) 3) "" (apply string-append (cddr parts)))])
+         [arg1 (cadr parts)]
+         [arg2 (caddr parts)])
     (cond
-      [(string-ci=? cmd "SET!")      (set! vars (cmd-set! vars lop rop lineno port))]
-      [(string-ci=? cmd "DISPLAY")   (set! vars (cmd-display vars lop lineno port))]
-      [(string-ci=? cmd "RESPECTS?") (set! vars (cmd-respects? vars lop rop lineno port))]
+      [(string-ci=? cmd "SET!")      (set! vars (cmd-set! vars arg1 arg2 lineno port))]
+      [(string-ci=? cmd "DISPLAY")   (set! vars (cmd-display vars arg1 lineno port))]
+      [(string-ci=? cmd "RESPECTS?") (set! vars (cmd-respects? vars arg1 arg2 lineno port))]
       [(string-ci=? cmd "HELP")      (cmd-help)]
       [(string-ci=? cmd "QUIT")      (set! vars #f)]
       [else                          (eprintf "~a:~a: Unknown command ~a~n" (object-name port) lineno cmd)])
