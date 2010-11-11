@@ -36,7 +36,7 @@
                       (when (terminal-port? port)
                             (printf "~a" prompt))
                       (let ([line (read-line port)])
-                        (if (eq? line eof)
+                        (if (eof-object? line)
                             state
                             (let ([new-state (action line lineno port state)])
                               (if (not new-state)
