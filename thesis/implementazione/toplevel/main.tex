@@ -1,0 +1,109 @@
+\subsection{Toplevel}
+
+L'inferenza \`e completa e funziona correttamente all'interno di Racket;
+per rendere l'interazione con il sistema pi\`u pratica, \`e stato creato
+un piccolo toplevel in grado di svolgere le operazioni di base sia in
+modalit\`a interattiva che in modalit\`a batch.
+
+Una sessione di esempio nel toplevel:
+
+\begin{termlisting}
+\begin{lstlisting}
+    Welcome to the Pity interactive toplevel!
+    Type HELP and hit Enter for an overview.
+
+    pity> set! p !(a)(a<b,c>.0|a(u,v).0)
+    pity> set! s s=(t,r);t=(s);r=(r)
+    pity> respects? p s
+    {b:t,c:r}
+    pity> quit
+    Bye.
+\end{lstlisting}
+\end{termlisting}
+
+Il toplevel individua e segnala all'utente eventuali errori di sintassi
+o di tipizzazione, oltre a gestire correttamente l'$\alpha$-conversione
+dei processi:
+
+\begin{termlisting}
+\begin{lstlisting}
+    pity> set! p a(a).a<b>
+    stdin:1: SET!: Invalid value a(a).a<b>
+    pity> set! p a(a).a<b>.0
+    pity> display p
+    a(a1).a1<b>.0
+    pity> respects? p p
+    stdin:4: RESPECTS?: Need a process and a sorting
+\end{lstlisting}
+\end{termlisting}
+
+Al contrario di quanto avviene in modalit\`a interattiva, in modalit\`a
+batch un errore interrompe l'esecuzione: se i comandi appena visti
+fossero stati inseriti in un file chiamato \lstinline{test.pity} e il
+toplevel fosse stato eseguito usando il \lstinline{Makefile} fornito,
+il risultato sarebbe stato
+
+\begin{termlisting}
+\begin{lstlisting}
+    $ make run RUN_FILE=test.pity
+    test.pity:1: SET! Invalid value a(a).a<b>
+    $ 
+\end{lstlisting}
+\end{termlisting}
+
+Si noti come in modalit\`a batch non vengano mostrati n\'e il messaggio
+di benvenuto iniziale n\'e il prompt.
+
+Il cuore del toplevel \`e costituito da un read-eval-print-loop (REPL)
+generico, implementato dalla procedura \lstinline{repl}:
+
+\begin{lstlisting}
+    (define (repl action initial-state prompt port)
+      (letrec ([recur (lambda (state lineno)
+                        (with-handlers ([exn:break?
+                                         (lambda (x) state)])
+                          (when (terminal-port? port)
+                                (printf "~a" prompt))
+                          (let ([line (read-line port)])
+                            (if (eof-object? line)
+                                state
+                                (let ([new-state (action line
+                                                         lineno
+                                                         port
+                                                         state)])
+                                  (if (not new-state)
+                                      state
+                                      (recur new-state
+                                             (+ lineno 1))))))))])
+          (recur initial-state 1)))
+\end{lstlisting}
+
+La procedura \lstinline{repl} richiede quattro parametri: una procedura
+da chiamare per interpretare ed eseguire i comandi, lo stato iniziale,
+la stringa da usare come prompt, e la porta di input.
+
+Viene dichiarata una procedura interna, \lstinline{recur}: questa
+procedura stampa il prompt (se in modalit\`a interattiva, ovvero se la
+porta di input \`e collegata ad un terminale, in base al valore di
+ritorno del predicato \lstinline{terminal-port?}), poi legge una riga
+di input usando \lstinline{read-line}.
+
+Se viene letto un carattere di fine input (questa condizione viene
+individuata tramite il predicato \lstinline{eof-object?}), allora il
+loop di lettura viene interrotto e il valore restituito \`e lo stato
+corrente.
+
+In caso contrario, viene chiamata la procedura di esecuzione comandi
+con argomenti, nell'ordine, la riga di input, il numero di riga, la
+porta di input e lo stato corrente: il valore restituito da questa
+procedura sar\`a il nuovo stato.
+
+Se il nuovo stato \`e \lstinline{#f}, vuol dire che il loop di lettura
+deve essere interrotto: in questo caso, l'ultimo stato viene restituito,
+e il loop termina; in caso contrario, la procedura \lstinline{recur}
+viene chiamata nuovamente con stato e numero di riga aggiornati.
+
+Il corpo della procedura \lstinline{recur} \`e protetto dalla sintassi
+\lstinline{with-handlers}, in modo che l'interruzione da tastiera,
+che solleva un'eccezione di tipo \lstinline{exn:break}, provochi
+una chiusura pulita del toplevel.

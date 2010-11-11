@@ -394,3 +394,9 @@ caso contrario, il controllo viene effettuato sul processo che segue
 l'azione nell'ambiente al quale \`e stata tolta la mappatura per
 \lstinline{x}, e ogni nome di \lstinline{y} \`e stato associato al
 rispettivo sort di \lstinline{obj-srt}.
+
+Con l'implementazione di queste procedure, \lstinline{process-respects?}
+\`e in grado di svolgere il suo compito: dato un processo ed un sorting,
+riesce a determinare non solo se il processo rispetta il sorting, ma
+anche da quali ambienti bisogna partire per costruire un albero di
+derivazione completo e corretto.
