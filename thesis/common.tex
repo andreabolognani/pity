@@ -7,6 +7,11 @@
 	{\vspace{3mm}\indent}
 	{\vspace{3mm}}
 
+% Environment for terminal interaction (use to wrap lstlisting)
+\newenvironment{termlisting}
+    {\lstset{language=C}}
+    {\lstset{language=Racket}}
+
 % Simple (and incomplete) Racket language definition
 \lstdefinelanguage{Racket}
 	{morekeywords={lambda,
