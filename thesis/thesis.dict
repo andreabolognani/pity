@@ -1,4 +1,4 @@
-personal_ws-1.1 it 295 
+personal_ws-1.1 it 300 
 nonassoc
 subj
 while
@@ -35,6 +35,7 @@ args
 line
 stuff
 agent
+complessit
 boolean
 DOT
 srt
@@ -120,6 +121,7 @@ listof
 infile
 inf
 dall'et
+poliadici
 Unknown
 grammar
 LAB
@@ -132,6 +134,7 @@ LCB
 anzich
 printf
 initial
+socket
 Scheme
 quit
 key
@@ -159,11 +162,13 @@ bn
 lex
 sorts
 eval
+monadici
 Scribble
 prefix
 number
 domain
 compatible
+monadico
 fact
 EQ
 gi

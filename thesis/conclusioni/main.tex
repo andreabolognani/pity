@@ -1,4 +1,40 @@
 \section{Conclusioni}
 
-Simile all'introduzione, riassume il lavoro svolto e spiega in che
-modo si potrebbe andare avanti a sviluppare il lavoro.
+Sono state implementate le regole di inferenza che costituiscono il
+type system per il $\pi$-calcolo; per fare questo, \`e stato necessario
+fornire una rappresentazione per tutti i concetti matematici coinvolti.
+
+Osservando il codice, o semplicemente l'indice di questa tesi, ci si
+rende conto immediatamente di come l'implementazione vera e propria
+delle regole di inferenza sia stata di fatto una parte minima del lavoro,
+mentre la quasi totalit\`a degli sforzi \`e stata necessariamente
+concentrata sulla definizione dei vari tipi di dato e delle procedure
+che li manipolano.
+
+Un'altra cosa che si pu\`o osservare \`e che le righe di codice scritte
+per i casi di test sono quasi il doppio rispetto a quelle scritte per
+l'implementazione della libreria: gli oltre 220 casi di test sviluppati
+nel corso del progetto hanno consentito di acquisire una buona confidenza
+nella correttezza dell'implementazione, oltre che permettere di
+verificare che ogni cambiamento fatto non causasse conseguenze
+inaspettate.
+
+Il linguaggio Racket, con la sua concisione e naturale inclinazione alla
+rappresentazione di concetti matematici, ha consentito di mantenere la
+complessit\`a delle singole unit\`a computazionali sotto controllo: come
+si \`e visto, la procedura pi\`u lunga conta circa 30 righe di codice,
+mentre la maggior parte \`e costituita da meno di 10.
+
+Il progetto, essendo stato sviluppato sotto forma di libreria, pu\`o
+essere integrato comodamente in qualsiasi altro software scritto in
+Racket; inoltre, grazie alla rappresentazione testuale fornita per i
+vari tipi di dato, l'integrazione con software scritti in altri linguaggi
+non presenta particolari ostacoli: sarebbe semplice scrivere un piccolo
+server che si comporta come il toplevel presentato, e che comunica con
+un altro programma, magari scritto in C, tramite una socket.
+
+Esistono possibilit\`a di estensione del progetto al di fuori della sua
+integrazione con altri software: ad esempio, sarebbe possibile
+estendere Pity implementando la conversione da processi poliadici a
+processi monadici ed il type system per il $\pi$-calcolo monadico
+descritti in \cite{qw05}.
