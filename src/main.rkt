@@ -124,15 +124,21 @@
 
 
 ; Start the evaluation loop
-(let* ([args (current-command-line-arguments)]
-       [infile (if (< (vector-length args) 1) #f (vector-ref args 0))]
-       [port (if (not infile) (current-input-port) (open-input-file infile))])
-  (when (terminal-port? port)
-    (printf "Welcome to the Pity interactive toplevel!~n")
-    (printf "Type HELP and hit Enter for an overview.~n~n"))
-  (repl action (hash) "pity> " port)
-  (if (terminal-port? port)
-      (printf "Bye.~n")
-      (printf ""))
-  (unless (equal? (current-input-port) port)
-          (close-input-port port)))
+(with-handlers ([exn?
+                 (lambda (e) (eprintf "Unable to open input file~n"))])
+  (let* ([args (current-command-line-arguments)]
+         [infile (if (< (vector-length args) 1)
+                     #f
+                     (vector-ref args 0))]
+         [port (if (not infile)
+                   (current-input-port)
+                   (open-input-file infile))])
+    (when (terminal-port? port)
+          (printf "Welcome to the Pity interactive toplevel!~n")
+          (printf "Type HELP and hit Enter for an overview.~n~n"))
+    (repl action (hash) "pity> " port)
+    (if (terminal-port? port)
+        (printf "Bye.~n")
+        (printf ""))
+    (unless (equal? (current-input-port) port)
+            (close-input-port port))))
