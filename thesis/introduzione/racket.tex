@@ -1,7 +1,7 @@
 \section{Racket}
 
-Come si pu\`o capire gi\`a dal primo impatto con $\pi$-calcolo, la sua
-definizione formale \`e naturalmente ricorsiva: si parte infatti dal
+Come si pu\`o capire gi\`a dal primo impatto con il $\pi$-calcolo, la
+sua definizione formale \`e naturalmente ricorsiva: si parte infatti dal
 processo nullo $0$, al quale si pu\`o aggiungere un'azione per ottenere
 un nuovo processo, nel quale si pu\`o restringere un nome per ottenere un
 nuovo processo, e cos\`i via.
@@ -31,14 +31,14 @@ appetibile come linguaggio di programmazione al di l\`a dell'ambito
 delle estensioni all'editor.
 
 Common Lisp non ha questo tipo di problemi, ma soffre di alcune
-limitazioni e particolarit\`a dovute dall'et\`a del suo design, come
-ad esempio il fatto di utilizzare due spazi di indirizzamento diversi
-per variabili e funzioni, e di gestire lo scoping di una variabile in
-maniera diversa a seconda di come viene dichiarata.
+limitazioni e particolarit\`a dovute in parte all'et\`a del suo design,
+come ad esempio il fatto di utilizzare due spazi di indirizzamento
+diversi per variabili e funzioni, e di gestire lo scoping di una
+variabile in maniera diversa a seconda di come viene dichiarata.
 
 Queste caratteristiche, unite all'enorme numero di moduli (talvolta
 scarsamente documentati) di cui Common Lisp dispone, rendono l'approccio
-a questo linguaggio poco amichevole.
+a questo linguaggio poco immediato.
 
 Il linguaggio Scheme, invece, ha un design minimalista, direttamente
 derivato dal $\lambda$-calcolo, che parte da un numero molto ridotto di
@@ -52,7 +52,7 @@ che usare abbreviazioni o acronimi.
 Tutte queste caratteristiche rendono possibile imparare Scheme in pochi
 giorni, e acquisire dimestichezza con praticamente tutti i costrutti che
 lo compongono in un paio di settimane. Per questo motivo, Scheme \`e
-frequentemente utilizzato nell'ambito dell'educazione.
+frequentemente utilizzato nell'ambito della formazione.
 
 Il linguaggio Scheme \`e definito formalmente da una serie di report: il
 pi\`u recente \`e R$^{6}$RS (Revised$^{6}$ Report on the Algorithmic
@@ -177,7 +177,7 @@ come in Racket le funzioni siano un tipo di dato di prim'ordine.
 \`E possibile definire nuove funzioni utilizzando la sintassi
 \lstinline{lambda}, che crea funzioni anonime, combinata con la sintassi
 \lstinline{define}, oppure con una sintassi abbreviata. I seguenti esempi
-sono totalmente equivalenti tra di loro:
+sono totalmente equivalenti tra loro:
 
 \begin{lstlisting}
     (define (double x)
@@ -239,7 +239,7 @@ nello scope interno.
 La procedura \lstinline{set!} permette di modificare il valore di una
 variabile. Il simbolo \lstinline{!} indica appunto una procedura non
 \emph{pura}; \`e convenzione in Racket utilizzare questo simbolo nel
-nome delle funzioni che alterano dello stato globale. Le funzioni non
+nome delle funzioni che alterano lo stato globale. Le funzioni non
 pure vengono solitamente evitate in Racket, preferendo ad esse procedure
 che operano in maniera non distruttiva e prive di effetti secondari.
 
