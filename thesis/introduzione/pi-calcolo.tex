@@ -170,16 +170,17 @@ Per evitare l'ambiguit\`a causata dall'avere pi\`u nomi all'apparenza
 identici, ma di fatto distinti, viene assunto che ogni nome legato sia
 scelto in modo da essere distinto da tutti i nomi legati presenti nel
 sistema, e da tutti i nomi liberi presenti in altri processi facenti parte
-del sistema. Il processo appena visto andrebbe quindi scritto come
+del sistema. Il sistema
 
 \begin{pilisting}
 $
-    \nu a \, (
+    \nu e \, (
       \overline{b}\langle c\rangle.0 \; | \;
-      b(e).0
+      b(f).0
     ) \; | \;
-    f(d).0
+    a(d).0
 $
 \end{pilisting}
 
-per mostrare chiaramente che i nomi coinvolti sono distinti.
+ha lo stesso significato di quello visto sopra, ma rispetta il criterio
+appena enunciato, ed \`e quindi esente da ambiguit\`a.
