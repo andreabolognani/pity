@@ -136,6 +136,28 @@ risposta al client e la sua richiesta. Una volta ricevuti questi dati, il
 server procede a generare una risposta $r$, che invia al client sul nome $c$
 precedentemente ricevuto, e a mettersi in attesa di una nuova richiesta.
 
+L'operatore a precedenza maggiore \`e quello di prefisso; seguono
+l'operatore di replicazione, quello di restrizione, e infine quello di
+composizione parallela. Quindi nel sistema
+
+\begin{pilisting}
+$
+    \nu x\; \overline{x}\langle y\rangle.0 \; | \;
+    !x(z).0
+$
+\end{pilisting}
+
+il nome $x$ viene ristretto unicamente nel processo di sinistra; se si
+vuole che la restrizione copra entrambi i processi, \`e sufficiente
+racchiuderli tra parentesi, ottenendo
+
+\begin{pilisting}
+$
+    \nu x\; (\overline{x}\langle y\rangle.0 \; | \;
+    !x(z).0)
+$
+\end{pilisting}
+
 Le occorrenze di $x$ in $\nu x \, P$ e in $ a(x).P$ sono \emph{leganti}:
 questo significa che tutte le occorrenze successive di $x$ in $P$ fanno
 riferimento allo stesso nome $x$. Lo scope \`e in entrambi i casi il
