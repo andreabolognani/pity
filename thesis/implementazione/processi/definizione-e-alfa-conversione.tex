@@ -354,7 +354,7 @@ $
 
 dove l'occorrenza di $b$ in $\overline{b}\langle c\rangle$ fa riferimento
 ad un nome che \`e diverso da quello a cui fa riferimento l'occorrenza di
-$b$ in $a(b)$; una volta effettuato il cambio di nomi si deve ottenere il
+$b$ in $a(b)$; una volta effettuato il cambio di nomi, si ottiene il
 processo
 
 \begin{pilisting}
@@ -363,7 +363,8 @@ $
 $
 \end{pilisting}
 
-privo di ambiguit\`a.
+uno degli infiniti processi $\alpha$-equivalenti all'originale, che non
+presenta ambiguit\`a.
 
 In questo primo caso \`e sufficiente rinominare l'occorrenza legata di $b$:
 nella procedura \lstinline{prefix-guard}, si comincia con il dichiarare una
@@ -399,8 +400,8 @@ $
 
 dove la prima occorrenza di $a$ si riferisce ad un nome diverso da
 quello a cui fanno riferimento le altre due occorrenze, quindi \`e
-necessario operare un cambio di nome per differenziarla, ottenendo il
-processo
+necessario operare un cambio di nome per differenziarla. La guardia
+trasforma il processo in
 
 \begin{pilisting}
 $
@@ -477,7 +478,7 @@ $
 
 l'occorrenza di sinistra del nome $a$ ha significato diverso rispetto
 all'occorrenza di destra, quindi quest'ultima deve essere rinominata,
-portando al processo
+il processo ottenuto dall'applicazione della guardia \`e
 
 \begin{pilisting}
 $
@@ -486,7 +487,7 @@ $
 $
 \end{pilisting}
 
-che rispetta i requisiti.
+che \`e $\alpha$-equivalente all'originale e rispetta i requisiti.
 
 Per svolgere questo compito, viene dichiarata una procedura interna
 chiamata \lstinline{fix}. La procedura accetta come parametri la coppia,
