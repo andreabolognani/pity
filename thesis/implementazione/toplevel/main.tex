@@ -84,8 +84,8 @@ la stringa da usare come prompt, e la porta di input.
 
 Viene dichiarata una procedura interna, \lstinline{recur}: questa
 procedura stampa il prompt (se in modalit\`a interattiva, ovvero se la
-porta di input \`e collegata ad un terminale, in base al valore di
-ritorno del predicato \lstinline{terminal-port?}), poi legge una riga
+porta di input \`e collegata ad un terminale, in base al valore
+restituito dal predicato \lstinline{terminal-port?}), poi legge una riga
 di input usando \lstinline{read-line}.
 
 Se viene letto un carattere di fine input (questa condizione viene
@@ -288,7 +288,7 @@ viene ceduto alla procedura \lstinline{cmd-set!/sorting}:
         (hash-set vars n (string->sorting v))))
 \end{lstlisting}
 
-Il valore di ritorno della prima tra \lstinline{string->process} e
+Il valore restituito dalla prima tra \lstinline{string->process} e
 \lstinline{string->sorting} ad avere successo viene associato al nome
 \lstinline{n} nell'hash table \lstinline{vars}.
 
