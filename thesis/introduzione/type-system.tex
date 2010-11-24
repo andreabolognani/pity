@@ -120,6 +120,13 @@ nomi distinti: se questa condizione non fosse verificata¸ all'interno
 dell'ambiente si dovrebbero assegnare ad uno stesso nome pi\`u sort,
 potenzialmente in conflitto tra loro.
 
+Inoltre, dal momento che nell'ambiente sono contenuti solamente i
+sort dei nomi che hanno occorrenze libere, se un nome avesse sia
+occorrenze libere che occorrenze legate in un processo, l'ambiente
+dovrebbe contemporaneamente contenere e non contenere un'associazione
+tra il nome in questione e il suo sort, il che \`e ovviamente un
+assurdo.
+
 Si dice che un processo $P$ \emph{rispetta} un sorting $\lambda$ se esiste
 un qualche ambiente $\Psi$ tale che \`e possibile usare le regole di
 inferenza appena descritte per derivare la conclusione $\Psi |- P$.
