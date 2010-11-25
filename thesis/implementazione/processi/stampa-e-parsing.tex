@@ -34,8 +34,8 @@ tuttavia, l'eleganza e la chiarezza dell'espressione matematica sono
 andate perdute.
 
 Per evitare che la dichiarazione di processi diventi un processo lungo
-e tedioso, verr\`a utilizzata una semplice rappresentazione testuale,
-molto vicina a quella matematica, che consentir\`a di scrivere e leggere
+e tedioso viene utilizzata una semplice rappresentazione testuale,
+molto vicina a quella matematica, che consente di scrivere e leggere
 velocemente processi: utilizzando questa rappresentazione, il processo
 appena visto pu\`o essere scritto come
 
@@ -43,7 +43,7 @@ appena visto pu\`o essere scritto come
     !(z)(z<q>.0|z(w).0)
 \end{lstlisting}
 
-Verr\`a definita come prima cosa la conversione da processo a stringa,
+Viene definita come prima cosa la conversione da processo a stringa,
 e successivamente quella opposta, da stringa a processo.
 
 La procedura che converte un processo in una stringa \`e
@@ -202,8 +202,8 @@ assegnando ad ogni token il pattern che lo contraddistingue:
 
 Si pu\`o notare che i simboli riconosciuti dal lexer sono pi\`u di
 quelli necessari a definire la rappresentazione testuale dei processi:
-questo perch\'e lo stesso lexer verr\`a successivamente utilizzato per
-riconoscere le rappresentazioni testuali di altre entit\`a.
+questo perch\'e lo stesso lexer viene utilizzato anche per riconoscere
+le rappresentazioni testuali di altre entit\`a.
 
 Il parser \`e definito da
 
@@ -264,7 +264,7 @@ e utilizza il parser appena definito per estrarne un processo:
 
 Dalla stringa input \lstinline{str} viene ottenuta una \emph{porta}
 tramite la chiamata a \lstinline{open-input-string}: la porta \`e il
-tipo utilizzato da Racket per rappresentare una variabile dalla sulla
+tipo utilizzato da Racket per rappresentare una variabile sulla
 quale si possono effettuare operazioni di input e output, in maniera
 analoga a quanto avviene con i file descriptor nel linguaggio C.
 

@@ -2,7 +2,7 @@
 
 Il modulo \lstinline{pity/name} contiene l'implementazione di un nome: il
 punto di partenza \`e la dichiarazione di un nuovo tipo, chiamato proprio
-\lstinline{name}, che verr\`a usato per rappresentare un nome. La
+\lstinline{name}, che viene usato per rappresentare un nome. La
 dichiarazione \`e la seguente:
 
 \begin{lstlisting}
@@ -22,7 +22,7 @@ tra le stringhe contenute nei rispettivi campi \lstinline{n}.
 Inoltre, usando la keyword \lstinline{#:guard}, la procedura
 \lstinline{name-guard} viene designata come \emph{guardia} per la struttura:
 questo tipo di procedura viene utilizzata in una maniera particolare che \`e
-bene spiegare, visto che ne verr\`a fatto ampio uso.
+bene spiegare, visto che nell'implementare Pity ne viene fatto ampio uso.
 
 Racket \`e un linguaggio a tipizzazione dinamica; in quanto tale, non
 richiede al programmatore di dichiarare il tipo n\'e delle variabili, n\'e
@@ -42,9 +42,9 @@ perch\'e, a differenza di quanto succede usando un contratto, una
 procedura guardia permette di manipolare in maniera arbitraria i campi
 di una struttura.
 
-Questa caratteristica non \`e utile per quanto riguarda i nomi, ma
-quando ci si trover\`a a dover costruire processi se ne far\`a ampio
-uso; per i nomi si usa la stessa tecnica in nome della consistenza.
+Questa caratteristica viene utilizzata ampiamente nell'ambito dei
+processi; per quanto riguarda i nomi, viene utilizzata solamente
+per ragioni di consistenza.
 
 La guardia per la struttura \lstinline{name} \`e
 
@@ -66,7 +66,7 @@ Il predicato \lstinline{id-string?} verifica che una stringa sia adatta
 ad essere utilizzata come identificatore: nel nostro caso, un
 identificatore deve essere costituito da un numero positivo di lettere,
 eventualmente seguite da un numero positivo di cifre. Le motivazioni che
-hanno dettato questa scelta verranno spiegate tra poco.
+hanno dettato questa scelta vengono spiegate poco pi\`u avanti.
 
 L'implementazione del predicato \`e resa estremamente semplice dal supporto
 alle espressioni regolari di Racket:
@@ -170,7 +170,7 @@ esporta (rende disponibile agli altri moduli) usando la forma
 utilizzare parentesi quadre in alcuni contesti pu\`o aumentare notevolmente
 la leggibilit\`a del codice.
 
-Da questo momento in poi, il contratto di ogni procedura pubblica verr\`a
+Da questo momento in poi, il contratto di ogni procedura pubblica viene
 dichiarato assieme alla procedura stessa, dando per scontato che la
-sintassi \lstinline{provide/contract} sar\`a usata per esportare la
+sintassi \lstinline{provide/contract} sia usata per esportare la
 procedura in questione.
