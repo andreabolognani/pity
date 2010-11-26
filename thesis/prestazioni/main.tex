@@ -1,0 +1,248 @@
+\chapter{Prestazioni}
+
+Per valutare le prestazioni di Pity, \`e stato misurato ripetutamente il
+tempo necessario a svolgere alcune operazioni, calcolando poi la media.
+
+Il sistema di riferimento \`e un ThinkPad X40 dotato di processore Intel
+Pentium M con singolo core a 1.2GHz e 512MB di RAM; la versione di Racket
+utilizzata \`e la 5.0 su Debian GNU/Linux. Questo sistema \`e stato
+progettato e messo in vendita nel 2004, quindi le sue prestazioni sono
+di parecchio inferiori a quelle delle macchine attualmente sul mercato.
+
+Come operazioni di riferimento vengono calcolati gli alberi di
+derivazione rispetto ad un sorting non banale
+
+\begin{pilisting}
+$
+    \lambda(s) = (s,t) \;\;\;
+    \lambda(t) = (p)   \;\;\;
+    \lambda(p) = (p)   \;\;\;
+    \lambda(n) = (n,m) \;\;\;
+    \lambda(m) = (t)
+$
+\end{pilisting}
+
+sul processo
+
+\begin{pilisting}
+$
+   \nu a \; (\overline{a}\langle b,c\rangle.0 \; | \;
+             a(e,f).\overline{e}\langle g,h\rangle.
+             \overline{f}\langle i\rangle.0) \; | \;
+   b(j,k).0 \; | \;
+   !c(l).0
+$
+\end{pilisting}
+
+che \`e decisamente complesso e contiene tutti i costrutti del
+$\pi$-calcolo.
+
+Per misurare le prestazioni \`e stato scritto un piccolo programma
+che utilizza la libreria Pity:
+
+\begin{lstlisting}
+    (let* ([p "(a)(a<b,c>.0|a(e,f).e<g,h>.f<i>.0)|b(j,k).0|!c(l).0"]
+           [s "s=(s,t);t=(p);p=(p);n=(n,m);m=(t)"]
+           [iterations 1000]
+           [proc (curry stopwatch-execution p s)]
+           [avg (build-list iterations proc)]
+           [avg (floor (/ (apply + avg) iterations))]
+           [envs (environments-count p s)])
+      (printf "Process:      ~a~n" p)
+      (printf "Sorting:      ~a~n" s)
+      (printf "Environments: ~a~n" envs)
+      (printf "Iterations:   ~a~n" iterations)
+      (printf "Average time: ~ams~n" avg))
+\end{lstlisting}
+
+Le prime tre dichiarazioni nella sintassi \lstinline{let*} sono
+\lstinline{p}, \lstinline{s} e \lstinline{iterations}, rispettivamente
+la stringa che rappresenta il processo, quella che rappresenta il
+sorting, e il numero di iterazioni da eseguire.
+
+Viene poi creata una procedura \lstinline{proc} che si comporta come
+\lstinline{stopwatch-execution} con primi parametri \lstinline{p} e
+\lstinline{s}, e tramite \lstinline{build-list} questa procedura
+viene chiamata su tutti gli interi compresi tra \lstinline{0} e
+\lstinline{(- iterations 1)}: il risultato, assegnato alla variabile
+\lstinline{avg}, \`e una lista di misurazioni, in millisecondi, ognuna
+corrispondente ad una singola esecuzione di
+\lstinline{stopwatch-execution}.
+
+Con \lstinline{apply} le misurazioni vengono sommate, poi il risultato
+\`e diviso per il numero di misurazioni e arrotondato alle unit\`a
+con \lstinline{floor}; \lstinline{avg} \`e ora il tempo medio di
+esecuzione.
+
+Infine, il numero di ambienti che vengono controllati da
+\lstinline{process-respects?} viene calcolato usando la procedura
+interna \lstinline{environments-count}, e le statistiche raccolte
+vengono mostrate all'utente.
+
+La procedura \lstinline{environments-count} \`e definita come
+
+\begin{lstlisting}
+    (define (environments-count p s)
+      (let* ([proc (string->process p)]
+             [srt (string->sorting s)]
+             [envs (process-environments proc srt)]
+             [ones (set-map envs (lambda (e) 1))])
+        (apply + ones)))
+\end{lstlisting}
+
+Il funzionamento di questa procedura \`e molto semplice: l'insieme degli
+ambienti possibili viene generato tramite la chiamata a
+\lstinline{process-environments}, poi \lstinline{set-map} viene
+chiamata sull'insieme ottenuto, con una procedura che restituisce il
+valore numerico \lstinline{1}.
+
+Il risultato della chiamata a \lstinline{set-map} \`e una lista
+contenente tanti \lstinline{1} quanti sono gli ambienti possibili:
+tramite la procedura \lstinline{apply}, viene fatta la somma, ottenendo
+il numero di ambienti possibili.
+
+La procedura \lstinline{stopwatch-execution} \`e definita come
+
+\begin{lstlisting}
+    (define (stopwatch-execution p s n)
+      (let* ([start-time (current-milliseconds)]
+             [proc (string->process p)]
+             [srt (string->sorting s)]
+             [envs (process-respects? proc srt)]
+             [end-time (current-milliseconds)])
+        (- end-time start-time)))
+\end{lstlisting}
+
+e non fa altro che chiamare \lstinline{process-respects?} sul processo
+e sul sorting passati come argomento, ottenendo prima e dopo l'esecuzione
+l'ora del sistema tramite \lstinline{current-milliseconds}, e restituendo
+la differenza tra l'ora finale e l'ora iniziale.
+
+Il tempo misurato comprende quello necessario a convertire la
+rappresentazione testuale del processo e del sorting in valori Racket.
+
+Come gi\`a detto, Racket supporta tre modalit\`a di esecuzione:
+interpretazione, esecuzione da bytecode, ed eseguibile nativo.
+
+L'esecuzione del programma di prova sul sistema di riferimento, con
+100 iterazioni, ci informa che Pity controlla i 3125 ambienti possibili
+nei tempi medi riportati nella seguente tabella:
+
+\vspace{3mm}
+\begin{center}
+\begin{tabular}{r c c c}
+&
+\textbf{Interpretato}
+&
+\textbf{Bytecode}
+&
+\textbf{Nativo}
+\\
+\textbf{Tempo medio}
+&
+632ms
+&
+626ms
+&
+639ms
+\\
+\end{tabular}
+\end{center}
+\vspace{3mm}
+
+Come si pu\`o vedere, l'esecuzione da bytecode \`e leggermente pi\`u
+efficiente.
+
+Questo test tiene conto unicamente del tempo necessario ad eseguire
+delle operazioni una volta che la libreria Pity \`e gi\`a stata
+caricata; il tempo di caricamento della libreria varia notevolmente in
+base alla modalit\`a di esecuzione scelta, e per misurare il suo impatto
+sul tempo di esecuzione totale di un programma che ne fa uso \`e stato
+eseguito ripetutamente (100 iterazioni) uno script che esce appena
+caricata la libreria:
+
+\begin{lstlisting}
+    #lang racket/base
+
+    (require pity)
+\end{lstlisting}
+
+Per tenere traccia del tempo impiegato, \`e stato creato uno script
+Bourne Shell con il seguente contenuto:
+
+\begin{lstlisting}
+    #!/bin/sh
+
+    ITERATIONS=100
+
+    COMMAND="${1}"
+    FILE="${2}"
+
+    AVG=0
+    I=0
+
+    while [ "${I}" -lt "${ITERATIONS}" ]; do
+
+        START_TIME=`date '+%s%N'`
+
+        ${COMMAND} ${FILE}
+
+        END_TIME=`date '+%s%N'`
+
+        ELAPSED_TIME=`expr "${END_TIME}" - "${START_TIME}"`
+        ELAPSED_TIME=`expr "${ELAPSED_TIME}" / 1000000`
+
+        AVG=`expr "${AVG}" + "${ELAPSED_TIME}"`
+
+        I=`expr "${I}" + 1`
+    done
+
+    echo "Iterations:   ${ITERATIONS}"
+    echo "Total time:   ${AVG}ms"
+
+    AVG=`expr "${AVG}" / "${ITERATIONS}"`
+
+    echo "Average time: ${AVG}ms"
+\end{lstlisting}
+
+Lo script Bourne Shell accetta due argomenti, un comando ed un file da
+eseguire, ed esegue il comando con il file come argomento il numero
+specificato di volte, calcolando infine la media dei tempi di esecuzione.
+
+I tempi ottenuti sono quelli riportati nella seguente tabella:
+
+\vspace{3mm}
+\begin{center}
+\begin{tabular}{r c c c}
+&
+\textbf{Interpretato}
+&
+\textbf{Bytecode}
+&
+\textbf{Nativo}
+\\
+\textbf{Tempo medio}
+&
+2883ms
+&
+589ms
+&
+870ms
+\\
+\end{tabular}
+\end{center}
+
+L'ampia differenza riscontrata tra i tempi di caricamento \`e dovuta
+principalmente al fatto che, se la libreria non viene compilata, ad ogni
+esecuzione \`e necessario ricreare le tabelle di lookup utilizzate dai
+lexer e parser, operazione piuttosto costosa in termini di tempo.
+
+Ancora una volta, il tempo di esecuzione \`e minore per il bytecode.
+
+Queste misurazioni suggeriscono che, una volta ultimata la stesura
+dell'applicazione, la strada migliore sia quella di utilizzare
+l'esecuzione da bytecode; d'altro canto, in fase di sviluppo,
+l'interpretazione si rivela la via pi\`u veloce, dal momento che
+aggiunge circa due secondi al tempo di esecuzione ma evita di dover
+ogni volta compilare il bytecode, operazione che richiede in media
+una decina di secondi.

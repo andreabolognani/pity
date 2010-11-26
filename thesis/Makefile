@@ -11,6 +11,7 @@ THESIS_CHAPTERS=abstract/*.tex \
                 implementazione/ambienti/*.tex \
                 type-inference/*.tex \
                 toplevel/*.tex \
+                prestazioni/*.tex \
                 conclusioni/*.tex
 THESIS_OTHER=common.tex
 THESIS_BIB=references.bib
